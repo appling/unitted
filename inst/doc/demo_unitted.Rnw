@@ -6,6 +6,7 @@
 \author{Alison Appling}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 <<setup, include=FALSE>>=
 opts_chunk$set(size = 'footnotesize', tidy=FALSE)

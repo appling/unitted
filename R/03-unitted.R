@@ -133,8 +133,9 @@ new_unitted_class <- function(superclass.name, overwrite=FALSE) {
 # 
 # Don't be fooled! This unassuming code block is the heart of unittted class
 # definitions.
-sapply(c("character","complex","logical","numeric","raw","NULL",    #"integer",
-         "factor","ordered","Date","POSIXct","POSIXlt",
+setOldClass("difftime")
+sapply(c("character","complex","logical","numeric","raw","NULL",
+         "factor","ordered","Date","POSIXct","POSIXlt","difftime",
          "list","data.frame",
          "array","matrix","ts",
          "expression","name","function"), 
@@ -156,10 +157,26 @@ setMethod(
   "unitted", "unitted",
   function(object, units, ...) {
     #print("u(unitted)")
-    if(isTRUE(is.na(units))) {
-      return(object)
-    } else {
+    if(isTRUE(isS4(units))) {
       callGeneric(deunitted(object), units, ...)
+    } else if(!isTRUE(is.na(units))) {
+      callGeneric(deunitted(object), units, ...)
+    } else {  
+      return(object)
+    }
+  }
+)
+
+setMethod(
+  "unitted", "unitted_data.frame",
+  function(object, units, ...) {
+    #print("u(unitted)")
+    if(isTRUE(isS4(units))) {
+      callGeneric(deunitted(object, partial=TRUE), units, ...)
+    } else if(!isTRUE(is.na(units))) {
+      callGeneric(deunitted(object, partial=TRUE), units, ...)
+    } else {  
+      return(object)
     }
   }
 )
@@ -175,7 +192,7 @@ setMethod(
   "unitted", "list",
   function(object, units, ...) {
     #print("u(list)")
-    warning("The implementation of unitted lists is currently primitive - one unit bundle per list.")
+    #warning("The implementation of unitted lists is currently primitive - one unit bundle per list.")
     new("unitted_list", object, units=unitbundle(units))
   }
 )
@@ -216,7 +233,7 @@ setMethod(
 #'   NA, indicating that units should be inferred from current units of the 
 #'   data.frame columns (a non-unitted column is assumed to have units "")
 #' @return A fully unitted data.frame having units specified by units (or, 
-#'   when units is NA or all of its elements are NA, by the original units
+#'   when units is NA or all of units's elements are NA, by the original units
 #'   of the individual columns)
 #' @family constructors
 setMethod(
@@ -224,21 +241,32 @@ setMethod(
   function(object, units) {
     #print("u(data.frame)")
     
-    if(length(units) == 1) {
-      if(isTRUE(is.na(units[[1]]))) {
-        #units <- rep(NA, ncol(object))
-        return(new("unitted_data.frame", object, units=NA))
+    if(length(units) != ncol(object)) {
+      fail <- TRUE
+      if(length(units) == 1) {
+        if(!isS4(units[[1]])) {
+          if(isTRUE(is.na(units[[1]]))) {
+            units <- rep(NA, ncol(object))
+            fail <- FALSE
+          } 
+        }
       }
-    } else if(length(units) != ncol(object)) {
-      stop("Number of units must equal number of data.frame columns")
+      if(fail) stop("Number of units must equal number of data.frame columns")
     }
     
     # Overwrite units when current column units are absent and/or units[col] is not NA
     for(col in 1:ncol(object)) {
-      if(!is.na(units[[col]])) {
+      if(isS4(units[[col]])) {
+        object[,col] <- unitted(object[,col], units[[col]])
+      } else {
         object[,col] <- unitted(object[,col], units[[col]])
       }
     }
+    # Known bug: The following line creates row names for data.frames even if 
+    # they were absent before. This is a property of S4 data.frames that doesn't
+    # make a lot of sense to me, but that I also don't see how to skirt. So for 
+    # now, I accept that unitted data.frames may be slightly different from
+    # plain S3 data.frames in this respect.
     return(new("unitted_data.frame", object, units=NA))
   }
 )
@@ -260,7 +288,7 @@ setGeneric(".unitted_as.data.frame", function(object, ...) {
   standardGeneric(".unitted_as.data.frame")
 })
 setMethod(
-  ".unitted_as.data.frame", "vector",
+  ".unitted_as.data.frame", "ANY",
   function(object, ...) {
     # Vectors (including lists unless overridden) are the simple and typical
     # case. Remove the units, route to a new as.data.frame call, and then add
@@ -286,7 +314,6 @@ setMethod(
 setMethod(
   ".unitted_as.data.frame", "data.frame",
   function(object, ...) {
-    #names(object) <- NULL
     return(object)
   }
 )
@@ -330,29 +357,48 @@ setMethod(
     return(S3Part(object, strictS3=TRUE))
   }
 )
-
-
+setMethod(
+  "deunitted", "unitted_list",
+  function(object, partial=FALSE, ...) {
+    if(!partial) {
+      object@.Data <- lapply(object@.Data, function(col) { deunitted(col) })
+    }
+    return(S3Part(object, strictS3=TRUE))
+  }
+)
+setMethod(
+  "deunitted", "data.frame",
+  function(object, ...) {
+    as.data.frame(lapply(object, function(col) { deunitted(col) }))
+  }
+)
+setMethod(
+  "deunitted", "list",
+  function(object, ...) {
+    lapply(object, function(elem) { deunitted(elem) })
+  }
+)
 #### Helper functions ####
 
-#' The internal, reasonably efficient, unsafe (little error checking) method for
-#' setting an object's units
-#' 
-#' \code{.set_units()} of a non-unitted class creates a new unitted object with 
-#' the specified units.
-#' 
-#' \code{.set_units()} of a unitted vector, array, or matrix class accepts a 
-#' single unitbundle to associate with that object. NA is NOT an acceptable 
-#' value of new.units.
-#' 
-#' \code{.set_units()} of a unitted data.frame accepts a list of unitbundles (or
-#' NAs), one per data.frame column in \code{columns}. NA is NOT an acceptable 
-#' value of new.units. The length of new.units is not checked.
-#' 
-#' @param object The object whose units should be changes
-#' @param new.units The new unit or units in their internal representation 
-#'   (currently a unitbundle)
-#' @param columns (data.frames only) The numeric column numbers to which
-#'   new.units should be applied.
+# ' The internal, reasonably efficient, unsafe (little error checking) method for
+# ' setting an object's units
+# ' 
+# ' \code{.set_units()} of a non-unitted class creates a new unitted object with 
+# ' the specified units.
+# ' 
+# ' \code{.set_units()} of a unitted vector, array, or matrix class accepts a 
+# ' single unitbundle to associate with that object. NA is NOT an acceptable 
+# ' value of new.units.
+# ' 
+# ' \code{.set_units()} of a unitted data.frame accepts a list of unitbundles (or
+# ' NAs), one per data.frame column in \code{columns}. NA is NOT an acceptable 
+# ' value of new.units. The length of new.units is not checked.
+# ' 
+# ' @param object The object whose units should be changes
+# ' @param new.units The new unit or units in their internal representation 
+# '   (currently a unitbundle)
+# ' @param columns (data.frames only) The numeric column numbers to which
+# '   new.units should be applied.
 setGeneric(
   ".set_units", 
   function(object, new.units, ...) {
@@ -379,20 +425,20 @@ setMethod(
 )
 
 
-#' The internal, reasonably efficient method for acquiring an object's units in 
-#' the internal representation
-#' 
-#' .get_units() of a non-unitted class returns NA.
-#' 
-#' .get_units() of a unitted vector, array, or matrix class returns the single 
-#' unitbundle associated with that object.
-#' 
-#' .get_units() of a unitted data.frame returns a named list of unitbundles (or
-#' NAs), one per data.frame column.
-#' 
-#' @param object The object whose units should be returned
-#' @return A unitbundle or list of unitbundles, each representing one set of 
-#'   units
+# ' The internal, reasonably efficient method for acquiring an object's units in 
+# ' the internal representation
+# ' 
+# ' .get_units() of a non-unitted class returns NA.
+# ' 
+# ' .get_units() of a unitted vector, array, or matrix class returns the single 
+# ' unitbundle associated with that object.
+# ' 
+# ' .get_units() of a data.frame or unitted_data.frame returns a named list of
+# ' unitbundles (or NAs), one per data.frame column.
+# ' 
+# ' @param object The object whose units should be returned
+# ' @return A unitbundle or list of unitbundles, each representing one set of 
+# '   units
 setGeneric(
   ".get_units", 
   function(object, ...) {
@@ -401,13 +447,49 @@ setGeneric(
 )
 setMethod(
   ".get_units", "unitted",
-  function(object) {
+  function(object, ...) {
     object@units
   }
 )
 setMethod(
+  ".get_units", "data.frame",
+  function(object, recursive=TRUE, ...) {
+    if(recursive) {
+      lapply(object, function(col) { .get_units(col) })
+    } else {
+      NA
+    }
+  }
+)
+setMethod(
   ".get_units", "unitted_data.frame",
-  function(object) {
-    lapply(object, function(col) { .get_units(col) })
+  function(object, recursive=TRUE, ...) {
+    if(recursive) {
+      setNames(unlist(lapply(object@.Data, .get_units)), object@names)
+    } else {
+      NA
+    }
+  }
+)
+setMethod(
+  ".get_units", "list",
+  function(object, recursive=TRUE, ...) {
+    if(recursive) {
+      lapply(object, function(col) { .get_units(col) })
+    } else {
+      NA
+    }
+  }
+)
+setMethod(
+  ".get_units", "unitted_list",
+  function(object, recursive=FALSE, ...) {
+    if(recursive) {
+      # '@names' is not technically a slot for S4 lists, but I think this is an
+      # efficient way to access names anyway.
+      setNames(unlist(lapply(object@.Data, .get_units)), object@names)
+    } else {
+      object@units
+    }
   }
 )

@@ -72,9 +72,9 @@ test_that("data.frames can be accessed with '[.unitted'", {
   # empty indices
   expect_that(udf[], equals(u(df[],units)))
   expect_that(udf[,], equals(u(df[,],units)))
-  expect_that(udf[,,], equals(u(df[,,],units)))
+  expect_that(udf[,,], equals(u(df[,,],units))) #breaks
   expect_that(df[,,,], throws_error("unused argument"))
-  expect_that(udf[,,,], throws_error("unused argument")) # breaks
+  expect_that(udf[,,,], throws_error("unused argument"))
   
   # numeric indices
   expect_that(udf[2,2], equals(u(df[2,2],"eggs")))
@@ -91,7 +91,7 @@ test_that("data.frames can be accessed with '[.unitted'", {
   # out-of-bounds indices
   expect_that(udf[,5], throws_error("undefined columns selected"))
   expect_that(udf[7,], equals(u(df[7,],units)))
-  expect_that(udf[7,5], equals(u(df[7,5],units))) # breaks; should return NULL
+  expect_that(udf[7,5], equals(u(df[7,5],units[5])))
   expect_that(udf[7,5:9], throws_error("undefined columns selected"))
   
   # logical indices
@@ -117,14 +117,14 @@ test_that("data.frames can be accessed with '[.unitted'", {
   # partial matching
   df <- data.frame(yxz=1:5,yum=LETTERS[6:10],zop=rnorm(5),stringsAsFactors=FALSE,row.names=c("alpha","beta","gamma","delta","epsilon"))
   udf <- u(df, units)
-  expect_that(udf["alp",], equals(u(df["alp",], units))) # partial matching on rows
-  expect_that(udf[,"z"], throws_error("undefined columns selected")) # not allowed partial matching on columns with []
-  expect_that(udf["z"], throws_error("undefined columns selected")) # breaks - should not be allowed
-  expect_that(udf[["y",exact=FALSE]], throws_error("undefined columns selected"))
+  expect_that(udf["alp",], equals(u(df["alp",], units)))
+  expect_that(udf[,"z"], throws_error("undefined columns selected"))
+  expect_that(udf["z"], throws_error("undefined columns selected"))
+  expect_that(udf[["y",exact=FALSE]], equals(u(df[["y",exact=FALSE]], NA)))
   
   # drop argument
-  expect_that(udf[1:3,"z",drop=T], equals(u(df[1:3,"z",drop=T],get_units(udf)['z'])))
-  expect_that(udf[1:3,"z",drop=F], equals(u(df[1:3,"z",drop=F],get_units(udf)['z'])))
+  expect_that(udf[1:3,"zop",drop=T], equals(u(df[1:3,"zop",drop=T],get_units(udf)['zop'])))
+  expect_that(udf[1:3,"zop",drop=F], equals(u(df[1:3,"zop",drop=F],get_units(udf)['zop'])))
 })
 
 
@@ -152,11 +152,11 @@ test_that("matrices and arrays can be accessed with '[.unitted'", {
   expect_that(uarr[-6:-2,1:2,], equals(u(arr[-6:-2,1:2,],"popcorns")))
   expect_that(uarr[2,3,4], equals(u(arr[2,3,4],"popcorns")))
   expect_that(uarr[2,3,], equals(u(arr[2,3,],"popcorns")))
-  expect_that(uarr[,3,4], equals(u(arr[,3,4],"popcorns"))) # breaks!
-  expect_that(uarr[2,,4], equals(u(arr[2,,4],"popcorns"))) # breaks!
-  expect_that(uarr[2,,], equals(u(arr[2,,],"popcorns"))) # breaks!
-  expect_that(uarr[,2,], equals(u(arr[,2,],"popcorns"))) # breaks!
-  expect_that(uarr[,,2], equals(u(arr[,,2],"popcorns"))) # breaks!
+  expect_that(uarr[,3,4], equals(u(arr[,3,4],"popcorns")))
+  expect_that(uarr[2,,4], equals(u(arr[2,,4],"popcorns")))
+  expect_that(uarr[2,,], equals(u(arr[2,,],"popcorns")))
+  expect_that(uarr[,2,], equals(u(arr[,2,],"popcorns")))
+  expect_that(uarr[,,2], equals(u(arr[,,2],"popcorns")))
   
   
   # logical indices
@@ -172,11 +172,11 @@ test_that("matrices and arrays can be accessed with '[.unitted'", {
   expect_that(uarr[F,F,F], equals(u(arr[F,F,F],"popcorns")))
   expect_that(uarr[i1,i2,i3], equals(u(arr[i1,i2,i3],"popcorns")))
   expect_that(uarr[i1,i2,], equals(u(arr[i1,i2,],"popcorns")))
-  expect_that(uarr[i1,,i3], equals(u(arr[i1,,i3],"popcorns"))) # breaks!
-  expect_that(uarr[,i2,i3], equals(u(arr[,i2,i3],"popcorns"))) # breaks!
-  expect_that(uarr[i1,,], equals(u(arr[i1,,],"popcorns"))) # breaks!
-  expect_that(uarr[,i2,], equals(u(arr[,i2,],"popcorns"))) # breaks!
-  expect_that(uarr[,,i3], equals(u(arr[,,i3],"popcorns"))) # breaks!
+  expect_that(uarr[i1,,i3], equals(u(arr[i1,,i3],"popcorns")))
+  expect_that(uarr[,i2,i3], equals(u(arr[,i2,i3],"popcorns")))
+  expect_that(uarr[i1,,], equals(u(arr[i1,,],"popcorns")))
+  expect_that(uarr[,i2,], equals(u(arr[,i2,],"popcorns")))
+  expect_that(uarr[,,i3], equals(u(arr[,,i3],"popcorns")))
   
   
   # character indices
@@ -191,11 +191,11 @@ test_that("matrices and arrays can be accessed with '[.unitted'", {
   expect_that(uarr['cubic','poly','nomial'], throws_error("subscript out of bounds"))
   expect_that(uarr[i1,i2,i3], equals(u(arr[i1,i2,i3],"popcorns")))
   expect_that(uarr[i1,i2,], equals(u(arr[i1,i2,],"popcorns")))
-  expect_that(uarr[i1,,i3], equals(u(arr[i1,,i3],"popcorns"))) # breaks!
-  expect_that(uarr[,i2,i3], equals(u(arr[,i2,i3],"popcorns"))) # breaks!
-  expect_that(uarr[i1,,], equals(u(arr[i1,,],"popcorns"))) # breaks!
-  expect_that(uarr[,i2,], equals(u(arr[,i2,],"popcorns"))) # breaks!
-  expect_that(uarr[,,i3], equals(u(arr[,,i3],"popcorns"))) # breaks!
+  expect_that(uarr[i1,,i3], equals(u(arr[i1,,i3],"popcorns")))
+  expect_that(uarr[,i2,i3], equals(u(arr[,i2,i3],"popcorns")))
+  expect_that(uarr[i1,,], equals(u(arr[i1,,],"popcorns")))
+  expect_that(uarr[,i2,], equals(u(arr[,i2,],"popcorns")))
+  expect_that(uarr[,,i3], equals(u(arr[,,i3],"popcorns")))
 })
 
 
@@ -211,7 +211,7 @@ test_that("vectors can be accessed with '[[.unitted'", {
   uvec <- u(vvec,"hats")
   
   # numeric indices
-  expect_that(uvec[[2]],        equals(u(vvec[2],"hats"))) # should [[]] remove units or not???
+  expect_that(uvec[[2]],        equals(u(vvec[[2]],"hats")))
   expect_that(uvec[[NA]],       throws_error("subscript out of bounds"))
   expect_that(uvec[[c(3,9,1)]], throws_error("attempt to select more than one element"))
   expect_that(uvec[[-2]],       throws_error("attempt to select more than one element"))
@@ -223,7 +223,7 @@ test_that("vectors can be accessed with '[[.unitted'", {
   expect_that(uvec[[rep(T,10)]],throws_error("attempt to select more than one element"))
   
   # character indices
-  expect_that(uvec[["F"]],            equals(u(vvec["F"],"hats")),            info="indexing by a single string")
+  expect_that(uvec[["F"]],            equals(u(vvec[["F"]],"hats")))
   expect_that(uvec[[c("N","H","N")]], throws_error("attempt to select more than one element"))
   expect_that(uvec[["x"]],            throws_error("subscript out of bounds"))
   
@@ -244,31 +244,31 @@ test_that("data.frames can be accessed with '[[.unitted'", {
   
   # [[i]] can't select for rows; selects for columns only
   expect_that(udf[[1]],       equals(u(df[[1]],units[1]))) # selects first column
-  expect_that(udf[["alpha"]], equals(df[["alpha"]])) # 1 value = columns; trying rows gives NULL
+  expect_that(udf[["alpha"]], equals(u(df[["alpha"]],NA))) # 1 value = columns; trying rows gives NULL
   expect_that(udf[["zop"]],   equals(u(df[["zop"]],units["zop"]))) # naming a column works fine
   expect_that(udf[[c("yxz","zop")]], throws_error("subscript out of bounds")) # two columns is not allowed
   
   # partial matching - columns only
-  expect_that(udf[["almega",exact=FALSE]], equals(df[["almega",exact=FALSE]])) # nonexistent - gives NULL
-  expect_that(udf[["y",     exact=FALSE]], equals(df[["y",     exact=FALSE]])) # ambiguous - gives NULL
+  expect_that(udf[["almega",exact=FALSE]], equals(u(df[["almega",exact=FALSE]], NA))) # nonexistent - gives NULL
+  expect_that(udf[["y",     exact=FALSE]], equals(u(df[["y",     exact=FALSE]], NA))) # ambiguous - gives NULL
   expect_that(udf[["yu",    exact=FALSE]], equals(u(df[["yu",  exact=FALSE]], units["yum"]))) # inexact but unambiguous
   expect_that(udf[["zop",   exact=FALSE]], equals(u(df[["zop", exact=FALSE]], units["zop"]))) # inexact but very unambiguous
   
   # df has funny behavior for vectors of column or row indices
-  expect_that(udf[["alpha",c(1,2)]],         equals(df[["alpha",c(1,2)]]))
+  expect_that(udf[["alpha",c(1,2)]],         equals(u(df[["alpha",c(1,2)]], NA)))
   expect_that(udf[["alpha",c("yxz","yum")]], throws_error("subscript out of bounds"))
   expect_that(udf[["alpha",c(1,2,3)]],       throws_error("recursive indexing failed")) 
   expect_that(udf[[c(1,2,3),"zop"]],         throws_error("attempt to select more than one element")) 
   expect_that(udf[[c(1,2,3),c(1,2,3)]],      throws_error("recursive indexing failed"))
   
   # [[i,j]] selects for one row, one column. "[[ can only be used to select one element"
-  expect_that(udf[[4,3]],           equals(u(df[[4,3]],           units["yxz"]))) # breaks - missing units
-  expect_that(udf[["alpha","yxz"]], equals(u(df[["alpha","yxz"]], units["yxz"]))) # breaks - missing units
+  expect_that(udf[[4,3]],           equals(u(df[[4,3]],           units[3])))
+  expect_that(udf[["alpha","yxz"]], equals(u(df[["alpha","yxz"]], units["yxz"])))
   
   # partial matching - rows and columns
-  expect_that(udf[["gamma","yxz",exact=FALSE]], equals(u(df[["gamma","yxz",exact=FALSE]],units["yxz"]))) # breaks - should retain units
-  expect_that(udf[["gam",  "yxz",exact=FALSE]], equals(u(df[["gam",  "yxz",exact=FALSE]],units["yxz"]))) # breaks - should retain units
-  expect_that(udf[["gam",  "yu", exact=FALSE]], equals(u(df[["gam",  "yu", exact=FALSE]],units["yum"]))) # breaks - should retain units
+  expect_that(udf[["gamma","yxz",exact=FALSE]], equals(u(df[["gamma","yxz",exact=FALSE]],units["yxz"])))
+  expect_that(udf[["gam",  "yxz",exact=FALSE]], equals(u(df[["gam",  "yxz",exact=FALSE]],units["yxz"])))
+  expect_that(udf[["gam",  "yu", exact=FALSE]], equals(u(df[["gam",  "yu", exact=FALSE]],units["yum"])))
   
 })
 
@@ -290,24 +290,24 @@ test_that("matrices and arrays can be accessed with '[[.unitted'", {
   expect_that(uarr[[,,]], throws_error("invalid subscript type"))
     
   # one numeric index
-  expect_that(umat[[4]],   equals(u(mat[[4]],"peanuts"))) # should [[]] remove units or not???
+  expect_that(umat[[4]],   equals(u(mat[[4]],"peanuts")))
   expect_that(umat[[1:5]], throws_error("attempt to select more than one element"))
   expect_that(umat[[NA]],  throws_error("subscript out of bounds"))
-  expect_that(uarr[[4]],   equals(u(arr[[4]],"peanuts"))) # should [[]] remove units or not???
+  expect_that(uarr[[4]],   equals(u(arr[[4]],"popcorns")))
   expect_that(uarr[[1:5]], throws_error("attempt to select more than one element"))
   expect_that(uarr[[NA]],  throws_error("subscript out of bounds"))
   
   # two numeric indices
-  expect_that(umat[[2,4]],     equals(u(mat[[2,4]],"peanuts"))) # should [[]] remove units or not???
+  expect_that(umat[[2,4]],     equals(u(mat[[2,4]],"peanuts")))
   expect_that(umat[[1:5,4]],   throws_error("attempt to select more than one element"))
   expect_that(umat[[NA,4]],    throws_error("subscript out of bounds"))
-  expect_that(umat[[-3,4]],    throws_error("attempt to select more than one element"))
-  expect_that(uarr[[2,4,3]],   equals(u(arr[[2,4,3]],"peanuts"))) # should [[]] remove units or not???
+  expect_that(umat[[-3,4]],    throws_error("attempt to select")) #error message is inconsistent, "more" or "less" than one unit
+  expect_that(uarr[[2,4,3]],   equals(u(arr[[2,4,3]],"popcorns")))
   expect_that(uarr[[1:5,4,3]], throws_error("attempt to select more than one element"))
   expect_that(uarr[[3,4]],     throws_error("incorrect number of subscripts"))
   expect_that(uarr[[3,4,]],    throws_error("invalid subscript type"))
   expect_that(uarr[[NA,4,3]],  throws_error("subscript out of bounds"))
-  expect_that(uarr[[-3,4,3]],  throws_error("attempt to select more than one element"))
+  expect_that(uarr[[-3,4,3]],  throws_error("attempt to select"))
   
   # logical indices
   expect_that(umat[[T]],     equals(umat[[1]]))
@@ -318,10 +318,10 @@ test_that("matrices and arrays can be accessed with '[[.unitted'", {
   expect_that(uarr[[F,4,3]], throws_error("attempt to select less than one element"))
   
   # character indices
-  expect_that(umat[["b","N"]],               equals(u(20,"peanuts"))) # should [[]] remove units or not???
+  expect_that(umat[["b","N"]],               equals(u(20,"peanuts")))
   expect_that(umat[[c('b','c'),c("P","R")]], throws_error("attempt to select more than one element"))
   expect_that(umat[["b","No no no"]],        throws_error("subscript out of bounds"))
-  expect_that(uarr[["y ray",'4',"W"]],       equals(u(arr[["y ray",'4',"W"]],"popcorns"))) # should [[]] remove units or not???
+  expect_that(uarr[["y ray",'4',"W"]],       equals(u(arr[["y ray",'4',"W"]],"popcorns")))
   expect_that(uarr[["y ray",'kiddy',"W"]],   throws_error("subscript out of bounds"))
   expect_that(uarr[["y ray"]],               throws_error("subscript out of bounds"))
   expect_that(uarr[["2"]],                   throws_error("subscript out of bounds"))
@@ -343,14 +343,14 @@ test_that("data.frames can be accessed with '$.unitted'", {
   expect_that(udf$'yum', equals(u(df$'yum',units["yum"])))
   
   # Nonexistent column names
-  expect_that(udf$youthere, equals(df$youthere)) # breaks - should return NULL
+  expect_that(udf$youthere, equals(u(df$youthere,NA)))
 })
 
 
 test_that("lists can be accessed with '$.unitted'", {
   vlist <- list(yxz=1:5,yum=LETTERS[6:10],zop=rnorm(5))
   units <- c(yxz="toasts",yum="eggs",zop="hams^2")
-  expect_that(ulist <- u(vlist, units), throws_error("Lists can't be unitted, although their elements may be."))
+  expect_that(ulist <- u(vlist, units), gives_warning("The implementation of unitted lists is currently primitive"))
   ulist <- lapply(1:length(vlist), function(listnum) { u(vlist[[listnum]], units[listnum]) })
   names(ulist) <- names(vlist)
   
@@ -361,16 +361,11 @@ test_that("lists can be accessed with '$.unitted'", {
   # Nonexistent column names - returns NULL
   expect_that(ulist$youthere, equals(vlist$youthere))
   
-  # unitted POSIXlt vectors (or generally, unitted lists of lists) can be problematic
+  # unitted POSIXlt vectors have historically been problematic
   vvec <- as.POSIXlt(Sys.time()+1:9)
   uvec <- u(vvec,"dates")
   expect_that(v(uvec), equals(vvec))
-  expect_that(names(uvec), equals(NULL), "breaks because `$.unitted`(x, 'year') gets called on this non-data.frame")
-  expect_that(uvec, equals(uvec), "breaks because names(uvec) breaks")
-  
-  vvec <- 1:9
-  names(vvec) <- LETTERS[1:9]
-  uvec <- u(vvec,"palms")
-  names(uvec)
+  expect_that(names(uvec), equals(names(vvec)))
+  expect_that(uvec, equals(uvec))
 })
 

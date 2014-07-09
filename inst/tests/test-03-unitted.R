@@ -96,6 +96,7 @@ test_that("data.frame method of unitted() works", {
   expect_that(u(df,c(NA,"e","ru")), throws_error())
 })
 
+
 test_that("as.data.frame.unitted() works", {
   # expect that data.frame(u(x)) is just a data.frame, but u(data.frame(x)) is unitted
   expect_that(class(data.frame(Ca=u(1:5,"mg L^-1"))), is_identical_to("data.frame"))
@@ -110,6 +111,8 @@ test_that("as.data.frame.unitted() works", {
   # expect that data.frame(y, u(x)) keeps the units for x
   expect_that(get_units(data.frame(y=1:5, x=u(2:6,"pins"))$x), equals("pins"))
   
+  # vectors of unequal length still don't work!
+  expect_equal(data.frame(z=u(3,"e"), k=u(2:4,"")), data.frame(z=3, k=2:4))
 })
 
 
@@ -132,6 +135,70 @@ test_that("Arrays and matrices can be unitted with [exactly] 1 unit", {
   expect_that(u(array(1:2),c("a","b")), throws_error())
 })
 
-test_that("Lists can't be unitted", {
-  expect_error(u(as.list(rnorm(5)),"rice"),"Lists can't be unitted, although their elements may be.")
+test_that("Lists can be unitted in two different ways", {
+  # One way: unitted_list. The whole list has units; elements may or may not be unitted
+  expect_that(u(as.list(rnorm(5)),"rice"), is_a("unitted_list"))
+  expect_that(get_units(u(as.list(rnorm(5)),"rice")), equals("rice"))
+  expect_that(get_units(u(as.list(rnorm(5)),"rice"), recursive=TRUE), equals(rep(NA,5)))
+  expect_that(u(as.list(u(rnorm(5),"brown")),"rice"), is_a("unitted_list"))
+  expect_that(get_units(u(as.list(u(rnorm(5),"brown")),"rice")), equals("rice"))
+  expect_that(get_units(u(as.list(u(rnorm(5),"brown")),"rice"), recursive=TRUE), equals(rep("brown",5)))
+  # these lists can be deconstructed in a way that keeps or discards their inner
+  # units. 
+  ulist <- u(list(z=u(1,"brown"),k=u(7,"basmati")),"rice")
+  expect_that(get_units(v(ulist), recursive=FALSE), equals(NA))
+  expect_that(get_units(v(ulist)), equals(c(z=NA,k=NA)))
+  expect_that(get_units(v(ulist, partial=TRUE), recursive=FALSE), equals(NA))
+  expect_that(get_units(v(ulist, partial=TRUE)), equals(c(z="brown",k="basmati")))
+  # Deunitting a unitted_list always erases the outer units. However, you
+  # can keep the outer units if you use as.list instead.
+  expect_that(get_units(as.list(ulist)))
+  
+  # Another way to use units with lists: regular list with unitted elements.
+  expect_that(list(u(rnorm(5),"rice")), is_a("list"))
+  expect_that(get_units(list(u(rnorm(5),"rice"))), equals("rice"))
+  expect_that(get_units(list(u(rnorm(5),"rice")), recursive=FALSE), equals(NA))
+})
+
+test_that("Lists can be deunitted with several options", {
+  # One way: rice 
+  expect_that(u(as.list(rnorm(5)),"rice"), is_a("unitted_list"))
+  expect_that(get_units(u(as.list(rnorm(5)),"rice")), equals("rice"))
+  
+  expect_that(list(u(rnorm(5),"rice")), is_a("list"))
+  expect_that(get_units(list(u(rnorm(5),"rice"))), equals("rice"))
+  expect_that(get_units(list(u(rnorm(5),"rice")), recursive=FALSE), equals(NA))
+})
+
+#### .set_units ####
+
+
+#### .get_units ####
+
+test_that(".get_units works for all data types", {
+  # non-unitted objects
+  expect_that(.get_units(8), equals(NA))
+  expect_that(.get_units(matrix(1:20,nrow=4)), equals(NA))
+  
+  # vectors, matrices, arrays
+  expect_that(.get_units(u(1:30,"kids")), equals(unitbundle("kids")))
+  expect_that(.get_units(u(matrix(1:30,nrow=5),"kids")), equals(unitbundle("kids")))
+  expect_that(.get_units(u(array(1:30,c(5,3,2)),"kids")), equals(unitbundle("kids")))
+  
+  # non-unitted data.frames and lists
+  expect_that(.get_units(data.frame(a=Sys.Date(),b=9)), equals(list(a=NA,b=NA)))
+  expect_that(.get_units(data.frame(a=u(Sys.Date(),"time"),b=9)), equals(list(a=unitbundle("time"),b=NA)))
+  expect_that(.get_units(list(a=Sys.Date(),b=9)), equals(list(a=NA,b=NA)))
+  expect_that(.get_units(list(a=u(Sys.Date(),"time"),b=9)), equals(list(a=unitbundle("time"),b=NA)))
+
+  # unitted data.frames
+  expect_that(.get_units(u(data.frame(a=Sys.Date(),b=9))), equals(list(a=unitbundle(NA),b=unitbundle(NA))))
+  expect_that(.get_units(u(data.frame(a=u(Sys.Date(),"time"),b=9))), equals(list(a=unitbundle("time"),b=unitbundle(NA))))
+  expect_that(.get_units(u(data.frame(a=u(Sys.Date(),"time"),b=9)),recursive=FALSE), equals(NA))
+  
+  # unitted lists
+  expect_that(.get_units(u(list(a=Sys.Date(),b=9),"mochas")), equals(unitbundle("mochas")))
+  expect_that(.get_units(u(list(a=u(Sys.Date(),"time"),b=9),"mochas")), equals(unitbundle("mochas")))
+  expect_that(.get_units(u(list(a=u(Sys.Date(),"time"),b=9),"mochas"),recursive=TRUE), equals(list(a=unitbundle("time"),b=NA)))
+  
 })

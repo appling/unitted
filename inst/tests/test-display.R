@@ -21,6 +21,9 @@ test_that("show.unitted works", {
   expect_that(udf[F,], equals(u(df[F,],units))) # passes, illustrating that the problem is in the printing, not the unitting
   expect_that(v(udf[F,]), equals(df[F,])) # passes, illustrating that the problem is in the printing, not the unitting
   expect_that(show(udf[F,]), equals(show(u(df[F,],units)))) # breaks - printing empty unitted df with POSIXlt column (also breaks if POSIXct)  
+  
+  u(list(a=u(4,"brown"), b=u(5,"jasmine")),"rice") # breaks - only displays 2 of the 3 possible units, and not a logical set of them.
+  u(as.list(rnorm(5)),"rice") # breaks - repeated display of one units set, and also gets the units wrong
 })
 
 

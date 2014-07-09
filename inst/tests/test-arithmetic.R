@@ -6,8 +6,8 @@ context("arithmetic")
 {
   u0 <- NA;       
   u1 <- "s q^-2";
-  u2 <- "k^-1 R"; 
-  u00 <- c(u0, u0)
+  u2 <- "k^-1 R";
+  u00 <- c("", "")
   u11 <- c(u1, u1)
   u21 <- c(u2, u1)
   scal <- 3; vec <- rnorm(4)
@@ -29,6 +29,7 @@ context("arithmetic")
   divu1u2 <- "s q^-2 k R^-1"   # u1/u2
   invu1 <- "s^-1 q^2"          # 1/u1
   powu1scal <- "s^3 q^-6"      # u1^3
+  invu11 <- c(invu1, invu1)
 
 }
 
@@ -36,10 +37,10 @@ expect_OpsB <- function(info, uobj, vobj, vunits, OP) {
   expected <- vunits[[match(OP, names(vunits))]]
   expect_that(
     uobj, 
-    if(isTRUE(expected=="eUM")) { # error units mismatch
+    if(isTRUE(expected=="eUM")) { # error Units Mismatch
       callinfo <- "throws_error('Units of e2 are invalid')"
       throws_error("Units of e2 are invalid")
-    } else if(isTRUE(expected=="ePL")) { # error power length
+    } else if(isTRUE(expected=="ePL")) { # error Power Length
       callinfo <- "throws_error('Attempting to raise units to a power of length != 1')"
       throws_error("Attempting to raise units to a power of length != 1")
     } else {
@@ -73,10 +74,15 @@ test_that("Ops.unitted works for scalars", {
     expect_OpsB("09 op(uscal, vec),   AB, diff units", op(u1scal, vec), op(scal, vec), c("+"="eUM", "-"="eUM", "*"=u1, "/"=u1, "^"="ePL"), OP)
     expect_OpsB("10 op(uscal, vec),   BA, diff units", op(vec, u1scal), op(vec, scal), c("+"="eUM", "-"="eUM", "*"=u1, "/"=invu1, "^"="eUM"), OP)
     
-    expect_OpsB("11 op(uscal, df),    AB, same units", op(u0scal, df), op(scal, df), list("+"=u00, "-"=u00, "*"=u00, "/"=u00, "^"="ePL"), OP) # breaks
-    expect_OpsB("12 op(uscal, df),    BA, same units", op(df, u0scal),  op(df, scal), list("+"=u00, "-"=u00, "*"=u00, "/"=u00, "^"="ePL"), OP) # breaks
-    # expect_OpsB("13 op(uscal, df),    AB, diff units", op(u1scal, df), op(scal, df), list("+"="eUM", "-"="eUM", "*"=u00, "/"=u00, "^"="ePL"), OP) # breaks
-    # expect_OpsB("14 op(uscal, df),    BA, diff units", op(df, u1scal), op(df, scal), list("+"="eUM", "-"="eUM", "*"=u00, "/"=u00, "^"="ePL"), OP) # breaks
+    expect_OpsB("11 op(uscal, df),    AB, same units", op(u0scal, df), op(scal, df), list("+"=u00, "-"=u00, "*"=u00, "/"=u00, "^"="ePL"), OP)
+    # known oddity (bug?): df^u0scal adds row names to the resulting matrix, even if df had none to begin with. df^scal does not. 
+    if(OP=="^") {
+      expect_OpsB("12 op(uscal, df),    BA, same units", op(df, u0scal), {temp <- op(df, scal); rownames(temp) <- row.names(df); temp}, list("+"=u00, "-"=u00, "*"=u00, "/"=u00, "^"=""), OP)
+    } else {
+      expect_OpsB("12 op(uscal, df),    BA, same units", op(df, u0scal), op(df, scal), list("+"=u00, "-"=u00, "*"=u00, "/"=u00, "^"=""), OP)
+    }
+    expect_OpsB("13 op(uscal, df),    AB, diff units", op(u1scal, df), op(scal, df), list("+"="eUM", "-"="eUM", "*"=u11, "/"=u11, "^"="ePL"), OP)
+    expect_OpsB("14 op(uscal, df),    BA, diff units", op(df, u1scal), op(df, scal), list("+"="eUM", "-"="eUM", "*"=u11, "/"=invu11, "^"="eUM"), OP)
 
     expect_OpsB("15 op(uscal, mat2D), AB, same non-units", op(u0scal, mat2D), op(scal, mat2D), c("+"=u0, "-"=u0, "*"=u0, "/"=u0, "^"="ePL"), OP)
     expect_OpsB("16 op(uscal, mat2D), BA, same non-units", op(mat2D, u0scal), op(mat2D, scal), c("+"=u0, "-"=u0, "*"=u0, "/"=u0, "^"=u0), OP)
@@ -95,7 +101,7 @@ test_that("Ops.unitted works for scalars", {
   }
 })
 
-# vectors
+test_that("Ops.unitted works for vectors", {
   expect_that(u1vec, u1vec,  equals(u(vec, vec, u1)),            info="uvec, uvec,  AA, same units")
   expect_that(u1vec, u2vec,  throws_error("Units of e2 are invalid"), info="uvec, uvec,  AA, diff units")
   expect_that(u1vec, u1scal, equals(u(vec, scal, u1)),           info="uvec, uscal, AB, same units")
@@ -361,7 +367,9 @@ test_that("round, signif.unitted work", {
 })
 
 test_that("exp, log, expm1, log1p.unitted work", {
-  
+  expect_that(.get_units(log(u(1:10,""))), equals(unitbundle("")))
+  expect_that(log(u(1:10,"kg")), throws_error("Input units are invalid in log"))
+  #expect_that(log(u(1:10,"kg"), check.input.units=FALSE), "this doesn't actually work; check.input.units doesn't get passed through math.unitted")
 })
 
 test_that("cos, sin, tan.unitted work", {

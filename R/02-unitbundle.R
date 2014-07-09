@@ -232,3 +232,25 @@ setMethod(
     callGeneric(e1=new("unitbundle"), e2)
   }
 )
+
+setMethod(
+  "Ops", signature(e1 = "unitbundle", e2 = "list"),
+  function(e1, e2) {
+    #print("Operating on e1=unitbundle, e2=list")
+    lapply(e2, FUN=function(e2elem) {
+      .Generic = .Generic #because callGeneric will only look 1 frame up for .Generic
+      callGeneric(e1, e2elem)
+    })
+  }
+)
+
+setMethod(
+  "Ops", signature(e1 = "list", e2 = "unitbundle"),
+  function(e1, e2) {
+    #print("Operating on e1=list, e2=unitbundle")
+    lapply(e1, function(e1elem) {
+      .Generic = .Generic #because callGeneric will only look 1 frame up for .Generic
+      callGeneric(unitbundle(e1elem), e2)
+    })
+  }
+)

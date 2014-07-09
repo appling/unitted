@@ -21,6 +21,39 @@ setMethod("Ops", c("ANY","unitted"), function(e1, e2) {
   unitted_Ops(.Generic, unitted(e1, NA), e2)
 })
 
+# Use the Ops.data.frame function to apply the Ops to the columns, which will 
+# then call unitted_Ops(ANY, ANY) to check and manipulate units on a
+# column-by-column basis.
+setMethod("Ops", c("unitted","data.frame"), function(e1, e2) {
+  #print("Ops(unitted,data.frame)")
+  #UseMethod(.Generic, deunitted(unitted(e2, NA), partial=TRUE))
+  #print(str(.Method))
+  #with(list())
+  .Method <<- c(if(is.atomic(e1)) "" else class(deunitted(e1)), "data.frame")
+  .Generic <<- .Generic
+  df <- Ops.data.frame(e1, deunitted(unitted(e2, NA), partial=TRUE))
+  unitted(df, NA)
+})
+setMethod("Ops", c("data.frame","unitted"), function(e1, e2) {
+  .Method <<- c("data.frame", if(is.atomic(e2)) "" else class(deunitted(e2)))
+  .Generic <<- .Generic
+  df <- Ops.data.frame(deunitted(unitted(e1, NA), partial=TRUE), e2)
+  unitted(df, NA)
+})
+
+
+# We don't currently treat arrays and matrices differently from vectors, but
+# here's how we'll get the right routing if and when we permit multiple units
+# per array or matrix.
+setMethod("Ops", c("unitted","array"), function(e1, e2) {
+  # This method outcompetes structure#vector in dispatch, where ANY#unitted only ties it.
+  unitted_Ops(.Generic, e1, unitted(e2, NA))
+})
+setMethod("Ops", c("array","unitted"), function(e1, e2) {
+  # This method outcompetes structure#vector in dispatch, where ANY#unitted only ties it.
+  unitted_Ops(.Generic, unitted(e1, NA), e2)
+})
+
 
 Ops.unitted <- function(e1, e2) {
   if(missing(e2)) {
@@ -45,87 +78,54 @@ setGeneric(
 setMethod(
   "unitted_Ops", c("ANY","ANY"),
   function (.Generic, e1, e2) {
-    if(is.atomic(e1)) {  # vectors, matrices, and arrays
-      is_unary <- nargs() == 1
-      if(is_unary) {
-        # Unary operators are +, -, and !
-        # No unit checks necessary
-        eout <-
-          unitted(do.call(.Generic, list(deunitted(e1))),
-                  .get_units(e1))
-        return(e1)
-      } else {
-        # Group "Ops":
-        #   "+", "-", "*", "/", "^", "%%", "%/%"
-        #   "&", "|", "!"
-        #   "==", "!=", "<", "<=", ">=", ">"
-        # where %% indicates x mod y and %/% indicates integer division
+    is_unary <- nargs() == 1
+    if(is_unary) {
+      # Unary operators are +, -, and !
+      # No unit checks necessary
+      warning("wasn't expecting a unary argument to unitted_Ops")
+      eout <-
+        unitted(do.call(.Generic, list(deunitted(e1))),
+                .get_units(e1))
+      return(e1)
+    } else {
+      # Group "Ops":
+      #   "+", "-", "*", "/", "^", "%%", "%/%"
+      #   "&", "|", "!"
+      #   "==", "!=", "<", "<=", ">=", ">"
+      # where %% indicates x mod y and %/% indicates integer division
+      
+      # Check old units and/or set new ones
+      return(switch(
+        .Generic,
+        "+"=, "-"=, "*"=, "/"=, "%%"=, "%/%"= { 
+          unitted(do.call(.Generic, list(deunitted(e1), deunitted(e2))),
+                  do.call(.Generic, list(.get_units(e1), .get_units(e2)))) }, 
+        "^"= { 
+          .get_units(unitted(e1, NA)) ^ .get_units(unitted(e2, NA)) # units check only
+          unitted(
+            do.call(.Generic, list(deunitted(e1), deunitted(e2))),
+            #mapply(function(el1, el2) { 
+            #  .get_units(el1) ^ deunitted(el2) }, e1, e2, SIMPLIFY=TRUE) )},
+            .get_units(unitted(e1, NA)) ^ deunitted(e2)) },
         
-        # Check old units and/or set new ones
-        return(switch(
-          .Generic,
-          "+"=, "-"=, "*"=, "/"=, "%%"=, "%/%"= { 
-            unitted(do.call(.Generic, list(deunitted(e1), deunitted(e2))),
-                    do.call(.Generic, list(.get_units(e1), .get_units(e2)))) }, 
-          "^"= { 
-            .get_units(unitted(e1, NA)) ^ .get_units(unitted(e2, NA)) # units check only
-            unitted(
-              do.call(.Generic, list(deunitted(e1), deunitted(e2))),
-              .get_units(unitted(e1, NA)) ^ deunitted(e2)) },
-          
-          "&"=, "|"=, { 
-            if(.get_units(e1) != .get_units(e2)) {
-              warning("Units mismatch in logical operation 'e1 (",get_units(e1),") ",.Generic," e2 (",get_units(e2),")'")
-            }
-            do.call(.Generic, list(deunitted(e1), deunitted(e2))) },
-          
-          "==" = { (.get_units(e1) == .get_units(e2)) & (deunitted(e1) == deunitted(e2)) },
-          "!=" = { (.get_units(e1) != .get_units(e2)) | (deunitted(e1) != deunitted(e2)) },
-          "<"=, "<="=, ">"=, ">="= { 
-            if(.get_units(e1) != .get_units(e2)) {
-              stop("Units mismatch in comparison 'e1 (",get_units(e1),") ",.Generic," e2 (",get_units(e2),")'") 
-            } else {
-              do.call(.Generic, list(deunitted(e1), deunitted(e2)))
-            }}
-        ))
-      }
+        "&"=, "|"=, { 
+          if(.get_units(e1) != .get_units(e2)) {
+            warning("Units mismatch in logical operation 'e1 (",get_units(e1),") ",.Generic," e2 (",get_units(e2),")'")
+          }
+          do.call(.Generic, list(deunitted(e1), deunitted(e2))) },
+        
+        "==" = { (.get_units(e1) == .get_units(e2)) & (deunitted(e1) == deunitted(e2)) },
+        "!=" = { (.get_units(e1) != .get_units(e2)) | (deunitted(e1) != deunitted(e2)) },
+        "<"=, "<="=, ">"=, ">="= { 
+          if(.get_units(e1) != .get_units(e2)) {
+            stop("Units mismatch in comparison 'e1 (",get_units(e1),") ",.Generic," e2 (",get_units(e2),")'") 
+          } else {
+            do.call(.Generic, list(deunitted(e1), deunitted(e2)))
+          }}
+      ))
     }
   }
 )
-# 
-# setMethod(
-#   "unitted_Ops", c("data.frame","data.frame")
-#   function(e1, e2) {
-#     if(is.data.frame(e1) | is.data.frame(e2)) {
-#       # If eX is a nonlist, nondataframe, nonscalar, then replicate it as does
-#       # Ops.data.frame BUT PRESERVE UNITS
-#       repair_nonscalar <- function(eX, eY) {
-#         if(!(!is.null(eX) && is.list(eX))) { # !isList
-#           if(length(eX) > 1) { # !scalar
-#             return(lapply(
-#               split(rep_len(as.vector(eX), prod(dim(eY))),
-#                     rep.int(seq_len(ncol(eY)),
-#                             rep.int(nrow(eY), ncol(eY)))),
-#               function(excol) {
-#                 u(excol, .get_units(u(eX,NA)))
-#               }))
-#           }
-#         }
-#         return(eX)
-#       }
-#       # with the exception of this repair_nonscalar stuff, the basic procedure is 
-#       # to call the generic on the data.frame and other operator and hope/expect 
-#       # that units will be properly propagated through subsequent calls to
-#       # Ops.unitted for the individual data columns.
-#       eout <- u(do.call(.Generic, list(
-#         .remove_unitted_class(repair_nonscalar(e1,e2)), 
-#         .remove_unitted_class(repair_nonscalar(e2,e1)))))
-#       
-#       # And return
-#       return(eout)
-#     } 
-#   }
-# )
 
 #### Math ####
 
@@ -142,7 +142,7 @@ setMethod(
 #'   Functions cos, sin, and tan require that inputs are "radians". 
 Math.unitted <- function (x, ..., check.input.units=TRUE)
 {
-  x[] <- NextMethod(.Generic, ...) # let any other error checks happen first
+  mathx <- NextMethod(.Generic, ...) # let any other error checks happen first
   if(is.atomic(x)) { # applies to vectors, matrices, and arrays    
     units_in_out <- switch(
       .Generic,
@@ -162,18 +162,16 @@ Math.unitted <- function (x, ..., check.input.units=TRUE)
       
     )
     if(isTRUE(check.input.units) & !is.na(units_in_out[1])) {
-      if(!all.equal(.get_units(x), unitbundle(units_in_out[1]))) {
-        stop("Input units are invalid in ", .Generic, "; found '",get_units(x),"'', expected '",units_in_out[1],"'. To override, set check.input.units to FALSE.")
+      if(!all(.get_units(x) == unitbundle(units_in_out[1]))) {
+        stop("Input units are invalid in ", .Generic, "; found '",get_units(x),"', expected '",units_in_out[1],"'. To override, set check.input.units to FALSE.")
       }
     }
     if(is.numeric(units_in_out[2])) {
-      new_units <- attr(x,"unitdf")
-      new_units$Power <- new_units$Power * units_in_out[2]
-      new_units <- list(new_units)
+      new_units <- .get_units(x) ^ units_in_out[2]
     } else {
-      new_units <- parse_units(units_in_out[2])
+      new_units <- unitbundle(units_in_out[2])
     }
-    x <- .set_units(x, new_units)
+    x <- .set_units(mathx, new_units)
   }
   x
 }

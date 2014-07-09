@@ -55,7 +55,8 @@ test_that("get_units returns a unit string or vector of unit strings", {
   expect_that(get_units(u(df, c("u1","u2^4"))), is_equivalent_to(c("u1","u2^4")))
   expect_that(get_units(u(df, c("u1",NA))), is_equivalent_to(c("u1","")))
   expect_that(get_units(u(df, NA)), is_equivalent_to(c("","")))
-  expect_that(get_units(data.frame(y=1:5, x=u(2:6,"pins"))), equals(NULL)) # this could be changed by implementing get_units.data.frame
+  expect_that(get_units(data.frame(y=1:5, x=u(2:6,"pins"))), equals(c(y=NA,x="pins")))
+  expect_that(get_units(data.frame(y=1:5, x=u(2:6,"pins")))[["x"]], equals("pins"))
   
   # arrays
   expect_that(get_units(u(array(1:300),"dog")), equals("dog"))
@@ -65,7 +66,18 @@ test_that("get_units returns a unit string or vector of unit strings", {
   expect_that(get_units(u(matrix(1:400),"cats")), equals("cats"))
   
   # lists
-  expect_that(get_units(list(a=u(5,"golden rings"))), equals(NULL)) # this could be changed by implementing get_units.list
+  expect_that(get_units(list(a=u(5,"golden rings"))), equals(c(a="golden rings")))
+  expect_that(get_units(list(a=u(5,"golden rings")), recursive=FALSE), equals(NA))
+  expect_that(get_units(u(as.list(u(rnorm(5),"brown")),"rice"), recursive=TRUE), equals(rep("brown",5)))
+  expect_that(get_units(u(as.list(u(rnorm(5),"brown")),"rice"), recursive=FALSE), equals("rice"))
+  expect_that(get_units(u(list(a=u(4,"brown"), b=u(5,"jasmine")),"rice"), recursive=TRUE), equals(c(a="brown",b="jasmine")))
+  expect_that(get_units(u(list(a=u(4,"brown"), b=u(5,"jasmine")),"rice"), recursive=FALSE), equals("rice"))
+  # lists - strange stuff when you try to actually use deep recursion
+  uls <- u(list(x=1,y=list(q=u("b","letters"))), c("q"))
+  get_units(uls, recursive=TRUE)
+  get_units(list(q=u("b","letters")), recursive=FALSE)
+  get_units(list(q=u("b","letters")), recursive=TRUE)
+  expect_that(get_units(list(q=list(z=u("b","letters"))), recursive=TRUE), equals(c(q.z="letters"))) # breaks - not sure what this should actually equal, but probably not what we're getting right now.
 })
 
 
@@ -73,32 +85,61 @@ test_that("get_units returns a unit string or vector of unit strings", {
 #### verify_units ####
 
 test_that("verify_units passes IFF the units are the same", {
-  # Behavior that is acceptable but that I might want to change:
-  expect_that(verify_units(1:5, NA), throws_error("First value must be unitted"))
-  expect_that(verify_units(data.frame(a=1:5, b=u(1:5,"m")),c(NA,"m")), throws_error("First value must be unitted"))
-  expect_that(verify_units(data.frame(a=u(1:5,"hi"),b=6:10),c("hi",NA)), throws_error("First value must be unitted"))
-  expect_that(verify_units(list(a=u(10:1,"happy new year")),c("happy new year")), throws_error("First value must be unitted"))
+  ### Warnings (or not) for non-unittedness
+  # Non-unitted objects give warnings by default
+  expect_that(verify_units(1:5, NA), gives_warning("First value is not unitted"))
+  expect_that(verify_units(1:5, NA, nounits.handler=stop), throws_error("First value is not unitted"))
+  expect_that(verify_units(1:5, NA, nounits.handler=function(msg){}), equals(1:5))
+  expect_that(verify_units(1:5, "", nounits.handler=function(msg){}), equals(1:5))
+  
+  # data.frames or lists with no unitted elements give warnings by default
+  expect_that(verify_units(data.frame(a=1:5, b=1:5),c(NA,"m")), gives_warning("First value is not unitted and has no unitted elements"))
+  expect_that(verify_units(data.frame(a=1:5, b=1:5),c(NA,"m"), nounits.handler=function(msg){}), throws_error("Unexpected units"))
+  expect_that(verify_units(list(a=1:5, b=1:5),c(NA,"m")), gives_warning("First value is not unitted and has no unitted elements"))
+  expect_that(verify_units(list(a=1:5, b=1:5),c(NA,NA), nounits.handler=function(msg){}), equals(list(a=1:5, b=1:5)))
+  expect_that(verify_units(list(a=1:5, b=1:5),c("",""), nounits.handler=function(msg){}), equals(list(a=1:5, b=1:5)))
+  expect_that(verify_units(list(a=1:5, b=1:5),c(NA,""), nounits.handler=function(msg){}), equals(list(a=1:5, b=1:5)))
+  
+  # data.frames or lists with one or more unitted elements give no warnings for unittedness
+  expect_that(verify_units(data.frame(a=1:5, b=u(1:5,"m")),c(NA,"m")), equals(data.frame(a=1:5, b=u(1:5,"m"))))
+  expect_that(verify_units(data.frame(a=u(1:5,"hi"),b=6:10),c("hi",NA)), equals(data.frame(a=u(1:5,"hi"),b=6:10)))
+  expect_that(verify_units(list(a=u(10:1,"happy new year")),c("happy new year")), equals(list(a=u(10:1,"happy new year"))))
   
   ### Defaults: stop on error, return x otherwise
   # vectors
   expect_that(verify_units(u(1:5,"m"),c("m","m")), throws_error("Conflicting dimensions for given units"))
-  expect_that(verify_units(u(1:5,"m"),"q"), throws_error("Unexpected units: given 'q', expected 'm'"))
+  expect_that(verify_units(u(1:5,"m"),"q"), throws_error("Unexpected units: given 'm', expected 'q'"))
   expect_that(verify_units(u(1:5,"m"),"m"), is_identical_to(u(1:5,"m")))
+  
+  # arrays
+  expect_that(verify_units(u(array(1:5),"kids"),c("kiddos","kids")), throws_error("Conflicting dimensions for given units"))
+  expect_that(verify_units(u(array(1:5),"kids"),"kiddos"), throws_error("Unexpected units"))
+  expect_that(verify_units(u(array(1:5),"kids"),c("kids")), is_identical_to(u(array(1:5),"kids")))
+  
+  # matrices
+  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kiddos","kids")), throws_error("Conflicting dimensions for given units"))
+  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),"kiddos"), throws_error("Unexpected units"))
+  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kids")), is_identical_to(u(matrix(1:6,ncol=3),"kids")))
+  
   # data.frames
+  expect_that(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("q")), throws_error("Conflicting dimensions for given units"))
+  expect_that(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("p","q")), throws_error("Unexpected units"))
+  expect_that(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("m","m")), is_identical_to(data.frame(a=u(1:5,"m"),b=u(6:10,"m"))))
+  
+  # unitted data.frames
   expect_that(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("q")), throws_error("Conflicting dimensions for given units"))
   expect_that(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("p","q")), throws_error("Unexpected units"))
   expect_that(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("m","m")), is_identical_to(u(data.frame(a=1:5,b=6:10),c("m","m"))))
-  expect_that(verify_units(data.frame(a=u(1:5,"hi"),b=6:10),c("hi",NA)), throws_error("First value must be unitted")) # could be changed (see above)
-  # arrays
-  expect_that(verify_units(u(array(1:5),"kids"),c("kiddos","kids")), throws_error("Conflicting dimensions for given units")) # breaks
-  expect_that(verify_units(u(array(1:5),"kids"),"kiddos"), throws_error("Unexpected units")) # breaks
-  expect_that(verify_units(u(array(1:5),"kids"),c("kids")), is_identical_to(u(array(1:5),"kids"))) # breaks
-  # matrices
-  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kiddos","kids")), throws_error("Conflicting dimensions for given units")) # breaks
-  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),"kiddos"), throws_error("Unexpected units")) # breaks
-  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kids")), is_identical_to(u(matrix(1:6,ncol=3),"kids"))) # breaks
+  
   # lists
-  expect_that(verify_units(list(a=u(10:1,"happy new year")),c("happy new year")), throws_error("First value must be unitted")) # could be changed (see above)
+  expect_that(verify_units(list(a=u(10:1,"h n y")),c("y h^3 n h^-2")), equals(list(a=u(10:1,"n y h"))))
+  
+  # unitted_lists - check the outer, not the inner, units
+  expect_that(verify_units(u(list(a=u(10:1,"wildflower")),"honey"),c("wildflower")), throws_error("Unexpected units"))
+  expect_that(verify_units(u(list(a=u(10:1,"wildflower")),"honey"),c("honey")), equals(u(list(a=u(10:1,"wildflower")),"honey")))
+  # unitted_lists - here's how to check the inner units:
+  expect_that(verify_units(v(u(list(a=u(10:1,"wildflower")),"honey"),partial=TRUE),c("wildflower")), equals(list(a=u(10:1,"wildflower"))))
+  
 })
 
 

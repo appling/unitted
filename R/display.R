@@ -88,7 +88,62 @@ setMethod(
   }
 )
 
+#### str ####
 
+str.unitted_data.frame <- function(object, ...) {
+  if (!is.data.frame(object)) {
+    warning("str.unitted_data.frame() called with non-data.frame -- coercing to one.")
+    object <- unitted(data.frame(object))
+  }
+  cat("unitted data.frame:\t", nrow(object), " obs. of  ", (p <- length(object)), 
+      " variable", if (p != 1) 
+        "s", if (p > 0) 
+          ":", "\n", sep = "")
+  args_say_length <- length(l <- list(...)) && any("give.length" == names(l))
+  mapply(function(col, colnm) {
+    cat(" $ ", colnm, ":", sep="")
+    if(args_say_length) 
+      str(col, ...)
+    else
+      str(col, give.length=FALSE, ...)
+  }, object, names(object))
+  invisible()
+}
+
+str.unitted <- function(object, ...) {
+  cat(" ",class(object)," (",paste(get_units(object), collapse=";"),"):", sep="")
+  str(S3Part(object, strictS3=TRUE), ...)
+  invisible()
+}
+
+str.unitted_NULL <- function(object, ...) {
+  cat(paste0("unitted ", substring(class(object)[1], 9), " (", get_units(object), ")\n"))
+  invisible()
+}
+
+#### .str ####
+
+.str <- function(object, ...) {
+  if(isS4(object)) {
+    cat("S4 object of class '", class(object), "' (package '", attr(class(object),"package"), "'):\n",sep="")
+    if(!(".Data" %in% slotNames(class(object)))) {
+      s3p <- S3Part(object, strictS3=TRUE)
+      cat("[S3Part]: ")
+      str(s3p)
+    }
+    for(sl in slotNames(class(object))) {
+      cat("@ ",sl,": ",sep="")
+      str( slot(object, sl) ) 
+    }
+  } else {
+    cat("S3 object of oldClass ",paste0(paste0("'", oldClass(object), "'"),collapse=", "),":\n",sep="")
+    str(object)
+  }
+  
+  invisible()
+}
+
+#### edit ####
 
 edit.unitted <- function(name, factor.mode=c("character","numeric"), edit.row.names=any(row.names(name) != 1:nrow(name)), ...) {
   warning("Editing unitted objects is largely uncharted territory. Be alert and tell me if you find bugs.")
