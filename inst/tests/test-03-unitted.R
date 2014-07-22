@@ -173,32 +173,32 @@ test_that("Lists can be deunitted with several options", {
 #### .set_units ####
 
 
-#### .get_units ####
+#### get_unitbundles ####
 
-test_that(".get_units works for all data types", {
+test_that("get_unitbundles works for all data types", {
   # non-unitted objects
-  expect_that(.get_units(8), equals(NA))
-  expect_that(.get_units(matrix(1:20,nrow=4)), equals(NA))
+  expect_that(get_unitbundles(8), equals(NA))
+  expect_that(get_unitbundles(matrix(1:20,nrow=4)), equals(NA))
   
   # vectors, matrices, arrays
-  expect_that(.get_units(u(1:30,"kids")), equals(unitbundle("kids")))
-  expect_that(.get_units(u(matrix(1:30,nrow=5),"kids")), equals(unitbundle("kids")))
-  expect_that(.get_units(u(array(1:30,c(5,3,2)),"kids")), equals(unitbundle("kids")))
+  expect_that(get_unitbundles(u(1:30,"kids")), equals(unitbundle("kids")))
+  expect_that(get_unitbundles(u(matrix(1:30,nrow=5),"kids")), equals(unitbundle("kids")))
+  expect_that(get_unitbundles(u(array(1:30,c(5,3,2)),"kids")), equals(unitbundle("kids")))
   
   # non-unitted data.frames and lists
-  expect_that(.get_units(data.frame(a=Sys.Date(),b=9)), equals(list(a=NA,b=NA)))
-  expect_that(.get_units(data.frame(a=u(Sys.Date(),"time"),b=9)), equals(list(a=unitbundle("time"),b=NA)))
-  expect_that(.get_units(list(a=Sys.Date(),b=9)), equals(list(a=NA,b=NA)))
-  expect_that(.get_units(list(a=u(Sys.Date(),"time"),b=9)), equals(list(a=unitbundle("time"),b=NA)))
+  expect_that(get_unitbundles(data.frame(a=Sys.Date(),b=9)), equals(list(a=NA,b=NA)))
+  expect_that(get_unitbundles(data.frame(a=u(Sys.Date(),"time"),b=9)), equals(list(a=unitbundle("time"),b=NA)))
+  expect_that(get_unitbundles(list(a=Sys.Date(),b=9)), equals(list(a=NA,b=NA)))
+  expect_that(get_unitbundles(list(a=u(Sys.Date(),"time"),b=9)), equals(list(a=unitbundle("time"),b=NA)))
 
   # unitted data.frames
-  expect_that(.get_units(u(data.frame(a=Sys.Date(),b=9))), equals(list(a=unitbundle(NA),b=unitbundle(NA))))
-  expect_that(.get_units(u(data.frame(a=u(Sys.Date(),"time"),b=9))), equals(list(a=unitbundle("time"),b=unitbundle(NA))))
-  expect_that(.get_units(u(data.frame(a=u(Sys.Date(),"time"),b=9)),recursive=FALSE), equals(NA))
+  expect_that(get_unitbundles(u(data.frame(a=Sys.Date(),b=9))), equals(list(a=unitbundle(NA),b=unitbundle(NA))))
+  expect_that(get_unitbundles(u(data.frame(a=u(Sys.Date(),"time"),b=9))), equals(list(a=unitbundle("time"),b=unitbundle(NA))))
+  expect_that(get_unitbundles(u(data.frame(a=u(Sys.Date(),"time"),b=9)),recursive=FALSE), equals(NA))
   
   # unitted lists
-  expect_that(.get_units(u(list(a=Sys.Date(),b=9),"mochas")), equals(unitbundle("mochas")))
-  expect_that(.get_units(u(list(a=u(Sys.Date(),"time"),b=9),"mochas")), equals(unitbundle("mochas")))
-  expect_that(.get_units(u(list(a=u(Sys.Date(),"time"),b=9),"mochas"),recursive=TRUE), equals(list(a=unitbundle("time"),b=NA)))
+  expect_that(get_unitbundles(u(list(a=Sys.Date(),b=9),"mochas")), equals(unitbundle("mochas")))
+  expect_that(get_unitbundles(u(list(a=u(Sys.Date(),"time"),b=9),"mochas")), equals(unitbundle("mochas")))
+  expect_that(get_unitbundles(u(list(a=u(Sys.Date(),"time"),b=9),"mochas"),recursive=TRUE), equals(list(a=unitbundle("time"),b=NA)))
   
 })

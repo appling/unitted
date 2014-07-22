@@ -2,64 +2,98 @@
 
 #### Superclass Definition ####
 
-#' Defines a generic unitted object that could contain a vector, matrix, array, 
-#' or data.frame with units attached
+#' A fusion of data and units
 #' 
-#' A unitted object is the original data object with units attached. These units
-#' will be propagated through addition, multiplication, and other operations you
-#' perform on the unitted object.
+#' A unitted object is a data object - a vector, data.frame, array, etc. - and 
+#' its associated units. These units will be propagated through addition, 
+#' multiplication, and many other common operations on data. Unitted objects are
+#' created by calling \code{\link{unitted}()} or \code{\link{u}()}, and
+#' the data can be retrieved by calling \code{\link{deunitted}()} or
+#' \code{\link{v}()}. Units can be extracted as character strings with
+#' \code{\link{get_units}()}. Most of the time, you'll find that unitted
+#' objects can do everything that their un-unitted data could do, but with smart
+#' units to make your analyses more readable and less vulnerable to typos or
+#' omissions.
 #' 
-#' The data part of a unitted object is S3 if the original data object was S3, 
-#' and S4 if the original object was S4. However, methods dispatch can be S3 or 
-#' S4.
-#' 
-#' A short function name (u) is essential for using this package to write clean 
-#' code that enforces units consistency throughout data analysis operations. The
-#' underlying constructor function is called unitted(), which may be useful if 
-#' u() is overwritten by another package, but this will seldom be the case.
-#' 
+#' @name unitted-class
+#' @rdname unitted-class
+#' @exportClass unitted
+#'   
 #' @slot .Data The data to which units are attached
 #' @slot units The units. Depending on the .Data type, the units slot may 
 #'   contain a single units bundle (e.g., "kg ha^-1"), a matrix or array of 
 #'   bundles, or a list of bundles. Any of these may be retrieved with 
 #'   \code{\link{get_units}}.
-#' @seealso \code{\link{unitted}} for class and subclass construction,
-#'   \code{\link{deunitted}} for recovering the data from the unitted object,
-#'   and \code{\link{arithmetic}} for smart units behaviors.
-#' @family classes
+#'   
+#' @seealso \code{\link{unitted}} for class and subclass construction, 
+#'   \code{\link{deunitted}} for recovering the data from the unitted object, 
+#'   and \code{\link{unitted_ops}} for smart units behaviors.
+#'   
 #' @examples
-#' uvec <- u(1:5,"ants-on-a-log")
-#' uvec * uvec
+#' # unitted object creation
+#' miles_vec <- unitted(1:5,"mi")
+#' hours_vec <- unitted(7,"hr")
+#' 
+#' # unitted object manipulation
+#' miles_vec / hours_vec
+#' miles_vec^2
+#' hours_vec + hours_vec
+#' hours_vec == hours_vec
 setClass("unitted", slots=c(units="ANY"))
+
 
 #### Generic Constructor ####
 
 #' Attach units to data
 #' 
-#' If data is already unitted and the following argument is NA, this just 
-#' returns data. If the following argument is anything else, this replaces the 
-#' units completely.
+#' A \code{unitted} object is the fusion of data and units. The \code{unitted()}
+#' function, or its alias \code{u()}, constructs an object inheriting from the 
+#' \code{\linkS4class{unitted}} class.
 #' 
-#' @param data A vector, array, or data.frame containing the data
-#' @param unit Character, data.frame, or list specifying one or more sets of
-#'   units (depending on the data type of \code{object})
+#' The short constructor name (\code{u}) makes it easy to write clean code that 
+#' enforces units consistency throughout your data analysis. The underlying 
+#' constructor function is called \code{unitted()} but aliased to \code{u()}. 
+#' Similarly, units can be removed from data using the \code{\link{deunitted}()} 
+#' function or its alias \code{\link{v}()}.
+#' 
+#' @name u
+#' @rdname unitted
+#' @export u
+#'   
+#' @param object A vector, data.frame, array, matrix, list, or S4 object 
+#'   containing data
+#' @param units A specification of the units to attach to \code{object}. The 
+#'   class and form of \code{units} depends on the class of \code{object}; see 
+#'   Details
+#'   
+u <- function(object, units=NA, ...) {
+  unitted(object, units, ...)
+}
+
+#' @name unitted
+#' @rdname unitted
+#' @exportMethod unitted
 setGeneric(
   "unitted", 
   function(object, units=NA, ...) {
     standardGeneric("unitted")
   }
 )
-u <- unitted
 
-#### Subclass Definitions and Constructors ####
 
-#' Define a custom class with units tracking
+
+#### Subclass Definitions ####
+
+# These definitions must occur after the generic unitted constructor is defined.
+
+#' Define a custom subclass of \code{unitted}
 #' 
-#' There is already a unitted class to each of the basic classes, many of the 
-#' most common S3 data structures (factor, Date, POSIXct), and both lists and 
-#' data.frames. And for the most part, only the numeric types will make sense as
-#' unitted types. However, there may still be cases where you need still another
-#' class for still another data type.
+#' There is already a unitted class defined for each of the basic classes 
+#' (numeric, logical, character, ...), many of the most common S3 data 
+#' structures (factor, Date, POSIXct), and both lists and data.frames. And for 
+#' the most part, only the numeric types will make sense as unitted types. 
+#' However, there may still be cases where you need yet another class for yet 
+#' another data type. \code{new_unitted_class} helps you define such a class.
 #' 
 #' Your new class will have to be S4; I have found no way to circumvent this 
 #' requirement. However, a close S4 counterpart can be constructed for nearly 
@@ -78,19 +112,29 @@ u <- unitted
 #' that the dispatch behavior you want is within the abilities of the particular
 #' dispatch system (S3 or s4).
 #' 
-#' @param superclass.name The character name of the S4 class to be extended by 
-#'   the new unitted class. The new class will have the name, 
+#' @export
+#' @param superclass.name The character name of the S4 class that will form the 
+#'   core of the new unitted class. The new class will have the name 
 #'   "unitted_[superclass.name]".
 #' @param overwrite Logical. If TRUE, the new setClass call will be executed 
-#'   even if the same superclass.name has been
+#'   even if the same superclass.name has already been defined during this
+#'   session.
 #' @examples
-#' # An S4 class to be made unitted
-#' setClass("myS4flower", contains="numeric", slots=c(leaves="numeric", petals="numeric", color="character"))
-#' new_unitted_class("myS4flower") 
-#' petunia <- new("unitted_myS4flower", c(frontyard=7, backyard=3, planters=12), leaves=4, petals=5, color="purple", units="stems ft^-2")
-#' petunia * u(1/2,"living")
+#' ## S4 ##
 #' 
-#' # An S3 class to be made unitted
+#' # "myS4flower": An S4 class to be made unitted
+#' setClass("myS4flower", contains="numeric", slots=c(leaves="numeric", petals="numeric", color="character"))
+#' 
+#' # Define the unitted version of myS4flower
+#' new_unitted_class("myS4flower") 
+#' 
+#' # Try out the new unitted_myS4flower class
+#' petunia <- new("unitted_myS4flower", c(frontyard=7, backyard=3, planters=12), leaves=4, petals=5, color="purple", units="stems ft^-2")
+#' petunia * u(1/2,"blooming")
+#' 
+#' ## S3 ##
+#' 
+#' # "quote": An S3 class to be made unitted
 #' two_cities <- c("It was the best of times, it was the worst of times, ",
 #'                 "it was the age of wisdom, it was the age of foolishness, ",
 #'                 "it was the epoch of belief, it was the epoch of incredulity, ",
@@ -100,8 +144,10 @@ u <- unitted
 #' attr(two_cities, "author") <- "Charles Dickens"
 #' print.quote <- function(x) { cat(paste(paste(x, collapse="\n"),"\n   - ",attr(x,"author"))) }
 #' print(two_cities)
+#' 
 #' # Now make it unittable
 #' setClass("quote", contains="character", slots=c(author="character"))
+#' 
 #' # And now make it unitted
 #' new_unitted_class("quote", overwrite=TRUE)
 #' two_cities_unitted <- new("unitted_quote", two_cities, author=attr(two_cities, "author"), units="lines")
@@ -128,117 +174,53 @@ new_unitted_class <- function(superclass.name, overwrite=FALSE) {
   new_name
 }
 
-
 # Class and constructor definitions for common unitted classes
 # 
 # Don't be fooled! This unassuming code block is the heart of unittted class
 # definitions.
-setOldClass("difftime")
 sapply(c("character","complex","logical","numeric","raw","NULL",
-         "factor","ordered","Date","POSIXct","POSIXlt","difftime",
+         "factor","ordered","Date","POSIXct","POSIXlt",
          "list","data.frame",
          "array","matrix","ts",
          "expression","name","function"), 
        new_unitted_class)
+# setOldClass("difftime")
+# new_unitted_class("difftime")
 
 
-#' Replace units of a unitted object
-#' 
-#' A currently unitted object may be reunitted with this function.
-#' 
-#' @param object The currently unitted object
-#' @param units The new units to be applied. If the units argument is NA, the 
-#'   current object will be returned untouched. If the units argument is 
-#'   anything else, the units of the current object will be replaced with these 
-#'   new units. Empty units of "" are distinct from non-units (NA), with empty
-#'   units usually implying known units with the same numerator and denominator,
-#'   e.g., g/g or points/points.
-setMethod(
-  "unitted", "unitted",
-  function(object, units, ...) {
-    #print("u(unitted)")
-    if(isTRUE(isS4(units))) {
-      callGeneric(deunitted(object), units, ...)
-    } else if(!isTRUE(is.na(units))) {
-      callGeneric(deunitted(object), units, ...)
-    } else {  
-      return(object)
-    }
-  }
-)
 
-setMethod(
-  "unitted", "unitted_data.frame",
-  function(object, units, ...) {
-    #print("u(unitted)")
-    if(isTRUE(isS4(units))) {
-      callGeneric(deunitted(object, partial=TRUE), units, ...)
-    } else if(!isTRUE(is.na(units))) {
-      callGeneric(deunitted(object, partial=TRUE), units, ...)
-    } else {  
-      return(object)
-    }
-  }
-)
+#### Specific Constructors ####
 
-#' Create a unitted list
-#' 
-#' Even non-unitted lists may contain unitted elements (or a mixture of unitted 
-#' and non-unitted elements). However, there are advantages to defining the list
-#' itself as unitted - specifically, operations such as print(), show(), or
-#' arithmetic will treat the entire list as unitted, displaying and applying
-#' units as appropriate to each element.
-setMethod(
-  "unitted", "list",
-  function(object, units, ...) {
-    #print("u(list)")
-    #warning("The implementation of unitted lists is currently primitive - one unit bundle per list.")
-    new("unitted_list", object, units=unitbundle(units))
-  }
-)
-
-#' Create a unitted array
-#' 
-#' This method is currently identical to the simple constructor defined above. 
-#' This one serves as a placeholder for my intention to implement multi-unit 
-#' arrays and matrices. I am thinking about efficient ways to accomplish this. 
-#' The simplest is to store a parallel array that contains unitbundles rather 
-#' than numeric values. A step up would be to use factors and/or hash tables to 
-#' store the results of arithmetic operations between unique pairs of 
-#' unitbundles during matrix or array arithmetic, reducing the total number of 
-#' computations. It might also be possible to allow only some of the dimensions
-#' of a matrix or array to be unitted, implying that other dimensions have the
-#' same unit all along them. But that's an advanced feature for down the road.
-setMethod(
-  "unitted", "array",
-  function(object, units) {
-    #print("u(array)")
-    #http://stackoverflow.com/questions/11857658/assignment-of-s4-r-objects-to-a-matrix-why-does-this-work
-    new("unitted_array", object, units=unitbundle(units))
-  }
-)
-
-#' Create a unitted data.frame
-#' 
-#' If the object data.frame contains some unitted columns, these units will be 
-#' preserved, but only if the corresponding element of unitstrs is NA. To 
-#' overwrite a previously unitted column's units with empty units, specify the 
-#' units for that column with "" rather than NA.
-#' 
-#' @param object A non-unitted data.frame containing columns that are non-unitted,
-#'   unitted, or a mix.
-#' @param units One of three possibilities: (1) a character vector of unit 
-#'   strings, one per column of the data.frame, (2) a list where each element is
-#'   a units specification of one of the forms permitted by unitbundle(), or (3)
-#'   NA, indicating that units should be inferred from current units of the 
-#'   data.frame columns (a non-unitted column is assumed to have units "")
-#' @return A fully unitted data.frame having units specified by units (or, 
-#'   when units is NA or all of units's elements are NA, by the original units
-#'   of the individual columns)
-#' @family constructors
+#' @details \subsection{Data.frames}{
+#'   
+#'   In a call to \code{unitted(object, units, ...)} where \code{object} is a 
+#'   non-unitted data.frame, \code{object} may contain columns that are 
+#'   non-unitted, unitted, or a mix.
+#'   
+#'   \code{units} may be one of three possibilities: (1) a character vector of 
+#'   unit strings or NAs, one per column of the data.frame, (2) a list of the 
+#'   same length as \code{ncol(object)} where each element is a units 
+#'   specification of one of the forms permitted by \code{\link{unitbundle}()}, 
+#'   or (3) either NA or missing, indicating that units should be inferred from 
+#'   current units of the data.frame columns.
+#'   
+#'   If \code{object} contains some unitted columns, the units of those columns 
+#'   will be preserved if and only if the corresponding element of \code{units} 
+#'   is NA. To overwrite a previously unitted column's units with empty units, 
+#'   specify the new units for that column with "". Any non-unitted column with
+#'   a corresponding NA in \code{units} is given units of "".
+#'   
+#'   Known issue: Attaching units to a data.frame with \code{unitted()} creates 
+#'   row names for the data.frame even if they were absent before. This is a 
+#'   known issue with no known resolution. In other respects, unitted 
+#'   data.frames behave very much like non-unitted data.frames.
+#'   
+#'   }
+#'   
+#' @rdname unitted
 setMethod(
   "unitted", "data.frame",
-  function(object, units) {
+  function(object, units, ...) {
     #print("u(data.frame)")
     
     if(length(units) != ncol(object)) {
@@ -271,18 +253,103 @@ setMethod(
   }
 )
 
-#' Construct a unitted element of a (not-necessarily-united) data.frame from an
-#' already unitted object
+#' @details \subsection{Arrays and matrices}{
 #' 
-#' This is also the function that will be applied to calls of 
-#' data.frame(unitted_x, y, ...) where unitted_x (and possibly y, etc.) is a
-#' unitted object; if called on a non-unitted object, the units will be assumed
-#' to be "".
+#' Arrays and matrices are currently only permitted to have one unit apiece. 
+#' This may change in the future; if this is a feature you want implemented, 
+#' please create an issue on GitHub with information about how you would use 
+#' multiple units in an array or matrix if the option were available.
+#' 
+#' }
+#' 
+#' @rdname unitted
+setMethod(
+  "unitted", "array",
+  function(object, units, ...) {
+    # This method is currently identical to the simple constructor defined above. 
+    # This one serves as a placeholder for my intention to implement multi-unit 
+    # arrays and matrices. I am thinking about efficient ways to accomplish this. 
+    # The simplest is to store a parallel array that contains unitbundles rather 
+    # than numeric values. A step up would be to use factors and/or hash tables to 
+    # store the results of arithmetic operations between unique pairs of 
+    # unitbundles during matrix or array arithmetic, reducing the total number of 
+    # computations. It might also be possible to allow only some of the dimensions
+    # of a matrix or array to be unitted, implying that other dimensions have the
+    # same unit all along them. But that's an advanced feature for down the road.
+    
+    #print("u(array)")
+    #http://stackoverflow.com/questions/11857658/assignment-of-s4-r-objects-to-a-matrix-why-does-this-work
+    new("unitted_array", object, units=unitbundle(units))
+  }
+)
+
+#' @details \subsection{Lists}{
+#'   
+#'   Even non-unitted lists may contain unitted elements (or a mixture of
+#'   unitted and non-unitted elements). However, there are advantages to
+#'   defining the list itself as unitted - specifically, operations such as
+#'   print(), show(), or arithmetic will treat the entire list as unitted,
+#'   displaying and applying units as appropriate to each element.
+#'   
+#'   A unitted list, unlike a list of unitted elements, may have exactly one
+#'   unitbundle for the entire list.
+#'   
+#'   }
+#'   
+#' @rdname unitted
+setMethod(
+  "unitted", "list",
+  function(object, units, ...) {
+    #print("u(list)")
+    #warning("The implementation of unitted lists is currently primitive - one unit bundle per list.")
+    new("unitted_list", object, units=unitbundle(units))
+  }
+)
+
+#' @details \subsection{Already-unitted objects}{
+#'   
+#'   The \code{unitted} or \code{u} function may be used to replicate an 
+#'   already-unitted object or replace its units with new ones. When
+#'   \code{object} is unitted and the \code{units} argument is \code{NA}, the
+#'   constructor returns the data untouched. If the \code{units} argument is
+#'   anything else, the call to \code{unitted()} replaces the units of
+#'   \code{object} with the new units.
+#'   
+#'   }
+#'   
+#' @rdname unitted
+setMethod(
+  "unitted", "unitted",
+  function(object, units, ...) {
+    #print("u(unitted)")
+    if(isTRUE(isS4(units))) {
+      callGeneric(deunitted(object), units, ...)
+    } else if(!isTRUE(is.na(units))) {
+      callGeneric(deunitted(object), units, ...)
+    } else {  
+      return(object)
+    }
+  }
+)
+
+
+#### as.data.frame ####
+
+#' Construct a unitted element of a data.frame
+#' 
+#' \code{data.frames} are constructed by applying \code{as.data.frame()} to each
+#' element. Thus, \code{as.data.frame.unitted()} is called whenever an argument 
+#' to \code{data.frame()} is unitted. \code{as.data.frame.unitted()} can handle 
+#' inputs of any subclass of \code{unitted}. Data.frame elements constructed 
+#' with as.data.frame.unitted continue to store their units as members of the 
+#' complete data.frame, although those units may not be visible until/unless the
+#' data.frame is itself made unitted by a call to \code{u(mydf)}.
 #' 
 #' @param x A unitted object
-#' @param ... Other arguments passed to as.data.frame()
+#' @param ... Other arguments passed to \code{as.data.frame()}
+#' @return A unitted data.frame element
 as.data.frame.unitted <- function(x, ...) {
-  .unitted_as.data.frame(x, ...)
+  .unitted_as.data.frame(object=x, ...)
 }
 setGeneric(".unitted_as.data.frame", function(object, ...) {
   standardGeneric(".unitted_as.data.frame")
@@ -295,7 +362,7 @@ setMethod(
     # units back to the resulting column of the 1-column data.frame (but not to
     # the data.frame itself)
     df <- do.call("as.data.frame",list(list(deunitted(object)), ...))
-    df[[1]] <- unitted(df[[1]], .get_units(object))
+    df[[1]] <- unitted(df[[1]], get_unitbundles(object))
     names(df) <- NULL
     return(df)
   }
@@ -305,7 +372,7 @@ setMethod(
   function(object, ...) {
     df <- do.call("as.data.frame",list(list(deunitted(object)), ...))
     for(col in 1:dim(df)[2]) {
-      df[[col]] <- unitted(df[[col]], .get_units(object))
+      df[[col]] <- unitted(df[[col]], get_unitbundles(object))
     }
     names(df) <- NULL
     return(df)
@@ -320,34 +387,66 @@ setMethod(
 
 #### Deconstructors ####
 
-#' Removes units and all "unitted" class attributes from a unitted object
+#' Extract data from a unitted object
 #' 
-#' @aliases deunitted, v
-#' @param y A unitted object. A non-unitted object will be returned intact.
-#' @export
-#' @family constructors
+#' Unitted objects consist of data, units, and unitted class information. The 
+#' function \code{deunitted()} and its alias \code{v()} remove the units and 
+#' class information or, equivalently, extract the data from the unitted object.
+#' 
+#' @name v
+#' @rdname deunitted
+#' @export v
+#' @seealso \code{\link{u}()} and \code{\link{unitted}()} for the construction 
+#'   of unitted objects; \code{\linkS4class{unitted}} for the definition of the 
+#'   unitted class
+#'   
+#' @param object A unitted object
+#' @param ... Other arguments passed to \code{deunitted}
+#' @return A non-unitted data object
+v <- function(object, ...) {
+  deunitted(object, ...)
+}
+
+#' @name deunitted
+#' @rdname deunitted
+#' @exportMethod deunitted
 setGeneric("deunitted", function(object, ...) {
   standardGeneric("deunitted")
 })
-v <- deunitted
-setMethod(
-  "deunitted", "ANY",
-  function(object, ...) {
-    object
-  }
-)
+
+#' @rdname deunitted
+#'   
+#' @details In general, \code{deunitted()} and \code{v()} simply extract the
+#' data part of the unitted object.
 setMethod(
   "deunitted", "unitted",
   function(object, ...) {
+    # And what if the object's class is unitted extending another S4 class?
     return(S3Part(object, strictS3=TRUE))
   }
 )
+
+# Exclude this one from the documentation - it'd typically just be confusing
 setMethod(
   "deunitted", "unitted_NULL",
   function(object, ...) {
     return(NULL)
   }
 )
+
+#' @rdname deunitted
+#'   
+#' @details With unitted data.frames and lists, you have a choice between 
+#'   partial and complete deunitting (specified by the \code{partial} argument).
+#'   Complete deunitting removes units and unitted class attributes both from
+#'   the container (the data.frame or list) and its elements (the columns or
+#'   list elements). Partial deunitting only removes the container units and
+#'   unitted class attributes.
+#'   
+#' @param partial logical. Should the data.frame or list be fully deunitted, such that 
+#'   no elements will be left with units, or partially deunitted, such that the 
+#'   object that is returned is not itself unitted but may have unitted 
+#'   elements?
 setMethod(
   "deunitted", "unitted_data.frame",
   function(object, partial=FALSE, ...) {
@@ -357,6 +456,7 @@ setMethod(
     return(S3Part(object, strictS3=TRUE))
   }
 )
+#' @rdname deunitted
 setMethod(
   "deunitted", "unitted_list",
   function(object, partial=FALSE, ...) {
@@ -366,18 +466,37 @@ setMethod(
     return(S3Part(object, strictS3=TRUE))
   }
 )
+
+#' @rdname deunitted
+#'   
+#' @details Non-unitted data.frames and lists may also be deunitted: This 
+#'   operation always removes units from the data.frame columns or list
+#'   elements.
 setMethod(
   "deunitted", "data.frame",
   function(object, ...) {
     as.data.frame(lapply(object, function(col) { deunitted(col) }))
   }
 )
+#' @rdname deunitted
 setMethod(
   "deunitted", "list",
   function(object, ...) {
     lapply(object, function(elem) { deunitted(elem) })
   }
 )
+
+#' @rdname deunitted
+#'   
+#' @details If \code{object} is neither a list nor a data.frame and is not
+#' unitted, it will be returned intact.
+setMethod(
+  "deunitted", "ANY",
+  function(object, ...) {
+    object
+  }
+)
+
 #### Helper functions ####
 
 # ' The internal, reasonably efficient, unsafe (little error checking) method for
@@ -425,69 +544,69 @@ setMethod(
 )
 
 
-# ' The internal, reasonably efficient method for acquiring an object's units in 
-# ' the internal representation
-# ' 
-# ' .get_units() of a non-unitted class returns NA.
-# ' 
-# ' .get_units() of a unitted vector, array, or matrix class returns the single 
-# ' unitbundle associated with that object.
-# ' 
-# ' .get_units() of a data.frame or unitted_data.frame returns a named list of
-# ' unitbundles (or NAs), one per data.frame column.
-# ' 
-# ' @param object The object whose units should be returned
-# ' @return A unitbundle or list of unitbundles, each representing one set of 
-# '   units
+#' The internal, reasonably efficient method for acquiring an object's units in 
+#' the internal representation
+#' 
+#' get_unitbundles() of a non-unitted class returns NA.
+#' 
+#' get_unitbundles() of a unitted vector, array, or matrix class returns the single 
+#' unitbundle associated with that object.
+#' 
+#' get_unitbundles() of a data.frame or unitted_data.frame returns a named list of
+#' unitbundles (or NAs), one per data.frame column.
+#' 
+#' @param object The object whose units should be returned
+#' @return A unitbundle or list of unitbundles, each representing one set of 
+#'   units
 setGeneric(
-  ".get_units", 
+  "get_unitbundles", 
   function(object, ...) {
     NA
   }
 )
 setMethod(
-  ".get_units", "unitted",
+  "get_unitbundles", "unitted",
   function(object, ...) {
     object@units
   }
 )
 setMethod(
-  ".get_units", "data.frame",
+  "get_unitbundles", "data.frame",
   function(object, recursive=TRUE, ...) {
     if(recursive) {
-      lapply(object, function(col) { .get_units(col) })
+      lapply(object, function(col) { get_unitbundles(col) })
     } else {
       NA
     }
   }
 )
 setMethod(
-  ".get_units", "unitted_data.frame",
+  "get_unitbundles", "unitted_data.frame",
   function(object, recursive=TRUE, ...) {
     if(recursive) {
-      setNames(unlist(lapply(object@.Data, .get_units)), object@names)
+      setNames(unlist(lapply(object@.Data, get_unitbundles)), object@names)
     } else {
       NA
     }
   }
 )
 setMethod(
-  ".get_units", "list",
+  "get_unitbundles", "list",
   function(object, recursive=TRUE, ...) {
     if(recursive) {
-      lapply(object, function(col) { .get_units(col) })
+      lapply(object, function(col) { get_unitbundles(col) })
     } else {
       NA
     }
   }
 )
 setMethod(
-  ".get_units", "unitted_list",
+  "get_unitbundles", "unitted_list",
   function(object, recursive=FALSE, ...) {
     if(recursive) {
       # '@names' is not technically a slot for S4 lists, but I think this is an
       # efficient way to access names anyway.
-      setNames(unlist(lapply(object@.Data, .get_units)), object@names)
+      setNames(unlist(lapply(object@.Data, get_unitbundles)), object@names)
     } else {
       object@units
     }

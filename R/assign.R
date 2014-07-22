@@ -1,36 +1,56 @@
+#### [<- unitted ####
+
+#' Replace parts of a unitted vector, array, or data.frame
+#' 
+#' @name unitted_assign
+#' @aliases [<- Extract
+#' @rdname unitted_assign
+#' @export
+#' @seealso \code{\link{unitted_access}} for assignment to parts of objects; 
+#'   \code{\linkS4class{unitted}} for definition of the unitted class
+#'   
+#' @param x The unitted data.frame, vector, etc. to be partially replaced
+#' @param i (optional) The first replacement index
+#' @param j (optional) The second replacement index
+#' @param ... Other arguments passed to replacement functions
+#' @param value The value(s) with which to replace the indexed elements of x
+#' @return \code{x} with its indexed elements replaced by \code{value}
+setMethod(
+  "[<-", c(x="unitted", i="ANY", j="missing"), 
+  function(x, i, j, ..., value) {
+    # print("unitted[i] <- value")
+    if(get_unitbundles(x) != get_unitbundles(value)) { # unitbundle != interprets NA and unitbundle() as equal
+      stop("Mismatched units in subset replacement: ", get_units(x)," != ", get_units(value))
+    }
+    dx <- deunitted(x)
+    dx[i] <- deunitted(value)
+    unitted(dx, get_unitbundles(x))
+  }
+)
+
 #### $<- unitted_data.frame ####
 
+#' @aliases $<-
+#' @rdname unitted_assign
+#' @export
+#' 
+#' @param name The name of the column to be replaced
 setMethod(
   "$<-",c(x="unitted_data.frame", value="ANY"), 
   function(x, name, value) {
     if(is(value, "unitted")) {
       v2 <- callNextMethod(x, name, deunitted(value))[[name, exact=FALSE]]
-      callNextMethod(x, name, unitted(v2, .get_units(value)))
+      callNextMethod(x, name, unitted(v2, get_unitbundles(value)))
     } else {
       xcol <- x[[name, exact = FALSE]]
       if(is(xcol,"unitted_NULL")) {
         xu <- NA
       } else {
-        xu <- .get_units(xcol)
+        xu <- get_unitbundles(xcol)
       }
       v2 <- callNextMethod()[[name, exact=FALSE]]
       callNextMethod(x, name, unitted(v2, xu))
     }
-  }
-)
-
-#### [<- unitted ####
-
-setMethod(
-  "[<-", c(x="unitted", i="ANY", j="missing"), 
-  function(x, i, j, ..., value) {
-    # print("unitted[i] <- value")
-    if(.get_units(x) != .get_units(value)) { # unitbundle != interprets NA and unitbundle() as equal
-      stop("Mismatched units in subset replacement: ", get_units(x)," != ", get_units(value))
-    }
-    dx <- deunitted(x)
-    dx[i] <- deunitted(value)
-    unitted(dx, .get_units(x))
   }
 )
 
@@ -40,24 +60,24 @@ setMethod(
 .udf_get_replacement_units <- function(x, newx, cols, value, replace.old=FALSE) {
   if(ncol(newx) == ncol(x)) {
     if(replace.old) {
-      replace(.get_units(x), cols, .get_units(value))
+      replace(get_unitbundles(x), cols, get_unitbundles(value))
     } else {
-      .get_units(x)
+      get_unitbundles(x)
     }
   } else {
     # the data.frame was expanded during the 'replacement', so the new units
     # might include units from value
     if(replace.old) {
       new_units <- rep(NA,ncol(newx)) # a list of empties
-      new_units <- replace(new_units, match(names(x), names(newx)), .get_units(x))
-      replace(new_units, cols, .get_units(value))
+      new_units <- replace(new_units, match(names(x), names(newx)), get_unitbundles(x))
+      replace(new_units, cols, get_unitbundles(value))
     } else {
       if(is(value, "unitted")) {
-        uv <- unname(.get_units(value))
+        uv <- unname(get_unitbundles(value))
         if(!is.list(uv)) uv <- list(uv)
-        c(.get_units(x), uv[which(!(cols %in% seq_len(ncol(x))))])
+        c(get_unitbundles(x), uv[which(!(cols %in% seq_len(ncol(x))))])
       } else {
-        c(.get_units(x), rep_len(NA,ncol(newx)-ncol(x)))
+        c(get_unitbundles(x), rep_len(NA,ncol(newx)-ncol(x)))
       }
     }
   }
@@ -66,9 +86,9 @@ setMethod(
 .udf_check_replacement_units <- function(xdest, value) {
   # Extract the units of the destination cells and the units of the replacement
   # value.
-  ux <- unname(.get_units(xdest))
+  ux <- unname(get_unitbundles(xdest))
   if(!is.list(ux)) ux <- list(ux)
-  uv <- unname(.get_units(value))
+  uv <- unname(get_unitbundles(value))
   if(!is.list(uv)) uv <- list(uv)
   
   # Compare the units of the data.frame destination cells to those of the
@@ -83,6 +103,8 @@ setMethod(
   }
 }
 
+#' @rdname unitted_assign
+#' @export
 setMethod(
   "[<-", c(x="unitted_data.frame", i="ANY", j="ANY"), 
   function(x, i, j, ..., value) {
@@ -99,6 +121,9 @@ setMethod(
     newx
   }
 )
+
+#' @rdname unitted_assign
+#' @export
 setMethod(
   "[<-", c(x="unitted_data.frame", i="ANY", j="missing"), 
   function(x, i, j, ..., value) {
@@ -125,6 +150,9 @@ setMethod(
     newx
   }
 )
+
+#' @rdname unitted_assign
+#' @export
 setMethod(
   "[<-", c(x="unitted_data.frame", i="missing", j="ANY"), 
   function(x, i, j, ..., value) {
@@ -136,6 +164,9 @@ setMethod(
     newx
   }
 )
+
+#' @rdname unitted_assign
+#' @export
 setMethod(
   "[<-", c(x="unitted_data.frame", i="missing", j="missing"), 
   function(x, i, j, ..., value) {
@@ -148,87 +179,4 @@ setMethod(
   }
 )
 
-#### [old] ####
 
-# #' Replace cell[s] of a unitted data.frame
-# #' 
-# #' Bug: If you want to add columns to a unitted data.frame, you have to do it
-# #' one at a time. This won't work: 
-# #' chemdat[ghgrows,c(ghgcols,"CO2aq_G_APA","CH4aq_G_APA","N2Oaq_G_APA")] <- ghgchem 
-# #' where "CO2aq_G_APA","CH4aq_G_APA","N2Oaq_G_APA" are new columns to
-# #' chemdat and where ghgchem and chemdat are both unitted already.
-# #' 
-# #' @param x The data.frame
-# #' @param i The row (or column, if j is missing)
-# #' @param j The column
-# #' @param value The value or values to insert in the specified cell[s]
-# #' @return A new data.frame with the specified cells replaced with \code{value}
-# #' @export
-# "[<-.unitted" <- function(x,i,j,...,value) {
-#   call_args <- as.list(match.call())
-#   access_args <- call_args[-c(1, 2, length(call_args))]
-#   
-#   replacee <- do.call(`[`, c(list(x), access_args))
-#   assigned <- NextMethod()
-#   #as_replaced <- do.call(`[`, c(list(assigned), access_args))
-#   
-#   msg <- function(replacee, replacement) {
-#     paste0("Units mismatch in partial replacement. ",
-#            "Replacee units: '",get_units(replacee),
-#            "'; replacement units: '",get_units(replacement),"'")
-#   }
-#   if(is.atomic(.remove_unitted_class(x))) {
-#     if(is.null(dim(x))) {
-#       # Vectors
-#       if(.get_units(replacee) != .get_units(value)) {
-#         stop(msg(replacee, value))
-#       }
-#     } else {
-#       # Matrices and arrays
-#       if(.get_units(replacee) != .get_units(value)) {
-#         stop(msg(replacee, value))
-#       }
-#     }
-#     
-#   } else if(is.data.frame(x)) {
-#     
-#   } else {
-#     stop("Unrecognized data type of x in [<-.unitted")
-#   }
-#   
-#   return(assigned)
-# 
-# }
-# 
-# 
-# #' Replace a column of a unitted data.frame
-# #' 
-# #' Returns a vector with the right units still attached.
-# #' 
-# #' @param x The data.frame
-# #' @param i The row (or column, if j is missing)
-# #' @param j The column
-# #' @param value The value or values to insert in the specified cell[s]
-# #' @return A unitted vector
-# #' @export
-# "$<-.unitted" <- function(x,col,value) {
-#   if(!is.data.frame(x))
-#     stop("The only unitted data type currently supported for $<- replacement\n",
-#          "is a data.frame, which this is not.")
-#   get("[<-.unitted")(x,,col,value=value)
-#   #eval(call("[<-.unitted",x,NULL,col,value))
-#   #x[,col] <- value
-# }
-#         
-# 
-# #' Replace values within a unitted object
-# #' 
-# #' @param x The original unitted data object
-# #' @param i The row (or column, if j is missing)
-# #' @param j The column
-# #' @param value The value or values to insert in the specified cell[s]
-# #' @return A new unitted data object
-# #' @export
-# "[[<-.unitted" <- function(x,i,j,...,value) {
-#   stop("not yet implemented")
-# }

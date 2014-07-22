@@ -2,6 +2,9 @@
 
 #### show ####
 
+#' Show a unitted object
+#' 
+#' Displays a unitted object, including its units and data type whenever possible
 setMethod(
   "show", "unitted",
   function(object) {
@@ -32,7 +35,7 @@ print.unitted <- function(x,...) {
   .unitted_print(x, ...)
 }
 
-#' Print a unitted object
+# Print a unitted object
 setGeneric(
   ".unitted_print", 
   function(x, ...) {
@@ -54,10 +57,10 @@ setMethod(
   }
 )
 
-#' Print a unitted data.frame
-#' 
-#' @param x The unitted object
-#' @inheritParams base::print.data.frame
+# Print a unitted data.frame
+# 
+# @param x The unitted object
+# @inheritParams base::print.data.frame
 setMethod(
   ".unitted_print", "data.frame",
   function(x, ..., digits = NULL, quote = FALSE, right = TRUE, row.names = TRUE) {
@@ -90,6 +93,23 @@ setMethod(
 
 #### str ####
 
+#' Return the structure of a unitted object.
+#' 
+#' Works like str() but displays units-relevant information more elegantly
+#' 
+#' @name unitted_str
+#' @rdname unitted_str
+#' @export
+#' 
+#' @param object The object whose structure is to be displayed
+str.unitted <- function(object, ...) {
+  cat(" ",class(object)," (",paste(get_units(object), collapse=";"),"):", sep="")
+  str(S3Part(object, strictS3=TRUE), ...)
+  invisible()
+}
+
+#' @rdname unitted_str
+#' @export
 str.unitted_data.frame <- function(object, ...) {
   if (!is.data.frame(object)) {
     warning("str.unitted_data.frame() called with non-data.frame -- coercing to one.")
@@ -110,12 +130,8 @@ str.unitted_data.frame <- function(object, ...) {
   invisible()
 }
 
-str.unitted <- function(object, ...) {
-  cat(" ",class(object)," (",paste(get_units(object), collapse=";"),"):", sep="")
-  str(S3Part(object, strictS3=TRUE), ...)
-  invisible()
-}
-
+#' @rdname unitted_str
+#' @export
 str.unitted_NULL <- function(object, ...) {
   cat(paste0("unitted ", substring(class(object)[1], 9), " (", get_units(object), ")\n"))
   invisible()

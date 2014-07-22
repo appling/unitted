@@ -101,6 +101,15 @@ test_that("Ops.unitted works for scalars", {
   }
 })
 
+test_that("Bugs in Ops.unitted", {
+  miles_vec <- unitted(1:5,"mi")
+  -miles_vec
+
+  #sqrt seems not to get applied to elements of a unitted vector
+  x <- u(data.frame(a=1:3,b=3:5),c("a","q"))
+  expect_equal(v(sqrt(x)), sqrt(v(x)))
+})
+
 test_that("Ops.unitted works for vectors", {
   expect_that(u1vec, u1vec,  equals(u(vec, vec, u1)),            info="uvec, uvec,  AA, same units")
   expect_that(u1vec, u2vec,  throws_error("Units of e2 are invalid"), info="uvec, uvec,  AA, diff units")
@@ -367,7 +376,7 @@ test_that("round, signif.unitted work", {
 })
 
 test_that("exp, log, expm1, log1p.unitted work", {
-  expect_that(.get_units(log(u(1:10,""))), equals(unitbundle("")))
+  expect_that(get_unitbundles(log(u(1:10,""))), equals(unitbundle("")))
   expect_that(log(u(1:10,"kg")), throws_error("Input units are invalid in log"))
   #expect_that(log(u(1:10,"kg"), check.input.units=FALSE), "this doesn't actually work; check.input.units doesn't get passed through math.unitted")
 })

@@ -2,17 +2,23 @@
 
 #' Combine unitted elements into a unitted vector
 #' 
-#' Because a unitted vector has the same units for every element, all elements 
-#' passed to c.unitted() must have the same units when recursive=FALSE. When 
-#' recursive=TRUE, elements may include lists or data.frames, but the base 
-#' elements (vectors, columns, etc.) of those list elements must be unitted.
+#' This function takes one or more unitted elements and combines them into a 
+#' single unitted vector. To enforce units integrity, the function requires that
+#' all elements passed to the S3 or S4 versions of c.unitted() must have the
+#' same units, at least when recursive=FALSE. When recursive=TRUE, elements may
+#' include lists or data.frames, but the base elements (vectors, columns, etc.)
+#' of those list elements must still be unitted.
 #' 
-#' The following S4 method for c<<unitted>> will be found first (before other
-#' c() methods) whenever the first argument is unitted.
+#' The S4 method for c<<unitted>> will be found first (before other c() methods)
+#' whenever the first argument is unitted.
+#' 
+#' @name unitted_c
+#' @rdname unitted_c
+#' @export
+#' @family unitted object manipulation
 #' 
 #' @inheritParams base::c
 #' @return A unitted vector
-#' @export
 setMethod(
   "c", "unitted",
   function(x, ..., recursive=FALSE) {
@@ -61,43 +67,42 @@ setMethod(
     }   
   }
 )
-# If the first argument is not unitted but later arguments are, then
-# the primitive c method will still be called, and unitted objects will 
-# be coerced to their S3 data parts. So if you want to maintain units through a
-# call to c where the first argument is not unitted, then you should call c.unitted
-# directly. To avoid repeating code, this function simply calls the S4 method.
+
+#' If the first argument is not unitted but later arguments are, then the 
+#' primitive c method will still be called, and unitted objects will be coerced 
+#' to their S3 data parts. So if you want to maintain units through a call to 
+#' \code{c()} where the first argument is not unitted, then you should call 
+#' \code{c.unitted} directly.
+#' 
+#' To avoid repeating code, the S3 function simply calls the S4 method.
+#' 
+#' @rdname unitted_c
+#' @export
 c.unitted <- function(..., recursive=FALSE) {
   getMethod("c","unitted")(..., recursive=recursive)
 }
 
 #### .unitted_bind ####
 
-#' Main implementation of rbind and cbind for unitted objects
-#' 
-#' The most reliable way to call these is with rbind.unitted() and 
-#' cbind.unitted(). Although rbind() and cbind() often work correctly for 
-#' combinations of two or more unitted objects of the same class (e.g., two 
-#' unitted_data.frames or two unitted_characters), the base rbind and cbind 
-#' methods often fail to redirect to their unitted versions when there are type 
-#' mismatches, even minor ones, among the objects to be bound.
-#' 
-#' @name bind.unitted
-#' 
-#' Known issues:
-#' 
-#' cbind/rbind(unitteddataframe, dataframe) or cbind/rbind(dataframe, 
-#' unitteddataframe) does not get routed to these unitted methods; your options 
-#' in this case are to call c/rbind(unitteddataframe, u(dataframe)) or to call 
-#' c/rbind.unitted(unitteddataframe, dataframe).
-#' 
-#' The unitted cbind and rbind do not implement deparse.level=2 -- this would
-#' require too much duplication of the base rbind and cbind code for not enough
-#' reward.
-#' 
-#' @param ... unitted vectors, matrices, or data.frames
-#' @param deparse.level integer controlling the construction of labels, as in 
-#'   the default rbind and cbind methods. Only deparse.level = 0 and 1 are 
-#'   available for unitted rbind/cbind calls.
+# Main implementation of rbind and cbind for unitted objects
+# 
+# The most reliable way to call these is with rbind.unitted() and 
+# cbind.unitted(). Although rbind() and cbind() often work correctly for 
+# combinations of two or more unitted objects of the same class (e.g., two 
+# unitted_data.frames or two unitted_characters), the base rbind and cbind 
+# methods often fail to redirect to their unitted versions when there are type 
+# mismatches, even minor ones, among the objects to be bound.
+# 
+# Known issues:
+# 
+# cbind/rbind(unitteddataframe, dataframe) or cbind/rbind(dataframe, 
+# unitteddataframe) does not get routed to these unitted methods; your options 
+# in this case are to call c/rbind(unitteddataframe, u(dataframe)) or to call 
+# c/rbind.unitted(unitteddataframe, dataframe).
+# 
+# The unitted cbind and rbind do not implement deparse.level=2 -- this would
+# require too much duplication of the base rbind and cbind code for not enough
+# reward.
 .unitted_bind <- function(..., fun.name=c("cbind","rbind")) {
   # Our basic strategy is to create local, deunitted copies of each element to be
   # bound. It helps for these copies to have the same names as the originals (for
@@ -213,7 +218,7 @@ c.unitted <- function(..., recursive=FALSE) {
   newunits <- list()
   v_frame <- new.env()
   for(i in seq_along(args_to_bind)) {
-    newunits[[i]] <- .get_units(evaluated_args[[i]])
+    newunits[[i]] <- get_unitbundles(evaluated_args[[i]])
     assign(arg_names[i], deunitted(evaluated_args[[i]]), pos=v_frame)
   }
         
@@ -261,11 +266,30 @@ c.unitted <- function(..., recursive=FALSE) {
 
 #### rbind ####
 
+#' Bind unitted objects by row or column
+#' 
+#' Combines unitted objects as if they were not unitted, but enforces unit
+#' consistency across the objects to be combined.
+#' 
+#' @name unitted_bind
+#' @aliases unitted_rbind rbind bind
+#' @rdname unitted_bind
+#' @export
+#' @family unitted object manipulation
+#' 
+#' @param ... unitted vectors, matrices, or data.frames
+#' @param deparse.level integer controlling the construction of labels, as in 
+#'   the default rbind and cbind methods. Only deparse.level = 0 and 1 are 
+#'   available for unitted rbind/cbind calls.
+rbind.unitted <- function(...) {
+  .unitted_bind(..., fun.name="rbind")
+}
+
 # The specific unitted_xxx functions get discovered by rbind(), while the 
 # generic rbind.unitted never does. So we need an rbind function for every 
-# unitted subclass. An rbind.unitted function is also useful, however, for
-# when someone wants to explicitly specify a unitted type of rbind.
-for(subclass in c("unitted", names(getClass("unitted")@subclasses))) {
+# unitted subclass. The rbind.unitted function defined above is also useful,
+# however, for when someone wants to explicitly specify a unitted type of rbind.
+for(subclass in names(getClass("unitted")@subclasses)) {
   assign(paste0("rbind.",subclass), function(...) {
     .unitted_bind(..., fun.name="rbind")
   })
@@ -273,8 +297,15 @@ for(subclass in c("unitted", names(getClass("unitted")@subclasses))) {
 
 #### cbind ####
 
+#' @aliases unitted_cbind cbind
+#' @rdname unitted_bind
+#' @export
+cbind.unitted <- function(...) {
+  .unitted_bind(..., fun.name="cbind")
+}
+
 # Same logic as for rbind methods.
-for(subclass in c("unitted", names(getClass("unitted")@subclasses))) {
+for(subclass in names(getClass("unitted")@subclasses)) {
   assign(paste0("cbind.",subclass), function(...) {
     .unitted_bind(..., fun.name="cbind")
   })
@@ -283,8 +314,20 @@ for(subclass in c("unitted", names(getClass("unitted")@subclasses))) {
 
 #### merge ####
 
+
 setGeneric("merge")
 
+#' Merge unitted data.frames by one or more common columns
+#' 
+#' Merges unitted data.frames, ensuring units compatibility among the common
+#' columns
+#' 
+#' @name unitted_merge
+#' @rdname unitted_merge
+#' @export merge
+#' 
+#' @seealso \code{base::\link{merge}}
+#' @family unitted object manipulation
 setMethod(
   "merge", 
   c(x="unitted_data.frame", y="unitted_data.frame"),
@@ -319,6 +362,8 @@ setMethod(
     unitted(merged_xy, unlist(merged_units[1,]))
   }
 )
+#' @rdname unitted_merge
+#' @export
 setMethod(
   "merge",
   c(x="unitted", y="ANY"),
@@ -326,6 +371,8 @@ setMethod(
     stop("merge for unitted, ANY not yet implemented")
   }
 )
+#' @rdname unitted_merge
+#' @export
 setMethod(
   "merge",
   c(x="ANY", y="unitted"),
@@ -337,10 +384,20 @@ setMethod(
 
 #### rep ####
 
+#' Replicate elements, maintaining the original units
+#' 
+#' Wrapper for non-unitted rep() methods.
+#' 
+#' @name unitted_rep
+#' @rdname unitted_rep
+#' @export
+#' @family unitted object manipulation
 rep.unitted <- function(x, ...) {
-  unitted(rep(deunitted(x), ...), .get_units(x))
+  unitted(rep(deunitted(x), ...), get_unitbundles(x))
 }
 
+#' @rdname unitted_rep
+#' @export
 rep.unitted_data.frame <- function(x, ...) {
   rep(deunitted(x, partial=TRUE), ...)
   
@@ -348,6 +405,6 @@ rep.unitted_data.frame <- function(x, ...) {
   #   mapply(
   #     function(elem, units) unitted(elem, units),
   #     rep(deunitted(x), ...),
-  #     rep(.get_units(x), ...),
+  #     rep(get_unitbundles(x), ...),
   #     SIMPLIFY=FALSE)
 }

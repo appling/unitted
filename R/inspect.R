@@ -19,7 +19,7 @@ is.unitted <- function(x) {
 setMethod(
   "get_units", "unitted",
   function(object, ...) {
-    get_units(.get_units(object))
+    get_units(get_unitbundles(object))
   }
 )
 setMethod(
@@ -28,7 +28,7 @@ setMethod(
     if(recursive) {
       setNames(unlist(lapply(object@.Data, get_units)),names(object))
     } else {
-      get_units(.get_units(object))
+      get_units(get_unitbundles(object))
     }
   }
 )
@@ -103,7 +103,7 @@ verify_units <- function(
         return(return.values[[2]])
       }
     }
-    givenunits <- .get_units(x, recursive=TRUE)
+    givenunits <- get_unitbundles(x, recursive=TRUE)
     wantunits <- lapply(expected.units, function(eu) { unitbundle(eu) })
     # Allow for expected.units to define the order and set of names in x that should be checked
     wantnames <- names(wantunits)
@@ -134,7 +134,7 @@ verify_units <- function(
       violation.handler(msg)
       return(return.values[[2]])
     }
-    givenunits <- .get_units(x, recursive=FALSE)
+    givenunits <- get_unitbundles(x, recursive=FALSE)
     wantunits <- unitbundle(expected.units)
     unitsmatch <- givenunits == wantunits
     if(!unitsmatch) {

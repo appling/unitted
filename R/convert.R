@@ -82,7 +82,7 @@ setMethod(
     #should be slightly faster to keep units (partial=TRUE) than not
     res <- as.list(deunitted(x, partial=TRUE), ...) 
     if(push.units) {
-      ux <- .get_units(x)
+      ux <-  get_unitbundles(x)
       for (i in seq_along(x)) res[[i]] <- u(res[[i]], ux)
     }
     res

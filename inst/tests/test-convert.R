@@ -8,10 +8,10 @@ test_that("as.list works as expected", {
   expect_that(get_units(uvec_as_list), equals(rep("bottles of beer on the wall", 4)))
   expect_that(get_units(uvec_as_list, recursive=FALSE), equals(NA))
   # Alternative to as.list: If you want to create a list with all the same
-  # units, use list(uvec) or u(as.list(v(uvec)), .get_units(uvec)) instead of
+  # units, use list(uvec) or u(as.list(v(uvec)), get_unitbundles(uvec)) instead of
   # as.list(uvec)
-  expect_that(u(as.list(v(uvec)), .get_units(uvec)), is_a("unitted_list"))
-  expect_that(get_units(u(as.list(v(uvec)), .get_units(uvec))), equals("bottles of beer on the wall"))
+  expect_that(u(as.list(v(uvec)), get_unitbundles(uvec)), is_a("unitted_list"))
+  expect_that(get_units(u(as.list(v(uvec)), get_unitbundles(uvec))), equals("bottles of beer on the wall"))
   
   #as.list(data.frame) should keep the units. 
   udf <- u(data.frame(x=1:3,y=8),c("q","r"))

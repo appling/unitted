@@ -1,19 +1,29 @@
-#' Extract parts of a unitted data.frame, vector, etc.
+#' Extract parts of a unitted object
 #' 
-#' @param x The data.frame, vector, etc.
-#' @param i
-#' @param j
-#' @param ...
+#' The standard accessors \code{x[...]}, \code{x[[...]]}, and \code{x$name} are
+#' all available for unitted objects.
+#' 
+#' \code{x[...]} extracts elements with their units.
+#' 
+#' @name unitted_access
+#' @aliases [ Extract extract
+#' @rdname unitted_access
+#' @export
+#' @seealso \code{\link{unitted_assign}} for assignment to parts of objects; 
+#'   \code{\linkS4class{unitted}} for definition of the unitted class
+#'   
+#' @param x The unitted data.frame, vector, etc. to be accessed
+#' @param ... Arguments passed to accessors, typically including one or more 
+#'   extraction indices
 #' @param drop Should the column names be dropped if only a single column 
 #'   remains?
 #' @return A new data.frame, vector, etc. with the right units still attached.
-#' @export
 "[.unitted" <- function(x, ...) {
   if(isTRUE(is.data.frame(x))) {
     new_units <- NA
     x <- deunitted(x, partial=TRUE)
   } else {
-    new_units <- .get_units(x)
+    new_units <- get_unitbundles(x)
     x <- deunitted(x)
   }
   
@@ -22,15 +32,17 @@
   unitted(vx, new_units)
 }
 
-#' Extract parts of an object, dropping most attributes but retaining units
+#' @details \code{x[[...]]} drops most attributes but retains units.
 #' 
-#' To remove units, use v() before or after calling "[[".
+#' @aliases [[
+#' @rdname unitted_access
+#' @export
 "[[.unitted" <- function(x, ...) {
   if(isTRUE(is.data.frame(x))) {
     new_units <- NA
     x <- deunitted(x, partial=TRUE)
   } else {
-    new_units <- .get_units(x)
+    new_units <- get_unitbundles(x)
     x <- deunitted(x)
   }
   
@@ -39,19 +51,18 @@
   unitted(vx, new_units)
 }
 
-#' Extract a column of a unitted data.frame
-#' 
-#' Returns a vector with the right units still attached.
-#' 
-#' @param x The data.frame
-#' @param col The name of the column to be extracted
-#' @return A vector with the right units still attached.
+#' @details \code{x$name} extracts a named column, with units, from a unitted data.frame
+#'
+#' @aliases $
+#' @rdname unitted_access
 #' @export
-"$.unitted" <- function(x, col) {
+#' 
+#' @param name The name of the column to be extracted
+"$.unitted" <- function(x, name) {
   # NextMethod gives errors about promises being an unacceptable type for 'col',
   # so use [[ instead of NextMethod. According to ?`$`, x$name is equivalent to
   # x[["name", exact = FALSE]]
-  x[[col, exact=FALSE]]
+  x[[name, exact=FALSE]]
 }
 
 

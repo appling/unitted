@@ -44,6 +44,10 @@ test_that("parse_units works", {
   expect_that(parse_units("|kg C^1 ha|^-1",delimiter="|"), equals(list(data.frame(Unit=c("kg C^1 ha"),Power=c(-1),stringsAsFactors=FALSE))))
   expect_that(parse_units("Xkg C^1 haX^-1",delimiter="X"), equals(list(data.frame(Unit=c("kg C^1 ha"),Power=c(-1),stringsAsFactors=FALSE))))
   
+  # still problematic
+  expect_error(parse_units("^and")) # breaks - doesn't notice
+  expect_error(parse_units("or^and")) # "or^and" shouldn't be parsed into "or"
+  
   # badly formed numeric substrings
   expect_that(parse_units("m^-1/2"), throws_error()) # breaks; bad parse not caught
   expect_that(parse_units("m^-(1/2)"), throws_error("Invalid number"))
@@ -72,7 +76,7 @@ test_that("merge_units works", {
   
   # delimiter removal exception - delimiters get dropped in parsing
   expect_that(merge_units(parse_units("|kg_C|^1 ha^-1")), equals("kg_C ha^-1"))
-  expect_that(merge_units(parse_units("|kg SO_4^2-|^1 ha^-1")), equals("kg SO_4^2- ha^-1"))
+  expect_that(merge_units(parse_units("|kg SO_4^2-|^1 ha^-1"), rule="never"), equals("kg SO_4^2- ha^-1"))
   
   # empty unit strings - NA and "" are treated the same
   expect_that(merge_units(parse_units("")), equals(""))
@@ -80,6 +84,12 @@ test_that("merge_units works", {
   
   # vectors of unit strings
   expect_that(merge_units(parse_units(c("","mg dm^-1 dm^-2 ug mg^-1",NA))), equals(c("","mg dm^-1 dm^-2 ug mg^-1","")))
+  
+  # potentially ambiguous strings wtih delimiters
+  expect_equal(parse_units(c("|hi there| Wei","|or^1 and|", "Joe")), parse_units(merge_units(parse_units(c("|hi there| Wei","|or^1 and|", "Joe")), "|", "disambiguate")))
+  expect_equal(parse_units(c("|hi there| Wei","|or^1 and|", "Joe")), parse_units(merge_units(parse_units(c("|hi there| Wei","|or^1 and|", "Joe")), "|", "always")))
+  expect_equal(parse_units(c("hi there Wei","or and", "Joe")), parse_units(merge_units(parse_units(c("|hi there| Wei","|or^1 and|", "Joe")), "|", "never")))
+  expect_equal(merge_units(parse_units(c("|hi there| Wei","|or^1 and|", "Joe")),"*"), c("*hi there* Wei", "*or^1 and*", "Joe"))
 })
 
 
