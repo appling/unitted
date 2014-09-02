@@ -32,6 +32,7 @@ parse_units <- function(ustrs, delimiter="|") {
   # unit^power element (or just a unit, with implied power=1).
   
   ustrs <- unname(ustrs)
+  if(is.factor(ustrs)) ustrs <- as.character(ustrs)
   
   # q is our placeholder delimiter, to be replaced by the actual delimiter.
   # Since q appears nowhere in our regular expressions except where it's a

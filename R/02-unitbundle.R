@@ -238,6 +238,15 @@ setMethod(
   }
 )
 
+#' Separate a unitbundle into a data frame of units and powers
+#' 
+#' @export
+#' @param unitbds a unitbundle
+#' @return a data.frame with columns for unit and power
+separate_units <- function(unitbdl) {
+  unitbdl@unitdf
+}
+
 
 #### Ops ####
 
