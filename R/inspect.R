@@ -19,7 +19,7 @@ is.unitted <- function(x) {
 setMethod(
   "get_units", "unitted",
   function(object, ...) {
-    get_units(get_unitbundles(object))
+    get_units(get_unitbundles(object), ...)
   }
 )
 setMethod(

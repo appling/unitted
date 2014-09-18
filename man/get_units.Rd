@@ -11,7 +11,7 @@ get_units(object, ...)
 \S4method{get_units}{ANY}(object, ...)
 
 \S4method{get_units}{unitbundle}(object, delimiter = "|",
-  rule = c("disambiguate", "never", "always"), ...)
+  rule = c("disambiguate", "never", "always"), separator = " ", ...)
 }
 \arguments{
 \item{object}{The object from which to retrieve units}

@@ -164,7 +164,7 @@ sort_units <- function(unitdfs) {
 #'   none, and "always" wraps all.
 #' @return list of character strings, one for each data.frame passed in
 #' @family unit-merging functions
-merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","always")) {
+merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","always"), separator=" ") {
   # for rule, accept exactly one of those options listed in the function
   # definition, taking the first as the default. Convert to integer.
   rule <- match.arg(rule)
@@ -181,7 +181,7 @@ merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","a
         return(df$Unit)
       }
     })
-    paste(unitvec, collapse=" ")
+    paste(unitvec, collapse=separator)
   })
   return(unlist(strunits))
 }

@@ -4,7 +4,7 @@
 \title{Turn a units data.frame into the character representation of the units}
 \usage{
 merge_units(unitdfs, delimiter = "|", rule = c("disambiguate", "never",
-  "always"))
+  "always"), separator = " ")
 }
 \arguments{
 \item{unitdfs}{list of unit data.frames, such as those returned by a call to

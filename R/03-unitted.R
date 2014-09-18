@@ -53,7 +53,7 @@ setClass("unitted", slots=c(units="ANY"))
 #' The short constructor name (\code{u}) makes it easy to write clean code that 
 #' enforces units consistency throughout your data analysis. The underlying 
 #' constructor function is called \code{unitted()} but aliased to \code{u()}. 
-#' Similarly, units can be removed from data using the \code{\link{deunitted}()} 
+#' Similarly, units can be removed from data using the \code{\link{deunitted}()}
 #' function or its alias \code{\link{v}()}.
 #' 
 #' @name u
@@ -65,7 +65,8 @@ setClass("unitted", slots=c(units="ANY"))
 #' @param units A specification of the units to attach to \code{object}. The 
 #'   class and form of \code{units} depends on the class of \code{object}; see 
 #'   Details
-#'   
+#' @param ... Further arguments passed to unitbundle() for each unitted vector
+#'   or element created
 u <- function(object, units=NA, ...) {
   unitted(object, units, ...)
 }
@@ -218,6 +219,7 @@ sapply(c("character","complex","logical","numeric","raw","NULL",
 #'   }
 #'   
 #' @rdname unitted
+#' @inheritParams unitted
 setMethod(
   "unitted", "data.frame",
   function(object, units, ...) {

@@ -233,8 +233,8 @@ setMethod(
 #' get_units(unitbundle("king kong"))
 setMethod(
   "get_units", "unitbundle",
-  function(object, delimiter="|", rule=c("disambiguate","never","always"), ...) {
-    merge_units(list(object@unitdf), delimiter=delimiter, rule=rule)[[1]]
+  function(object, delimiter="|", rule=c("disambiguate","never","always"), separator=" ", ...) {
+    merge_units(list(object@unitdf), delimiter=delimiter, rule=rule, separator=separator)[[1]]
   }
 )
 

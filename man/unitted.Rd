@@ -28,6 +28,9 @@ containing data}
 \item{units}{A specification of the units to attach to \code{object}. The
 class and form of \code{units} depends on the class of \code{object}; see
 Details}
+
+\item{...}{Further arguments passed to unitbundle() for each unitted vector
+or element created}
 }
 \description{
 A \code{unitted} object is the fusion of data and units. The \code{unitted()}

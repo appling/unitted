@@ -2,9 +2,9 @@ Package: unitted
 Title: Track units as you manipulate data
 Description: Attaches units to data.frames, vectors, etc. and maintains the
     correct units when you add, multiply, exponentiate, etc. those values.
-URL: https://bitbucket.org/aappling/unitted
-Version: 1.0
-Date: 2013-12-08
+URL: https://github.com/pangia/unitted
+Version: 0.2.0
+Date: 2014-09-18
 Author: Alison Appling
 Maintainer: Alison Appling <alison.appling@gmail.com>
 License: MIT
