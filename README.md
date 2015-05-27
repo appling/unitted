@@ -1,7 +1,11 @@
-unitted
-=======
+# unitted
+## attach smart, self-updating units to your data
 
-An R package that lets you attach smart, self-updating units to your data
+| Name       | Status           |  
+| :------------ |:-------------|  
+| Linux Build: | [![Build Status](https://travis-ci.org/appling/unitted.svg)](https://travis-ci.org/appling/unitted)  |
+| Package tests: | [![Coverage Status](https://coveralls.io/repos/appling/unitted/badge.svg?branch=master)](https://coveralls.io/r/appling/unitted?branch=master) |  
+
 
 Examples
 --------
