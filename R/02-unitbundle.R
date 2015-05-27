@@ -11,6 +11,7 @@
 #' This information is stored in a way that permits efficient units conversion 
 #' and arithmetic.
 #' 
+#' @import methods
 #' @name unitbundle-class
 #' @rdname unitbundle-class
 #' @export unitbundle

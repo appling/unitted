@@ -153,6 +153,7 @@ sort_units <- function(unitdfs) {
 
 #' Turn a units data.frame into the character representation of the units
 #' 
+#' @import plyr
 #' @param unitdfs list of unit data.frames, such as those returned by a call to 
 #'   parse_units
 #' @param delimiter A single-character string designating the delimiter that 
@@ -168,7 +169,6 @@ merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","a
   # for rule, accept exactly one of those options listed in the function
   # definition, taking the first as the default. Convert to integer.
   rule <- match.arg(rule)
-  require(plyr)
   # merge the units within each unitdf
   strunits <- lapply(unitdfs, function(unitdf) {
     unitdf$Unit <- delimit_units(unitdf$Unit, delimiter, rule)
