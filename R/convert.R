@@ -3,30 +3,30 @@
 
 # This function requires a data.frame called UnitsConversions. There's probably a better solution.
 
-uconv <- unitConversion <- function(to,from) {
- #first locate the relevant row in the UnitsConversions data.frame
-  conversionRow <- UnitsConversions[which(UnitsConversions$FromUnits==from & UnitsConversions$ToUnits==to),]
-  flip <- FALSE
-  if(nrow(conversionRow)==0) { #try the opposite direction, to -> from 
-    conversionRow <- UnitsConversions[which(UnitsConversions$FromUnits==to & UnitsConversions$ToUnits==from),]
-    flip <- TRUE
-  }
-  if(nrow(conversionRow)==0) { #in this case we've tried both directions & found nothing
-    return(NA)
-  }
-
-  #turn the data.frame row into a unitted value
-  conversionfactor <- u(conversionRow$Value,paste0(conversionRow$ToUnits," ",conversionRow$FromUnits,"^-1"))^ifelse(flip,-1,1)
-  
-  #if aliases have been provided by passing the arguments to and/or from as  
-  #named vectors of length 1 each, use those aliases instead of the standard 
-  #conversion factors.
-  conversionfactor <- conversionfactor *
-  u(1,ifelse(is.null(names(to)),"",paste0(names(to)," ",to,"^-1"))) *
-  u(1,ifelse(is.null(names(from)),"",paste0(from," ",names(from),"^-1"))) 
-  return(conversionfactor)
-  
-}
+# uconv <- unitConversion <- function(to,from) {
+#  #first locate the relevant row in the UnitsConversions data.frame
+#   conversionRow <- UnitsConversions[which(UnitsConversions$FromUnits==from & UnitsConversions$ToUnits==to),]
+#   flip <- FALSE
+#   if(nrow(conversionRow)==0) { #try the opposite direction, to -> from 
+#     conversionRow <- UnitsConversions[which(UnitsConversions$FromUnits==to & UnitsConversions$ToUnits==from),]
+#     flip <- TRUE
+#   }
+#   if(nrow(conversionRow)==0) { #in this case we've tried both directions & found nothing
+#     return(NA)
+#   }
+# 
+#   #turn the data.frame row into a unitted value
+#   conversionfactor <- u(conversionRow$Value,paste0(conversionRow$ToUnits," ",conversionRow$FromUnits,"^-1"))^ifelse(flip,-1,1)
+#   
+#   #if aliases have been provided by passing the arguments to and/or from as  
+#   #named vectors of length 1 each, use those aliases instead of the standard 
+#   #conversion factors.
+#   conversionfactor <- conversionfactor *
+#   u(1,ifelse(is.null(names(to)),"",paste0(names(to)," ",to,"^-1"))) *
+#   u(1,ifelse(is.null(names(from)),"",paste0(from," ",names(from),"^-1"))) 
+#   return(conversionfactor)
+#   
+# }
 
 # A function like replace() but for unitted data.frames
 unittedreplace <- function(unitteddf, colname, replacefun, replacevalues) { 
