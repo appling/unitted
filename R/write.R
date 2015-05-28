@@ -4,6 +4,7 @@
 #' @exportMethod write_unitted
 #' @param x The unitted object to be written. Currently only implemented for 
 #'   data.frames.
+#' @param file, The file to write to, as in \code{\link{write.table}}
 #' @return NULL
 #' @examples
 #' write_unitted(u(data.frame(x=1:3, y=9:7), c(x="grapes","seeds")))
@@ -11,7 +12,7 @@
 #' file.remove("practice.tsv")
 setGeneric(
   "write_unitted", 
-  function(x, ...) {
+  function(x, file="", ...) {
     standardGeneric("write_unitted")
   }
 )
@@ -30,9 +31,9 @@ setGeneric(
 #' @param ... other arguments passed to \code{\link{write.table}}
 setMethod(
   "write_unitted", "unitted_data.frame",
-  function(x, comment.char="#", sep="\t", row.names=FALSE, quote=FALSE, ...) {
+  function(x, file="", comment.char="#", sep="\t", row.names=FALSE, quote=FALSE, ...) {
     # prepare & check the dots arguments
-    dots <- c(list(x=x, sep=sep, row.names=row.names, quote=quote), list(...))
+    dots <- c(list(x=x, file=file, sep=sep, row.names=row.names, quote=quote), list(...))
     find_dot <- function(dotname) {
       if(!(dotname %in% names(dots))) formals(write.table)[[dotname]] else (dots[[dotname]])
     }

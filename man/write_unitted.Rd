@@ -6,14 +6,17 @@
 \alias{write_unitted,unitted_data.frame-method}
 \title{Write a unitted object to file.}
 \usage{
-write_unitted(x, ...)
+write_unitted(x, file = "", ...)
 
-\S4method{write_unitted}{unitted_data.frame}(x, comment.char = "#",
-  sep = "\\t", row.names = FALSE, quote = FALSE, ...)
+\S4method{write_unitted}{unitted_data.frame}(x, file = "",
+  comment.char = "#", sep = "\\t", row.names = FALSE, quote = FALSE,
+  ...)
 }
 \arguments{
 \item{x}{The unitted object to be written. Currently only implemented for
 data.frames.}
+
+\item{file,}{The file to write to, as in \code{\link{write.table}}}
 
 \item{...}{other arguments passed to \code{\link{write.table}}}
 
