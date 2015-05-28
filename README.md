@@ -3,7 +3,8 @@
 
 | Name       | Status           |  
 | :------------ |:-------------|  
-| Linux Build: | [![Build Status](https://travis-ci.org/appling/unitted.svg)](https://travis-ci.org/appling/unitted)  |
+| Linux Build: | [![Build Status](https://travis-ci.org/appling/unitted.svg)](https://travis-ci.org/appling/unitted) |
+| Windows Build: | [![Build status](https://ci.appveyor.com/api/projects/status/p2q2ngpul0y87jh4?svg=true)](https://ci.appveyor.com/project/appling/unitted/branch/master) |
 | Package tests: | [![Coverage Status](https://coveralls.io/repos/appling/unitted/badge.svg?branch=master)](https://coveralls.io/r/appling/unitted?branch=master) |  
 
 
