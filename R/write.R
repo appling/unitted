@@ -19,16 +19,20 @@ setGeneric(
 #' Write a unitted_data.frame to file.
 #' 
 #' @rdname write_unitted
-#' @param comment.char a single character, or "", with which to prepend the 
-#'   line containing units information
+#' @param comment.char a single character, or "", with which to prepend the line
+#'   containing units information
 #' @param sep the character string used to separate columns, as in 
+#'   \code{\link{write.table}}
+#' @param row.names logical. whether to write row names to the file, as in 
+#'   \code{\link{write.table}}
+#' @param quote logical. whether to place quotes around every data entry, as in 
 #'   \code{\link{write.table}}
 #' @param ... other arguments passed to \code{\link{write.table}}
 setMethod(
   "write_unitted", "unitted_data.frame",
-  function(x, comment.char="#", sep="\t", ...) {
+  function(x, comment.char="#", sep="\t", row.names=FALSE, quote=FALSE, ...) {
     # prepare & check the dots arguments
-    dots <- c(list(x=x, sep=sep), list(...))
+    dots <- c(list(x=x, sep=sep, row.names=row.names, quote=quote), list(...))
     find_dot <- function(dotname) {
       if(!(dotname %in% names(dots))) formals(write.table)[[dotname]] else (dots[[dotname]])
     }

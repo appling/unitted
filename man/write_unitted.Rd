@@ -9,7 +9,7 @@
 write_unitted(x, ...)
 
 \S4method{write_unitted}{unitted_data.frame}(x, comment.char = "#",
-  sep = "\\t", ...)
+  sep = "\\t", row.names = FALSE, quote = FALSE, ...)
 }
 \arguments{
 \item{x}{The unitted object to be written. Currently only implemented for
@@ -17,10 +17,16 @@ data.frames.}
 
 \item{...}{other arguments passed to \code{\link{write.table}}}
 
-\item{comment.char}{a single character, or "", with which to prepend the
-line containing units information}
+\item{comment.char}{a single character, or "", with which to prepend the line
+containing units information}
 
 \item{sep}{the character string used to separate columns, as in
+\code{\link{write.table}}}
+
+\item{row.names}{logical. whether to write row names to the file, as in
+\code{\link{write.table}}}
+
+\item{quote}{logical. whether to place quotes around every data entry, as in
 \code{\link{write.table}}}
 }
 \description{
