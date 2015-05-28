@@ -3,16 +3,16 @@ Title: Track units as you manipulate data
 Description: Attaches units to data.frames, vectors, etc. and maintains the
     correct units when you add, multiply, exponentiate, etc. those values.
 URL: https://github.com/appling/unitted
-Version: 0.2.0
-Date: 2015-05-27
+Version: 0.2.1
+Date: 2015-05-28
 Author: Alison Appling
 Maintainer: Alison Appling <alison.appling@gmail.com>
 License: file LICENSE
 Depends:
-    R (>= 3.0)
+    R (>= 3.2)
 Imports:
     methods,
     plyr,
-    dplyr
+    dplyr (>= 0.4.1)
 Suggests:
     testthat
