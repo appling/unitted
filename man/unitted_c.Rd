@@ -2,6 +2,7 @@
 % Please edit documentation in R/combine.R
 \docType{methods}
 \name{unitted_c}
+\alias{c,unitted-method}
 \alias{c.unitted}
 \alias{unitted_c}
 \title{Combine unitted elements into a unitted vector}
@@ -11,6 +12,8 @@
 \method{c}{unitted}(..., recursive = FALSE)
 }
 \arguments{
+\item{x}{the first argument passed to \code{c}}
+
 \item{...}{objects to be concatenated.}
 
 \item{recursive}{logical.  If \code{recursive = TRUE}, the function
@@ -42,6 +45,7 @@ Other unitted object manipulation: \code{\link{bind}},
   \code{\link{unitted_rbind}};
   \code{\link{merge,ANY,unitted-method}},
   \code{\link{merge,unitted,ANY-method}},
+  \code{\link{merge,unitted_data.frame,unitted_data.frame-method}},
   \code{\link{unitted_merge}}; \code{\link{rep.unitted}},
   \code{\link{rep.unitted_data.frame}},
   \code{\link{unitted_rep}}

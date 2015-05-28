@@ -10,6 +10,11 @@
 
 \method{rep}{unitted_data.frame}(x, ...)
 }
+\arguments{
+\item{x}{object to replicate}
+
+\item{...}{other objects passed to \code{rep}}
+}
 \description{
 Wrapper for non-unitted rep() methods.
 }
@@ -18,10 +23,12 @@ Other unitted object manipulation: \code{\link{bind}},
   \code{\link{cbind}}, \code{\link{cbind.unitted}},
   \code{\link{rbind}}, \code{\link{rbind.unitted}},
   \code{\link{unitted_bind}}, \code{\link{unitted_cbind}},
-  \code{\link{unitted_rbind}}; \code{\link{c.unitted}},
+  \code{\link{unitted_rbind}};
+  \code{\link{c,unitted-method}}, \code{\link{c.unitted}},
   \code{\link{unitted_c}};
   \code{\link{merge,ANY,unitted-method}},
   \code{\link{merge,unitted,ANY-method}},
+  \code{\link{merge,unitted_data.frame,unitted_data.frame-method}},
   \code{\link{unitted_merge}}
 }
 

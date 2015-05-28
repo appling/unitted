@@ -4,6 +4,7 @@
 \name{unitted_merge}
 \alias{merge,ANY,unitted-method}
 \alias{merge,unitted,ANY-method}
+\alias{merge,unitted_data.frame,unitted_data.frame-method}
 \alias{unitted_merge}
 \title{Merge unitted data.frames by one or more common columns}
 \usage{
@@ -12,6 +13,13 @@
 \S4method{merge}{unitted,ANY}(x, y, ...)
 
 \S4method{merge}{ANY,unitted}(x, y, ...)
+}
+\arguments{
+\item{x}{first unitted object to merge}
+
+\item{y}{second unitted object to merge}
+
+\item{...}{other arguments passed to \code{c}}
 }
 \description{
 Merges unitted data.frames, ensuring units compatibility among the common
@@ -24,7 +32,8 @@ Other unitted object manipulation: \code{\link{bind}},
   \code{\link{cbind}}, \code{\link{cbind.unitted}},
   \code{\link{rbind}}, \code{\link{rbind.unitted}},
   \code{\link{unitted_bind}}, \code{\link{unitted_cbind}},
-  \code{\link{unitted_rbind}}; \code{\link{c.unitted}},
+  \code{\link{unitted_rbind}};
+  \code{\link{c,unitted-method}}, \code{\link{c.unitted}},
   \code{\link{unitted_c}}; \code{\link{rep.unitted}},
   \code{\link{rep.unitted_data.frame}},
   \code{\link{unitted_rep}}

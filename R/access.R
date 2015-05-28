@@ -6,7 +6,7 @@
 #' \code{x[...]} extracts elements with their units.
 #' 
 #' @name unitted_access
-#' @aliases [ Extract extract
+#' @aliases [ Extract
 #' @rdname unitted_access
 #' @export
 #' @seealso \code{\link{unitted_assign}} for assignment to parts of objects; 
@@ -15,8 +15,6 @@
 #' @param x The unitted data.frame, vector, etc. to be accessed
 #' @param ... Arguments passed to accessors, typically including one or more 
 #'   extraction indices
-#' @param drop Should the column names be dropped if only a single column 
-#'   remains?
 #' @return A new data.frame, vector, etc. with the right units still attached.
 "[.unitted" <- function(x, ...) {
   if(isTRUE(is.data.frame(x))) {

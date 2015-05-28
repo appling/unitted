@@ -9,9 +9,7 @@
 \arguments{
 \item{x}{The unitted object}
 
-\item{...}{further arguments passed to or from other methods.}
-
-\item{value}{The value or values to insert in the specified cell[s]}
+\item{...}{other arguments to \code{\link{print}}}
 }
 \value{
 An invisible unitted vector

@@ -13,7 +13,7 @@
 
 \item{...}{Other arguments passed to the specific Math function}
 
-\item{check.units}{logical. Should the units of x be checked for
+\item{check.input.units}{logical. Should the units of x be checked for
 compatibility with the specific Math function? Functions abs, floor,
 ceiling, trunc, round, signif, and sqrt accept any units. Functions exp,
 log, expm1, log1p, acos, asin, atan require that inputs are unitless.

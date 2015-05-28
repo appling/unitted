@@ -9,9 +9,8 @@
 #' rules. Data that are \code{unitted} obey these rules because the methods that
 #' handle operations on unitted objects are specially designed to do so.
 #' 
-#' @name unitted_ops
+#' @rdname unitted_Ops
 #' @aliases Ops
-#' @rdname unitted_ops
 #' @export
 #' @seealso \code{\link{unitbundle}} for the \code{unitbundle} class; 
 #'   \code{\linkS4class{unitted}} for data with unitbundles attached
@@ -20,24 +19,24 @@
 #' @param e1 The first argument to a binary arithmetical operation, or the only 
 #'   argument to a unary operation
 #' @param e2 The second argument to a binary arithmetical operation
-#' @param ... Other arguments passed to the specific Ops function
 setMethod("Ops", c("unitted","unitted"), function(e1, e2) {
   unitted_Ops(.Generic, e1, e2)
 })
 
-#' @rdname unitted_ops
+#' @rdname unitted_Ops
 #' @export
 setMethod("Ops", c("unitted","ANY"), function(e1, e2) {
   unitted_Ops(.Generic, e1, unitted(e2, NA))
 })
 
-#' @rdname unitted_ops
+#' @rdname unitted_Ops
 #' @export
 setMethod("Ops", c("ANY","unitted"), function(e1, e2) {
   unitted_Ops(.Generic, unitted(e1, NA), e2)
 })
 
 
+#' @rdname unitted_Ops
 #' @export
 setMethod("Ops", c("unitted","data.frame"), function(e1, e2) {
   # Uses the Ops.data.frame function to apply the Ops to the columns, which will
@@ -48,16 +47,17 @@ setMethod("Ops", c("unitted","data.frame"), function(e1, e2) {
   #UseMethod(.Generic, deunitted(unitted(e2, NA), partial=TRUE))
   #print(str(.Method))
   #with(list())
-  .Method <<- c(if(is.atomic(e1)) "" else class(deunitted(e1)), "data.frame")
-  .Generic <<- .Generic
+  .Method <- c(if(is.atomic(e1)) "" else class(deunitted(e1)), "data.frame")
+  .Generic <- .Generic
   df <- Ops.data.frame(e1, deunitted(unitted(e2, NA), partial=TRUE))
   unitted(df, NA)
 })
 
+#' @rdname unitted_Ops
 #' @export
 setMethod("Ops", c("data.frame","unitted"), function(e1, e2) {
-  .Method <<- c("data.frame", if(is.atomic(e2)) "" else class(deunitted(e2)))
-  .Generic <<- .Generic
+  .Method <- c("data.frame", if(is.atomic(e2)) "" else class(deunitted(e2)))
+  .Generic <- .Generic
   df <- Ops.data.frame(deunitted(unitted(e1, NA), partial=TRUE), e2)
   unitted(df, NA)
 })
@@ -67,12 +67,14 @@ setMethod("Ops", c("data.frame","unitted"), function(e1, e2) {
 # here's how we'll get the right dispatch if and when we permit multiple units
 # per array or matrix.
 
+#' @rdname unitted_Ops
 #' @export
 setMethod("Ops", c("unitted","array"), function(e1, e2) {
   # This method outcompetes structure#vector in dispatch, where ANY#unitted only ties it.
   unitted_Ops(.Generic, e1, unitted(e2, NA))
 })
 
+#' @rdname unitted_Ops
 #' @export
 setMethod("Ops", c("array","unitted"), function(e1, e2) {
   # This method outcompetes structure#vector in dispatch, where ANY#unitted only ties it.
@@ -83,7 +85,7 @@ setMethod("Ops", c("array","unitted"), function(e1, e2) {
 #' possible, even with funny combinations of unitted and non-unitted objects,
 #' both S3 and S4 group generics are implemented for the unitted class.
 #' 
-#' @rdname unitted_ops
+#' @rdname unitted_Ops
 #' @export
 Ops.unitted <- function(e1, e2) {
   if(missing(e2)) {
@@ -106,8 +108,6 @@ Ops.unitted <- function(e1, e2) {
 #' @rdname unitted_Ops
 #' 
 #' @param .Generic A generic function name, as for Ops.unitted and the S4 generic Ops
-#' @param e1 An element, as for Ops.unitted and the S4 generic Ops
-#' @param e2 An element, as for Ops.unitted and the S4 generic Ops
 setGeneric(
   "unitted_Ops", 
   function (.Generic, e1, e2) {
@@ -181,7 +181,7 @@ setMethod(
 #' 
 #' @param x A vector (probably numeric or complex)
 #' @param ... Other arguments passed to the specific Math function
-#' @param check.units logical. Should the units of x be checked for 
+#' @param check.input.units logical. Should the units of x be checked for 
 #'   compatibility with the specific Math function? Functions abs, floor, 
 #'   ceiling, trunc, round, signif, and sqrt accept any units. Functions exp,
 #'   log, expm1, log1p, acos, asin, atan require that inputs are unitless.

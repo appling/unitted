@@ -47,7 +47,10 @@ as.Date.unitted <- function(x, ...) {
   as.Date(deunitted(x), ...)
 }
 
-#' as.list()
+#' Convert unitted object to list
+#' 
+#' @param x object to be converted
+#' @param ... other arguments passed to class-specific methods
 as.list.unitted <- function(x, ...) {
   .unitted_as.list(x, ...)
 }
@@ -89,7 +92,10 @@ setMethod(
   }
 )
 
-#' as.unitted_list
+#' Convert to a unitted_list
+#' 
+#' @param x object to be converted
+#' @param ... other arguments passed to class-specific methods
 setGeneric(
   "as.unitted_list", 
   function(x, ...) {

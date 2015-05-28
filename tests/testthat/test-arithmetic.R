@@ -27,6 +27,7 @@ context("arithmetic")
   divu1u1 <- ""                # u1/u1
   produ1u2 <- "s q^-2 k^-1 R"  # u1*u2
   divu1u2 <- "s q^-2 k R^-1"   # u1/u2
+  divu2u1 <- "q^2 R s^-1 k^-1" # u2/u1
   invu1 <- "s^-1 q^2"          # 1/u1
   powu1scal <- "s^3 q^-6"      # u1^3
   invu11 <- c(invu1, invu1)
@@ -35,8 +36,7 @@ context("arithmetic")
 
 expect_OpsB <- function(info, uobj, vobj, vunits, OP) {
   expected <- vunits[[match(OP, names(vunits))]]
-  expect_that(
-    uobj, 
+  condition_fun <- 
     if(isTRUE(expected=="eUM")) { # error Units Mismatch
       callinfo <- "throws_error('Units of e2 are invalid')"
       throws_error("Units of e2 are invalid")
@@ -44,11 +44,16 @@ expect_OpsB <- function(info, uobj, vobj, vunits, OP) {
       callinfo <- "throws_error('Attempting to raise units to a power of length != 1')"
       throws_error("Attempting to raise units to a power of length != 1")
     } else {
-      callinfo <- paste0("equals(u(",paste0(match.call()[[3]], c("(",",",")"), collapse=""),", '",expected,"'))")
+      callinfo <- paste0("equals(u(",
+                         paste0(match.call()[[3]], c("(", "," ,")"), collapse=""),", c(",
+                         paste0(paste0("'",expected,"'"), collapse=","), ")))")
       equals(u(vobj, expected))
-    },
-    paste0("### INFO = ", info, "; OP = ", OP, " ###\n",
-           "### CALL = expect_that(", paste0(match.call()[[2]], c("(",",",")"), collapse=""), ", " ,callinfo,") ###")
+    }
+  expect_that(
+    object=uobj, 
+    condition=condition_fun,
+    info=paste0("### INFO = ", info, "; OP = ", OP, " ###\n",
+                "### CALL = expect_that(", match.call()[[2]], ", " ,callinfo,") ###")
   )
 }
 
@@ -101,18 +106,18 @@ test_that("Ops.unitted works for scalars", {
   }
 })
 
-test_that("Bugs in Ops.unitted", {
-  miles_vec <- unitted(1:5,"mi")
-  -miles_vec
 
-  #sqrt seems not to get applied to elements of a unitted vector
-  x <- u(data.frame(a=1:3,b=3:5),c("a","q"))
-  expect_equal(v(sqrt(x)), sqrt(v(x)))
-})
-
-test_that("Ops.unitted works for vectors", {
-  expect_that(u1vec, u1vec,  equals(u(vec, vec, u1)),            info="uvec, uvec,  AA, same units")
-  expect_that(u1vec, u2vec,  throws_error("Units of e2 are invalid"), info="uvec, uvec,  AA, diff units")
+test_that("Ops.unitted works for vectors and data.frames", {
+  #   "+", "-", "*", "/", "^", "%%", "%/%"
+  #   "&", "|", "!"
+  #   "==", "!=", "<", "<=", ">=", ">"
+  for(OP in c("+", "-", "*", "/", "^")) { #}, "%%", "%/%")) {
+    op <- get(OP)
+    cat(OP,"")
+    expect_OpsB("01 op(u1vec, u1vec), AA, same units", op(u1vec, u1vec), op(vec, vec), c("+"=u1, "-"=u1, "*"=produ1u1, "/"=divu1u1, "^"="eUM"), OP)
+    expect_OpsB("02 op(u1vec, u2vec), AB, diff units", op(u1vec, u2vec), op(vec, vec), c("+"="eUM", "-"="eUM", "*"=produ1u2, "/"=divu1u2, "^"="eUM"), OP)
+    expect_OpsB("03 op(u1vec, u1scal), AB, same units", op(u1vec, u1scal), op(vec, scal), c("+"=u1, "-"=u1, "*"=produ1u1, "/"=divu1u1, "^"="eUM"), OP)
+  }
   expect_that(u1vec, u1scal, equals(u(vec, scal, u1)),           info="uvec, uscal, AB, same units")
   expect_that(u1scal, u1vec, equals(u(scal, vec, u1)),           info="uvec, uscal, BA, same units")
   expect_that(u2vec, u1scal, throws_error("Units of e2 are invalid"), info="uvec, uscal, AB, diff units")
@@ -127,6 +132,18 @@ test_that("Ops.unitted works for vectors", {
   expect_that(vec, u2vec,    throws_error("Units of e2 are invalid"), info="uvec, vec,   BA, diff units")
   
   # data.frames
+  #   "+", "-", "*", "/", "^", "%%", "%/%"
+  #   "&", "|", "!"
+  #   "==", "!=", "<", "<=", ">=", ">"
+  for(OP in c("+", "-", "*", "/", "^")) { #}, "%%", "%/%")) {
+    op <- get(OP)
+    cat(OP,"")
+    # breaks: expect_OpsB("01 op(u21df, u21df), AA, same units", op(u21df, u21df), op(df, df), c("+"=u1, "-"=u1, "*"=produ1u1, "/"=divu1u1, "^"="eUM"), OP)
+    expect_OpsB("01 op(u1vec, u11df), AB, same units", op(u1vec, u11df), op(vec, df), list("+"=u11, "-"=u11, "*"=rep(produ1u1,2), "/"=rep(divu1u1,2), "^"="eUM"), OP)
+    expect_OpsB("02 op(u1vec, u11df), BA, same units", op(u11df, u1vec), op(df, vec), list("+"=u11, "-"=u11, "*"=rep(produ1u1,2), "/"=rep(divu1u1,2), "^"="eUM"), OP)
+    expect_OpsB("03 op(u1vec, u21df), AB, diff units", op(u1vec, u21df), op(vec, df), list("+"="eUM", "-"="eUM", "*"=c(produ1u2, produ1u1), "/"=c(divu1u2, divu1u1), "^"="eUM"), OP)
+    expect_OpsB("04 op(u1vec, u21df), BA, diff units", op(u21df, u1vec), op(df, vec), list("+"="eUM", "-"="eUM", "*"=c(produ1u2, produ1u1), "/"=c(divu2u1, divu1u1), "^"="eUM"), OP)
+  }
   expect_that(u11df, u1scal, equals(u(df, scal, u11)),           info="udf, uscal, AB, same units")
   expect_that(u1scal, u11df, equals(u(scal, df, u11)),           info="udf, uscal, BA, same units")
   expect_that(u21df, u2scal, throws_error("Units of e2 are invalid"), info="udf, uscal, AB, diff units")
@@ -376,7 +393,7 @@ test_that("round, signif.unitted work", {
 })
 
 test_that("exp, log, expm1, log1p.unitted work", {
-  expect_that(get_unitbundles(log(u(1:10,""))), equals(unitbundle("")))
+  expect_that(unitted:::get_unitbundles(log(u(1:10,""))), equals(unitbundle("")))
   expect_that(log(u(1:10,"kg")), throws_error("Input units are invalid in log"))
   #expect_that(log(u(1:10,"kg"), check.input.units=FALSE), "this doesn't actually work; check.input.units doesn't get passed through math.unitted")
 })
@@ -444,3 +461,4 @@ test_that("Arg, Conj, Im, Mod, Re.unitted works", {
 test_that("%*% and other matrix operations work", {
   
 })
+

@@ -8,7 +8,6 @@
 \alias{[.unitted}
 \alias{[[}
 \alias{[[.unitted}
-\alias{extract}
 \alias{unitted_access}
 \title{Extract parts of a unitted object}
 \usage{
@@ -25,9 +24,6 @@
 extraction indices}
 
 \item{name}{The name of the column to be extracted}
-
-\item{drop}{Should the column names be dropped if only a single column
-remains?}
 }
 \value{
 A new data.frame, vector, etc. with the right units still attached.

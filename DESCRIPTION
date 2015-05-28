@@ -16,3 +16,16 @@ Imports:
     dplyr (>= 0.4.1)
 Suggests:
     testthat
+Collate:
+    '01-parse.R'
+    '02-unitbundle.R'
+    '03-unitted.R'
+    'access.R'
+    'arithmetic.R'
+    'assign.R'
+    'combine.R'
+    'convert.R'
+    'display.R'
+    'inspect.R'
+    'package-unitted.R'
+    'write.R'

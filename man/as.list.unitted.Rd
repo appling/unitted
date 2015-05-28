@@ -2,11 +2,16 @@
 % Please edit documentation in R/convert.R
 \name{as.list.unitted}
 \alias{as.list.unitted}
-\title{as.list()}
+\title{Convert unitted object to list}
 \usage{
 \method{as.list}{unitted}(x, ...)
 }
+\arguments{
+\item{x}{object to be converted}
+
+\item{...}{other arguments passed to class-specific methods}
+}
 \description{
-as.list()
+Convert unitted object to list
 }
 

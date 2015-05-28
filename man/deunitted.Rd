@@ -7,6 +7,7 @@
 \alias{deunitted,data.frame-method}
 \alias{deunitted,list-method}
 \alias{deunitted,unitted-method}
+\alias{deunitted,unitted_NULL-method}
 \alias{deunitted,unitted_data.frame-method}
 \alias{deunitted,unitted_list-method}
 \alias{v}
@@ -17,6 +18,8 @@ v(object, ...)
 deunitted(object, ...)
 
 \S4method{deunitted}{unitted}(object, ...)
+
+\S4method{deunitted}{unitted_NULL}(object, ...)
 
 \S4method{deunitted}{unitted_data.frame}(object, partial = FALSE, ...)
 

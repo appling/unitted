@@ -7,6 +7,9 @@
 \usage{
 \S4method{show}{unitted}(object)
 }
+\arguments{
+\item{object}{the unitted object to display}
+}
 \description{
 Displays a unitted object, including its units and data type whenever possible
 }

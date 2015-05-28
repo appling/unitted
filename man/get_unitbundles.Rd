@@ -9,6 +9,8 @@ get_unitbundles(object, ...)
 }
 \arguments{
 \item{object}{The object whose units should be returned}
+
+\item{...}{other arguments passed to class-specific methods}
 }
 \value{
 A unitbundle or list of unitbundles, each representing one set of

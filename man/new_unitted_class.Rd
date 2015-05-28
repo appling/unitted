@@ -42,40 +42,6 @@ that the dispatch behavior you want is within the abilities of the particular
 dispatch system (S3 or s4).
 }
 \examples{
-## S4 ##
-
-# "myS4flower": An S4 class to be made unitted
-setClass("myS4flower", contains="numeric", slots=c(leaves="numeric", petals="numeric", color="character"))
-
-# Define the unitted version of myS4flower
-new_unitted_class("myS4flower")
-
-# Try out the new unitted_myS4flower class
-petunia <- new("unitted_myS4flower", c(frontyard=7, backyard=3, planters=12), leaves=4, petals=5, color="purple", units="stems ft^-2")
-petunia * u(1/2,"blooming")
-
-## S3 ##
-
-# "quote": An S3 class to be made unitted
-two_cities <- c("It was the best of times, it was the worst of times, ",
-                "it was the age of wisdom, it was the age of foolishness, ",
-                "it was the epoch of belief, it was the epoch of incredulity, ",
-                "it was the season of Light, it was the season of Darkness, ",
-                "it was the spring of hope, it was the winter of despair...")
-class(two_cities) <- "quote"
-attr(two_cities, "author") <- "Charles Dickens"
-print.quote <- function(x) { cat(paste(paste(x, collapse="\\n"),"\\n   - ",attr(x,"author"))) }
-print(two_cities)
-
-# Now make it unittable
-setClass("quote", contains="character", slots=c(author="character"))
-
-# And now make it unitted
-new_unitted_class("quote", overwrite=TRUE)
-two_cities_unitted <- new("unitted_quote", two_cities, author=attr(two_cities, "author"), units="lines")
-see_spot_run_unitted <- new("unitted_quote", c("Here is Spot.","See Spot run.","Run, Spot, Run!"), author="unknown", units="sentences")
-print(two_cities_unitted)
-print(see_spot_run_unitted)
-sum(!is.na(see_spot_run_unitted))
+# only works during package build, at least at the moment
 }
 

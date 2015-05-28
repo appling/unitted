@@ -17,20 +17,22 @@ cbind.unitted(...)
 }
 \arguments{
 \item{...}{unitted vectors, matrices, or data.frames}
-
-\item{deparse.level}{integer controlling the construction of labels, as in
-the default rbind and cbind methods. Only deparse.level = 0 and 1 are
-available for unitted rbind/cbind calls.}
 }
 \description{
 Combines unitted objects as if they were not unitted, but enforces unit
 consistency across the objects to be combined.
 }
+\details{
+\code{deparse.level} is an integer controlling the construction of labels, as in
+  the default rbind and cbind methods. Only deparse.level = 0 and 1 are
+  available for unitted rbind/cbind calls.
+}
 \seealso{
-Other unitted object manipulation: \code{\link{c.unitted}},
-  \code{\link{unitted_c}};
+Other unitted object manipulation: \code{\link{c,unitted-method}},
+  \code{\link{c.unitted}}, \code{\link{unitted_c}};
   \code{\link{merge,ANY,unitted-method}},
   \code{\link{merge,unitted,ANY-method}},
+  \code{\link{merge,unitted_data.frame,unitted_data.frame-method}},
   \code{\link{unitted_merge}}; \code{\link{rep.unitted}},
   \code{\link{rep.unitted_data.frame}},
   \code{\link{unitted_rep}}

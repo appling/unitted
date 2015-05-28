@@ -39,7 +39,8 @@ Write a unitted_data.frame to file.
 }
 \examples{
 write_unitted(u(data.frame(x=1:3, y=9:7), c(x="grapes","seeds")))
-write_unitted(u(data.frame(x=1:3, y=9:7), c(x="mg L^-1","ft^3 s^-1")), sep="\\t", file="practice.tsv")
+write_unitted(u(data.frame(x=1:3, y=9:7), c(x="mg L^-1","ft^3 s^-1")),
+  sep="\\t", file="practice.tsv")
 file.remove("practice.tsv")
 }
 

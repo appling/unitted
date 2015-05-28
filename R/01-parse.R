@@ -163,6 +163,8 @@ sort_units <- function(unitdfs) {
 #'   unit within a unitdf will be delimited or not. The default, "disambiguate",
 #'   wraps only those units that contain spaces or "^" characters. "never" wraps
 #'   none, and "always" wraps all.
+#' @param separator character indicating a split among pieces of a unit, e.g.,
+#'   "mg L^-1" is separated by " ".
 #' @return list of character strings, one for each data.frame passed in
 #' @family unit-merging functions
 merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","always"), separator=" ") {

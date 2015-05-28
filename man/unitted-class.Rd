@@ -8,19 +8,20 @@
 A unitted object is a data object - a vector, data.frame, array, etc. - and
 its associated units. These units will be propagated through addition,
 multiplication, and many other common operations on data. Unitted objects are
-created by calling \code{\link{unitted}()} or \code{\link{u}()}, and
-the data can be retrieved by calling \code{\link{deunitted}()} or
-\code{\link{v}()}. Units can be extracted as character strings with
-\code{\link{get_units}()}. Most of the time, you'll find that unitted
-objects can do everything that their un-unitted data could do, but with smart
-units to make your analyses more readable and less vulnerable to typos or
-omissions.
+created by calling \code{\link{unitted}()} or \code{\link{u}()}, and the data
+can be retrieved by calling \code{\link{deunitted}()} or \code{\link{v}()}.
+Units can be extracted as character strings with \code{\link{get_units}()}.
+Most of the time, you'll find that unitted objects can do everything that
+their un-unitted data could do, but with smart units to make your analyses
+more readable and less vulnerable to typos or omissions.
+}
+\details{
+Every unitted object contains a .Data 'slot', though this is not formally
+recognized as such in the documentation.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{.Data}}{The data to which units are attached}
-
 \item{\code{units}}{The units. Depending on the .Data type, the units slot may
   contain a single units bundle (e.g., "kg ha^-1"), a matrix or array of
   bundles, or a list of bundles. Any of these may be retrieved with
@@ -40,6 +41,6 @@ hours_vec == hours_vec
 \seealso{
 \code{\link{unitted}} for class and subclass construction,
   \code{\link{deunitted}} for recovering the data from the unitted object,
-  and \code{\link{unitted_ops}} for smart units behaviors.
+  and \code{\link{unitted_Ops}} for smart units behaviors.
 }
 

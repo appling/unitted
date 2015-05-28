@@ -12,9 +12,10 @@ is.unitted <- function(x) {
 
 #### get_units ####
 
-#' The exported, client-side method for acquiring an object's units in string representation.
+#' The exported, client-side method for acquiring an object's units in string
+#' representation.
 #' 
-#' @param y The object whose units should be returned
+#' @rdname get_units
 #' @return A string representing one set of units
 setMethod(
   "get_units", "unitted",
@@ -22,6 +23,10 @@ setMethod(
     get_units(get_unitbundles(object), ...)
   }
 )
+
+#' @rdname get_units
+#' @param recursive logical. If \code{object} is a list or data.frame, should
+#'   the units attached to each element be returned?
 setMethod(
   "get_units", "unitted_list",
   function(object, recursive=FALSE, ...) {
@@ -32,6 +37,8 @@ setMethod(
     }
   }
 )
+
+#' @rdname get_units
 setMethod(
   "get_units", "list",
   function(object, recursive=TRUE, ...) {
@@ -42,6 +49,8 @@ setMethod(
     }
   }
 )
+
+#' @rdname get_units
 setMethod(
   "get_units", "data.frame",
   function(object, recursive=TRUE, ...) {
@@ -70,6 +79,9 @@ setMethod(
 #'   list(TRUE, FALSE). Elements beyond position 2 are ignored.
 #' @param violation.handler closure. The function to call if the expectation is 
 #'   violated. Good options are stop, warning, message, and function(msg) {}.
+#' @param nounits.handler closure. The function to call if x or its elements 
+#'   have no units. Good options are stop, warning, message, and function(msg)
+#'   {}.
 #' @return If units are as expected, returns return.values[[1]] (by default, x).
 #'   Otherwise stops on an error (if violation.handler=stop) or returns 
 #'   return.values[[2]].

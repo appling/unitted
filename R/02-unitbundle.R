@@ -1,3 +1,6 @@
+#' @include 01-parse.R
+NULL
+
 # Package a set of units (e.g., the numerator and denominator units for a single
 # vector) into a single S4 class that can be smart about reading in units
 # strings, doing mathematical operations, etc.
@@ -17,7 +20,7 @@
 #' @export unitbundle
 #' @exportClass unitbundle
 #' @seealso \code{\linkS4class{unitted}} for data with unitbundles attached; 
-#'   \code{\link{unitbundle_ops}} for arithmetic and other operations on
+#'   \code{\link{unitbundle_Ops}} for arithmetic and other operations on
 #'   unitbundles; \code{\link{get_units}} for conversion to character formats
 setClass(
   "unitbundle",
@@ -203,10 +206,13 @@ setMethod(
 #' Units can be acquired from objects of all types; types without units will
 #' return NA.
 #' 
-#' @exportMethod get_units
+#' @name get_units
+NULL
+
 #' @rdname get_units
 #' @param object The object from which to retrieve units
 #' @param ... Other arguments passed on to the type-specific implementations
+#' @export
 setGeneric(
   "get_units",
   function(object, ...) standardGeneric("get_units")
@@ -226,10 +232,12 @@ setMethod(
 #' @param delimiter A single-character string designating the delimiter that 
 #'   should surround those units that are to be delimited according to 
 #'   \code{rule}
-#' @param rule character string indicating the rule by which each 
-#'   unit within a unitdf will be delimited or not. The default, "disambiguate",
-#'   wraps only those units that contain spaces or "^" characters. "never" wraps
-#'   none, and "always" wraps all.
+#' @param rule character string indicating the rule by which each unit within a
+#'   unitdf will be delimited or not. The default, "disambiguate", wraps only
+#'   those units that contain spaces or "^" characters. "never" wraps none, and
+#'   "always" wraps all.
+#' @param separator character indicating a split among pieces of a unit, e.g.,
+#'   "mg L^-1" is separated by " ".
 #' @examples
 #' get_units(unitbundle("king kong"))
 setMethod(
@@ -242,7 +250,7 @@ setMethod(
 #' Separate a unitbundle into a data frame of units and powers
 #' 
 #' @export
-#' @param unitbds a unitbundle
+#' @param unitbdl a unitbundle to separate into units & powers
 #' @return a data.frame with columns for unit and power
 separate_units <- function(unitbdl) {
   unitbdl@unitdf
@@ -294,16 +302,16 @@ separate_units <- function(unitbdl) {
 #' 
 #' }
 #' 
-#' @name unitbundle_ops
-#' @rdname unitbundle_ops
+#' @rdname unitbundle_Arith
 #' @export
+#' @param e1 the first unitbundle
+#' @param e2 the second unitbundle
 #' @seealso \code{\link{unitbundle}} for the \code{unitbundle} class; 
 #'   \code{\linkS4class{unitted}} for data with unitbundles attached
 #' @family unitbundle manipulation
 setMethod(
   "Arith", signature(e1 = "unitbundle", e2 = "unitbundle"),
   function(e1, e2) {
-    #print("Arith on e1=unitbundle, e2=unitbundle")
     if(nargs() == 1) {
       # Unary operators are +, -, and !
       # No action necessary
@@ -317,6 +325,7 @@ setMethod(
                "', found '",get_units(e2),"'")
         }
       }
+      Power <- ".transform.var" # eliminates the CHECK NOTE "no visible binding for global variable 'Power'"
       return(switch(
         .Generic,
         "+"=, "-"= { require_e2_units(e1); e1 },
@@ -354,8 +363,9 @@ setMethod(
 #' 
 #' }
 #' 
-#' @name unitbundle_comparison
-#' @rdname unitbundle_ops
+#' @rdname unitbundle_Compare
+#' @param e1 the first unitbundle
+#' @param e2 the second unitbundle
 #' @export
 setMethod(
   "Compare", signature(e1 = "unitbundle", e2 = "unitbundle"),
@@ -377,9 +387,10 @@ setMethod(
 #' unitbundles; for this reason, methods in the \code{Logic} group throw errors
 #' when applied to unitbundles.
 #' 
-#' @name unitbundle_logic
-#' @rdname unitbundle_ops
+#' @rdname unitbundle_Logic
 #' @export
+#' @param e1 the first unitbundle
+#' @param e2 the second unitbundle
 setMethod(
   "Logic", signature(e1 = "unitbundle", e2 = "unitbundle"),
   function(e1, e2) {
@@ -418,8 +429,12 @@ setMethod(
 #' 
 #' }
 #' 
-#' @name unitbundle_any_ops
-#' @rdname unitbundle_ops
+#' @name unitbundle_Ops
+#' @param e1 the first unitbundle (or other)
+#' @param e2 the second unitbundle (or other)
+NULL
+
+#' @rdname unitbundle_Ops
 #' @export
 setMethod(
   "Ops", signature(e1 = "unitbundle", e2 = "ANY"),
@@ -438,8 +453,7 @@ setMethod(
   }
 )
 
-#' @name any_unitbundle_ops
-#' @rdname unitbundle_ops
+#' @rdname unitbundle_Ops
 #' @export
 setMethod(
   "Ops", signature(e1 = "ANY", e2 = "unitbundle"),
@@ -449,8 +463,7 @@ setMethod(
   }
 )
 
-#' @name unitbundle_list_ops
-#' @rdname unitbundle_ops
+#' @rdname unitbundle_Ops
 #' @export
 setMethod(
   "Ops", signature(e1 = "unitbundle", e2 = "list"),
@@ -463,8 +476,7 @@ setMethod(
   }
 )
 
-#' @name list_unitbundle_ops
-#' @rdname unitbundle_ops
+#' @rdname unitbundle_Ops
 #' @export
 setMethod(
   "Ops", signature(e1 = "list", e2 = "unitbundle"),

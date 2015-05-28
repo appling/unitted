@@ -19,6 +19,9 @@ should surround those units that are to be delimited according to
 unit within a unitdf will be delimited or not. The default, "disambiguate",
 wraps only those units that contain spaces or "^" characters. "never" wraps
 none, and "always" wraps all.}
+
+\item{separator}{character indicating a split among pieces of a unit, e.g.,
+"mg L^-1" is separated by " ".}
 }
 \value{
 list of character strings, one for each data.frame passed in

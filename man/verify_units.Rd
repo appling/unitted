@@ -18,6 +18,10 @@ list(TRUE, FALSE). Elements beyond position 2 are ignored.}
 
 \item{violation.handler}{closure. The function to call if the expectation is
 violated. Good options are stop, warning, message, and function(msg) {}.}
+
+\item{nounits.handler}{closure. The function to call if x or its elements
+have no units. Good options are stop, warning, message, and function(msg)
+{}.}
 }
 \value{
 If units are as expected, returns return.values[[1]] (by default, x).

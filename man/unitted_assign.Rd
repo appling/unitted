@@ -4,8 +4,9 @@
 \name{unitted_assign}
 \alias{$<-}
 \alias{$<-,unitted_data.frame-method}
-\alias{Extract}
+\alias{Assign}
 \alias{[<-}
+\alias{[<-,unitted,ANY,missing-method}
 \alias{[<-,unitted_data.frame,ANY,ANY-method}
 \alias{[<-,unitted_data.frame,ANY,missing-method}
 \alias{[<-,unitted_data.frame,missing,ANY-method}

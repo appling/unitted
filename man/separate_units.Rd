@@ -7,7 +7,7 @@
 separate_units(unitbdl)
 }
 \arguments{
-\item{unitbds}{a unitbundle}
+\item{unitbdl}{a unitbundle to separate into units & powers}
 }
 \value{
 a data.frame with columns for unit and power

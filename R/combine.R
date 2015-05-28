@@ -13,12 +13,14 @@
 #' whenever the first argument is unitted.
 #' 
 #' @name unitted_c
-#' @rdname unitted_c
-#' @export
 #' @family unitted object manipulation
-#' 
-#' @inheritParams base::c
 #' @return A unitted vector
+NULL
+
+#' @rdname unitted_c
+#' @inheritParams base::c
+#' @param x the first argument passed to \code{c}
+#' @export
 setMethod(
   "c", "unitted",
   function(x, ..., recursive=FALSE) {
@@ -271,6 +273,10 @@ c.unitted <- function(..., recursive=FALSE) {
 #' Combines unitted objects as if they were not unitted, but enforces unit
 #' consistency across the objects to be combined.
 #' 
+#' \code{deparse.level} is an integer controlling the construction of labels, as in 
+#'   the default rbind and cbind methods. Only deparse.level = 0 and 1 are 
+#'   available for unitted rbind/cbind calls.
+#'   
 #' @name unitted_bind
 #' @aliases unitted_rbind rbind bind
 #' @rdname unitted_bind
@@ -278,9 +284,6 @@ c.unitted <- function(..., recursive=FALSE) {
 #' @family unitted object manipulation
 #' 
 #' @param ... unitted vectors, matrices, or data.frames
-#' @param deparse.level integer controlling the construction of labels, as in 
-#'   the default rbind and cbind methods. Only deparse.level = 0 and 1 are 
-#'   available for unitted rbind/cbind calls.
 rbind.unitted <- function(...) {
   .unitted_bind(..., fun.name="rbind")
 }
@@ -323,11 +326,16 @@ setGeneric("merge")
 #' columns
 #' 
 #' @name unitted_merge
-#' @rdname unitted_merge
-#' @export merge
 #' 
 #' @seealso \code{base::\link{merge}}
 #' @family unitted object manipulation
+NULL
+
+#' @rdname unitted_merge
+#' @param x first unitted object to merge
+#' @param y second unitted object to merge
+#' @param ... other arguments passed to \code{c}
+#' @export
 setMethod(
   "merge", 
   c(x="unitted_data.frame", y="unitted_data.frame"),
@@ -362,6 +370,7 @@ setMethod(
     unitted(merged_xy, unlist(merged_units[1,]))
   }
 )
+
 #' @rdname unitted_merge
 #' @export
 setMethod(
@@ -371,6 +380,7 @@ setMethod(
     stop("merge for unitted, ANY not yet implemented")
   }
 )
+
 #' @rdname unitted_merge
 #' @export
 setMethod(
@@ -390,6 +400,8 @@ setMethod(
 #' 
 #' @name unitted_rep
 #' @rdname unitted_rep
+#' @param x object to replicate
+#' @param ... other objects passed to \code{rep}
 #' @export
 #' @family unitted object manipulation
 rep.unitted <- function(x, ...) {

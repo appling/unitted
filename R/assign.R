@@ -3,9 +3,7 @@
 #' Replace parts of a unitted vector, array, or data.frame
 #' 
 #' @name unitted_assign
-#' @aliases [<- Extract
-#' @rdname unitted_assign
-#' @export
+#' @aliases [<- Assign
 #' @seealso \code{\link{unitted_access}} for assignment to parts of objects; 
 #'   \code{\linkS4class{unitted}} for definition of the unitted class
 #'   
@@ -15,6 +13,10 @@
 #' @param ... Other arguments passed to replacement functions
 #' @param value The value(s) with which to replace the indexed elements of x
 #' @return \code{x} with its indexed elements replaced by \code{value}
+NULL
+
+#' @rdname unitted_assign
+#' @export
 setMethod(
   "[<-", c(x="unitted", i="ANY", j="missing"), 
   function(x, i, j, ..., value) {

@@ -100,7 +100,7 @@ unitbundle(unitbdl=unitbundle("kg ha^-1 yr^-1"))
 }
 \seealso{
 \code{\linkS4class{unitted}} for data with unitbundles attached;
-  \code{\link{unitbundle_ops}} for arithmetic and other operations on
+  \code{\link{unitbundle_Ops}} for arithmetic and other operations on
   unitbundles; \code{\link{get_units}} for conversion to character formats
 }
 

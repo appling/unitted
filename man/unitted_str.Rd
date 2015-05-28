@@ -15,6 +15,8 @@
 }
 \arguments{
 \item{object}{The object whose structure is to be displayed}
+
+\item{...}{other arguments passed to \code{str}}
 }
 \description{
 Works like str() but displays units-relevant information more elegantly

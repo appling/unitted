@@ -1,3 +1,6 @@
+#' @include 01-parse.R 02-unitbundle.R
+NULL
+
 ## Unitted object construction
 
 #### Superclass Definition ####
@@ -7,19 +10,20 @@
 #' A unitted object is a data object - a vector, data.frame, array, etc. - and 
 #' its associated units. These units will be propagated through addition, 
 #' multiplication, and many other common operations on data. Unitted objects are
-#' created by calling \code{\link{unitted}()} or \code{\link{u}()}, and
-#' the data can be retrieved by calling \code{\link{deunitted}()} or
-#' \code{\link{v}()}. Units can be extracted as character strings with
-#' \code{\link{get_units}()}. Most of the time, you'll find that unitted
-#' objects can do everything that their un-unitted data could do, but with smart
-#' units to make your analyses more readable and less vulnerable to typos or
-#' omissions.
+#' created by calling \code{\link{unitted}()} or \code{\link{u}()}, and the data
+#' can be retrieved by calling \code{\link{deunitted}()} or \code{\link{v}()}.
+#' Units can be extracted as character strings with \code{\link{get_units}()}.
+#' Most of the time, you'll find that unitted objects can do everything that
+#' their un-unitted data could do, but with smart units to make your analyses
+#' more readable and less vulnerable to typos or omissions.
+#' 
+#' Every unitted object contains a .Data 'slot', though this is not formally
+#' recognized as such in the documentation.
 #' 
 #' @name unitted-class
 #' @rdname unitted-class
 #' @exportClass unitted
 #'   
-#' @slot .Data The data to which units are attached
 #' @slot units The units. Depending on the .Data type, the units slot may 
 #'   contain a single units bundle (e.g., "kg ha^-1"), a matrix or array of 
 #'   bundles, or a list of bundles. Any of these may be retrieved with 
@@ -27,7 +31,7 @@
 #'   
 #' @seealso \code{\link{unitted}} for class and subclass construction, 
 #'   \code{\link{deunitted}} for recovering the data from the unitted object, 
-#'   and \code{\link{unitted_ops}} for smart units behaviors.
+#'   and \code{\link{unitted_Ops}} for smart units behaviors.
 #'   
 #' @examples
 #' # unitted object creation
@@ -113,7 +117,6 @@ setGeneric(
 #' that the dispatch behavior you want is within the abilities of the particular
 #' dispatch system (S3 or s4).
 #' 
-#' @export
 #' @param superclass.name The character name of the S4 class that will form the 
 #'   core of the new unitted class. The new class will have the name 
 #'   "unitted_[superclass.name]".
@@ -121,41 +124,7 @@ setGeneric(
 #'   even if the same superclass.name has already been defined during this
 #'   session.
 #' @examples
-#' ## S4 ##
-#' 
-#' # "myS4flower": An S4 class to be made unitted
-#' setClass("myS4flower", contains="numeric", slots=c(leaves="numeric", petals="numeric", color="character"))
-#' 
-#' # Define the unitted version of myS4flower
-#' new_unitted_class("myS4flower") 
-#' 
-#' # Try out the new unitted_myS4flower class
-#' petunia <- new("unitted_myS4flower", c(frontyard=7, backyard=3, planters=12), leaves=4, petals=5, color="purple", units="stems ft^-2")
-#' petunia * u(1/2,"blooming")
-#' 
-#' ## S3 ##
-#' 
-#' # "quote": An S3 class to be made unitted
-#' two_cities <- c("It was the best of times, it was the worst of times, ",
-#'                 "it was the age of wisdom, it was the age of foolishness, ",
-#'                 "it was the epoch of belief, it was the epoch of incredulity, ",
-#'                 "it was the season of Light, it was the season of Darkness, ",
-#'                 "it was the spring of hope, it was the winter of despair...")
-#' class(two_cities) <- "quote"
-#' attr(two_cities, "author") <- "Charles Dickens"
-#' print.quote <- function(x) { cat(paste(paste(x, collapse="\n"),"\n   - ",attr(x,"author"))) }
-#' print(two_cities)
-#' 
-#' # Now make it unittable
-#' setClass("quote", contains="character", slots=c(author="character"))
-#' 
-#' # And now make it unitted
-#' new_unitted_class("quote", overwrite=TRUE)
-#' two_cities_unitted <- new("unitted_quote", two_cities, author=attr(two_cities, "author"), units="lines")
-#' see_spot_run_unitted <- new("unitted_quote", c("Here is Spot.","See Spot run.","Run, Spot, Run!"), author="unknown", units="sentences")
-#' print(two_cities_unitted)
-#' print(see_spot_run_unitted)
-#' sum(!is.na(see_spot_run_unitted))
+#' # only works during package build, at least at the moment
 new_unitted_class <- function(superclass.name, overwrite=FALSE) {
   class_def <- getClassDef(superclass.name)
   if(is.null(class_def)) {
@@ -428,7 +397,7 @@ setMethod(
   }
 )
 
-# Exclude this one from the documentation - it'd typically just be confusing
+#' @rdname deunitted
 setMethod(
   "deunitted", "unitted_NULL",
   function(object, ...) {
@@ -558,6 +527,7 @@ setMethod(
 #' unitbundles (or NAs), one per data.frame column.
 #' 
 #' @param object The object whose units should be returned
+#' @param ... other arguments passed to class-specific methods
 #' @return A unitbundle or list of unitbundles, each representing one set of 
 #'   units
 setGeneric(

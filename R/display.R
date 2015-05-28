@@ -5,6 +5,8 @@
 #' Show a unitted object
 #' 
 #' Displays a unitted object, including its units and data type whenever possible
+#' 
+#' @param object the unitted object to display
 setMethod(
   "show", "unitted",
   function(object) {
@@ -27,8 +29,7 @@ setMethod(
 #' units of each column.
 #' 
 #' @param x The unitted object
-#' @inheritParams base::print
-#' @param value The value or values to insert in the specified cell[s]
+#' @param ... other arguments to \code{\link{print}}
 #' @return An invisible unitted vector
 #' @export
 print.unitted <- function(x,...) {
@@ -49,7 +50,6 @@ setMethod(
     print(deunitted(x))
   }
 )
-
 setMethod(
   ".unitted_print", "NULL",
   function(x, ...) {
@@ -102,6 +102,7 @@ setMethod(
 #' @export
 #' 
 #' @param object The object whose structure is to be displayed
+#' @param ... other arguments passed to \code{str}
 str.unitted <- function(object, ...) {
   cat(" ",class(object)," (",paste(get_units(object), collapse=";"),"):", sep="")
   str(S3Part(object, strictS3=TRUE), ...)
