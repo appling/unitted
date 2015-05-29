@@ -7,6 +7,7 @@
 \alias{unitted,array-method}
 \alias{unitted,data.frame-method}
 \alias{unitted,list-method}
+\alias{unitted,tbl_df-method}
 \alias{unitted,unitted-method}
 \title{Attach units to data}
 \usage{
@@ -15,6 +16,8 @@ u(object, units = NA, ...)
 unitted(object, units = NA, ...)
 
 \S4method{unitted}{data.frame}(object, units = NA, ...)
+
+\S4method{unitted}{tbl_df}(object, units = NA, ...)
 
 \S4method{unitted}{array}(object, units = NA, ...)
 
@@ -37,6 +40,8 @@ or element created}
 A \code{unitted} object is the fusion of data and units. The \code{unitted()}
 function, or its alias \code{u()}, constructs an object inheriting from the
 \code{\linkS4class{unitted}} class.
+
+tbl_dfs work very similarly to data.frames
 }
 \details{
 The short constructor name (\code{u}) makes it easy to write clean code that

@@ -31,3 +31,4 @@ Collate:
     'inspect.R'
     'package-unitted.R'
     'write.R'
+    'zzz.R'

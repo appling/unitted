@@ -148,9 +148,11 @@ new_unitted_class <- function(superclass.name, overwrite=FALSE) {
 # 
 # Don't be fooled! This unassuming code block is the heart of unittted class
 # definitions.
+setOldClass("ordered") # not sure, but maybe this will fix the R-devel check error?
+setOldClass("tbl_df")
 sapply(c("character","complex","logical","numeric","raw","NULL",
          "factor","ordered","Date","POSIXct","POSIXlt",
-         "list","data.frame",
+         "list","data.frame","tbl_df",
          "array","matrix","ts",
          "expression","name","function"), 
        new_unitted_class)
@@ -188,7 +190,6 @@ sapply(c("character","complex","logical","numeric","raw","NULL",
 #'   }
 #'   
 #' @rdname unitted
-#' @inheritParams unitted
 setMethod(
   "unitted", "data.frame",
   function(object, units, ...) {
@@ -221,6 +222,40 @@ setMethod(
     # now, I accept that unitted data.frames may be slightly different from
     # plain S3 data.frames in this respect.
     return(new("unitted_data.frame", object, units=NA))
+  }
+)
+
+#' tbl_dfs work very similarly to data.frames
+#' 
+#' @rdname unitted
+setMethod(
+  "unitted", "tbl_df",
+  function(object, units, ...) {
+    #print("u(tbl_df)")
+    
+    if(length(units) != ncol(object)) {
+      fail <- TRUE
+      if(length(units) == 1) {
+        if(!isS4(units[[1]])) {
+          if(isTRUE(is.na(units[[1]]))) {
+            units <- rep(NA, ncol(object))
+            fail <- FALSE
+          } 
+        }
+      }
+      if(fail) stop("Number of units must equal number of data.frame columns")
+    }
+    
+    # Overwrite units when current column units are absent and/or units[col] is not NA
+    for(col in 1:ncol(object)) {
+      object[[col]] <- unitted(object[[col]], units[[col]])
+    }
+    # Known bug: The following line creates row names for data.frames even if 
+    # they were absent before. This is a property of S4 data.frames that doesn't
+    # make a lot of sense to me, but that I also don't see how to skirt. So for 
+    # now, I accept that unitted data.frames may be slightly different from
+    # plain S3 data.frames in this respect.
+    return(new("unitted_tbl_df", object, units=NA))
   }
 )
 
@@ -355,6 +390,23 @@ setMethod(
     return(object)
   }
 )
+#' Override the default S3 for as.data.frame.tbl_df
+#' 
+#' Exporting this function seems to make it available for dispatch but still 
+#' hidden. From here we could route back to the S4 dispatch system with 
+#' ".unitted_as.data.frame(object=x, ...)", but that seems like a waste of
+#' processing time since we come here first.
+#' 
+#' @param x The unitted_tbl_df to convert to a data.frame
+#' @param ... Additional arguments passed to as.data.frame
+#' @examples
+#' x <- as_data_frame(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
+#' as.data.frame(x)
+#' @export
+as.data.frame.unitted_tbl_df <- function(x, ...) {
+  return(u(as.data.frame(v(x), ...), get_unitbundles(x)))
+}
+
 
 #### Deconstructors ####
 
@@ -418,6 +470,9 @@ setMethod(
 #'   no elements will be left with units, or partially deunitted, such that the 
 #'   object that is returned is not itself unitted but may have unitted 
 #'   elements?
+#' @examples
+#' x <- u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C")))
+#' v(x)
 setMethod(
   "deunitted", "unitted_data.frame",
   function(object, partial=FALSE, ...) {
@@ -425,6 +480,21 @@ setMethod(
       object@.Data <- lapply(object@.Data, function(col) { deunitted(col) })
     }
     return(S3Part(object, strictS3=TRUE))
+  }
+)
+#' @rdname deunitted
+#' @examples
+#' x <- as_data_frame(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+#' str(v(x))
+#' str(v(x, partial=TRUE))
+setMethod(
+  "deunitted", "unitted_tbl_df",
+  function(object, partial=FALSE, ...) {
+    if(!partial) {
+      return(as_data_frame(lapply(S3Part(object, strictS3=TRUE), function(col) { deunitted(col) })))
+    } else {
+      return(S3Part(object, strictS3=TRUE))
+    }
   }
 )
 #' @rdname deunitted
@@ -440,13 +510,20 @@ setMethod(
 
 #' @rdname deunitted
 #'   
-#' @details Non-unitted data.frames and lists may also be deunitted: This 
-#'   operation always removes units from the data.frame columns or list
+#' @details Non-unitted data.frames, tbl_dfs, and lists may also be deunitted:
+#'   This operation always removes units from the data.frame columns or list 
 #'   elements.
 setMethod(
   "deunitted", "data.frame",
   function(object, ...) {
     as.data.frame(lapply(object, function(col) { deunitted(col) }))
+  }
+)
+#' @rdname deunitted
+setMethod(
+  "deunitted", "tbl_df",
+  function(object, ...) {
+    as_data_frame(lapply(object, function(col) { deunitted(col) }))
   }
 )
 #' @rdname deunitted
@@ -557,6 +634,16 @@ setMethod(
   function(object, recursive=TRUE, ...) {
     if(recursive) {
       setNames(unlist(lapply(object@.Data, get_unitbundles)), object@names)
+    } else {
+      NA
+    }
+  }
+)
+setMethod(
+  "get_unitbundles", "unitted_tbl_df",
+  function(object, recursive=TRUE, ...) {
+    if(recursive) {
+      setNames(unlist(lapply(S3Part(object, strictS3=TRUE), get_unitbundles)), object@names)
     } else {
       NA
     }

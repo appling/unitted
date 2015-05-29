@@ -57,10 +57,12 @@ setMethod(
   }
 )
 
-# Print a unitted data.frame
-# 
-# @param x The unitted object
-# @inheritParams base::print.data.frame
+#' Print a unitted data.frame
+#'
+#' @rdname print.unitted
+#' @inheritParams base::print.data.frame
+#' @examples
+#' head(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 setMethod(
   ".unitted_print", "data.frame",
   function(x, ..., digits = NULL, quote = FALSE, right = TRUE, row.names = TRUE) {
@@ -90,6 +92,49 @@ setMethod(
     }
   }
 )
+
+#' Print a unitted_tbl_df
+#' 
+#' @rdname print.unitted
+#' @param n Number of rows to show, as in \code{\link[dplyr]{print.tbl_df}}
+#' @param width Width of text output to generate, as in \code{\link[dplyr]{print.tbl_df}}
+#' @importFrom dplyr dim_desc trunc_mat
+#' @examples
+#' as_data_frame(u(list(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+setMethod(
+  ".unitted_print", "tbl_df",
+  function(x, ..., n = NULL, width = NULL) {
+    # comparable to getAnywhere(print.tbl_df)
+    cat("Source: local data frame ", dim_desc(v(x)), "\n", sep = "")
+    cat("\n")
+    y <- trunc_mat(v(x, partial=TRUE), n = n, width = width)
+    # reformat the trunc_mat as unitted
+    for(colnm in names(y$table)) {
+      y$table[colnm] <- u(unclass(y$table[[colnm]]), get_units(x)[colnm])
+    }
+    y$table <- u(y$table)
+    print(y, n=n, width=width)
+    
+    invisible(x)
+  }
+)
+
+
+# trunc_mat <- function(x) {
+#   UseMethod("trunc_mat")
+# }
+# 
+# trunc_mat.default <- function(x, n=NULL, width=NULL) {
+#   dplyr::trunc_mat(x, n, width)
+# }
+# 
+# trunc_mat.unitted_tbl_df <- function(x, n=NULL, width=NULL) {
+#   new("unitted_trunc_mat", 
+#       trunc_mat=dplyr::trunc_mat(v(x, partial=TRUE), n, width))
+# }
+# 
+# setClass("unitted_trunc_mat", slots = c(trunc_mat="ANY"))
+
 
 #### str ####
 

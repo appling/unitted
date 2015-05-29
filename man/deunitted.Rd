@@ -6,10 +6,12 @@
 \alias{deunitted,ANY-method}
 \alias{deunitted,data.frame-method}
 \alias{deunitted,list-method}
+\alias{deunitted,tbl_df-method}
 \alias{deunitted,unitted-method}
 \alias{deunitted,unitted_NULL-method}
 \alias{deunitted,unitted_data.frame-method}
 \alias{deunitted,unitted_list-method}
+\alias{deunitted,unitted_tbl_df-method}
 \alias{v}
 \title{Extract data from a unitted object}
 \usage{
@@ -23,9 +25,13 @@ deunitted(object, ...)
 
 \S4method{deunitted}{unitted_data.frame}(object, partial = FALSE, ...)
 
+\S4method{deunitted}{unitted_tbl_df}(object, partial = FALSE, ...)
+
 \S4method{deunitted}{unitted_list}(object, partial = FALSE, ...)
 
 \S4method{deunitted}{data.frame}(object, ...)
+
+\S4method{deunitted}{tbl_df}(object, ...)
 
 \S4method{deunitted}{list}(object, ...)
 
@@ -60,12 +66,19 @@ With unitted data.frames and lists, you have a choice between
   list elements). Partial deunitting only removes the container units and
   unitted class attributes.
 
-Non-unitted data.frames and lists may also be deunitted: This
-  operation always removes units from the data.frame columns or list
+Non-unitted data.frames, tbl_dfs, and lists may also be deunitted:
+  This operation always removes units from the data.frame columns or list
   elements.
 
 If \code{object} is neither a list nor a data.frame and is not
 unitted, it will be returned intact.
+}
+\examples{
+x <- u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C")))
+v(x)
+x <- as_data_frame(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+str(v(x))
+str(v(x, partial=TRUE))
 }
 \seealso{
 \code{\link{u}()} and \code{\link{unitted}()} for the construction
