@@ -72,12 +72,17 @@ as_data_frame.unitted_data.frame <- function(x) {
 
 #### select, rename, mutate, ... ####
 
-#' Implements dplyr::select and dplyr::select_ for unitted_data.frames
+#' Column selection for unitted data.frames, tbl_dfs, etc
 #' 
 #' @param .data a unitted_data.frame
-#' @param ... standard dots, as in \code{\link[dplyr]{select_}}
-#' @param .dots nonstandard dots, as in \code{\link[dplyr]{select_}}
-#' @return a unitted_data.frame after the \code{\link[dplyr]{select_}} operation
+#' @param ... standard dots, as in \code{\link[dplyr]{rename_}}
+#' @param .dots nonstandard dots, as in \code{\link[dplyr]{rename_}}
+#' @return a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
+#' 
+#' @name select
+NULL
+
+#' Implements dplyr::select and dplyr::select_ for unitted_data.frames
 #' 
 #' @importFrom dplyr select_ select_vars_
 #' @importFrom lazyeval all_dots
@@ -93,11 +98,6 @@ select_.unitted_data.frame <- function (.data, ..., .dots) {
 }
 
 #' Implements dplyr::select and dplyr::select_ for unitted_tbl_dfs
-#' 
-#' @param .data a unitted_tbl_df
-#' @param ... standard dots, as in \code{\link[dplyr]{select_}}
-#' @param .dots nonstandard dots, as in \code{\link[dplyr]{select_}}
-#' @return a unitted_data.frame after the \code{\link[dplyr]{select_}} operation
 #' 
 #' @importFrom dplyr select_ select_vars_
 #' @importFrom lazyeval all_dots
@@ -129,11 +129,6 @@ select_.unitted_tbl_df <- function (.data, ..., .dots) {
 
 #' Implements dplyr::rename and dplyr::rename_ for unitted_data.frames
 #' 
-#' @param .data a unitted_data.frame
-#' @param ... standard dots, as in \code{\link[dplyr]{rename_}}
-#' @param .dots nonstandard dots, as in \code{\link[dplyr]{rename_}}
-#' @return a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
-#' 
 #' @importFrom dplyr select_ rename_vars_
 #' @importFrom lazyeval all_dots
 #' @export
@@ -149,9 +144,6 @@ rename_.unitted_data.frame <- function (.data, ..., .dots) {
 
 #' Implements dplyr::rename and dplyr::rename_ for unitted_tbl_dfs
 #' 
-#' @param .data a unitted_data.frame
-#' @param ... standard dots, as in \code{\link[dplyr]{rename_}}
-#' @param .dots nonstandard dots, as in \code{\link[dplyr]{rename_}}
 #' @return a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
 #' 
 #' @importFrom dplyr select_ rename_vars_
