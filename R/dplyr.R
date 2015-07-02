@@ -94,7 +94,7 @@ NULL
 select_.unitted_data.frame <- function (.data, ..., .dots) {
   # copy lines from dplyr:::select_.data.frame
   dots <- lazyeval::all_dots(.dots, ...)
-  .select_unitted(.data, dots)
+  unitted_select(.data, dots)
 }
 
 #' Implements dplyr::select and dplyr::select_ for unitted_tbl_dfs
@@ -109,11 +109,13 @@ select_.unitted_data.frame <- function (.data, ..., .dots) {
 select_.unitted_tbl_df <- function (.data, ..., .dots) {
   # copy lines from dplyr:::select_.data.frame
   dots <- lazyeval::all_dots(.dots, ...)
-  .select_unitted(.data, dots)
+  unitted_select(.data, dots)
 }
 
 #' Internal function for selecting from unitted objects
-.select_unitted <- function (.data, .dots) {
+#' 
+#' @keywords internal
+unitted_select <- function (.data, .dots) {
   
   # copy lines from dplyr:::select_.data.frame
   vars <- select_vars_(names(.data), .dots)
@@ -139,7 +141,7 @@ select_.unitted_tbl_df <- function (.data, ..., .dots) {
 #' dplyr::rename(df, a=y, beta=x)
 rename_.unitted_data.frame <- function (.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ...)
-  .rename_unitted(.data, .dots=dots)
+  unitted_rename(.data, .dots=dots)
 }
 
 #' Implements dplyr::rename and dplyr::rename_ for unitted_tbl_dfs
@@ -156,11 +158,13 @@ rename_.unitted_data.frame <- function (.data, ..., .dots) {
 #' dplyr::rename(tbl_df(df), a=y, beta=x)
 rename_.unitted_tbl_df <- function(.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ...)
-  .rename_unitted(.data, .dots=dots)
+  unitted_rename(.data, .dots=dots)
 }
   
 #' Internal function for renaming unitted objects
-.rename_unitted <- function (.data, .dots) {
+#' 
+#' @keywords internal
+unitted_rename <- function (.data, .dots) {
   
   # copy lines from dplyr:::select_.data.frame
   vars <- rename_vars_(names(.data), .dots)

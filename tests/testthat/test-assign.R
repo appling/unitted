@@ -52,11 +52,11 @@ test_that("[<-.unitted works for vectors", {
   # logical indices
   vvec <- (1:100)
   uvec <- u(vvec, "dbs")
-  expect_that({uvec[uvec < 24] <- u(9,"dbs"); uvec}, equals({vvec[vvec < 24] <- 9; u(vvec, "dbs")}))
+  expect_error(uvec[uvec < 24])
   expect_that({uvec[uvec < u(24,"dbs")] <- u(9,"dbs"); uvec}, equals({vvec[vvec < 24] <- 9; u(vvec, "dbs")}))
-  expect_that({uvec[c(T,F)] <- 100:51; uvec}, equals({vvec[c(T,F)] <- 100:51; u(vvec, "dbs")}), info="reassignment indexed by short logical vector")
-  expect_that({uvec[c(F,T)] <- 1:5; uvec}, equals({vvec[c(F,T)] <- 1:5; u(vvec, "dbs")}), info="reassignment indexed by short logical vector & short value vector") # breaks
-  expect_that({uvec[F] <- 101:105; uvec}, equals({vvec[F] <- 101:105; u(vvec, "dbs")}), info="reassignment indexed by F") # breaks - shouldn't throw error
+  expect_that({uvec[c(T,F)] <- u(100:51,"dbs"); uvec}, equals({vvec[c(T,F)] <- 100:51; u(vvec, "dbs")}), info="reassignment indexed by short logical vector") # breaks
+  expect_that({uvec[c(F,T)] <- u(1:5,"dbs"); uvec}, equals({vvec[c(F,T)] <- 1:5; u(vvec, "dbs")}), info="reassignment indexed by short logical vector & short value vector") # breaks
+  expect_that({uvec[F] <- u(101:105,"dbs"); uvec}, equals({vvec[F] <- 101:105; u(vvec, "dbs")}), info="reassignment indexed by F") # breaks - shouldn't throw error
   
   # character indices
   expect_that({uvec["juliuscaesar"] <- 9; uvec}, equals({vvec["juliuscaesar"] <- 9; u(vvec, "dbs")}), info="reassignment in unnamed vector indexed by new string") # breaks
