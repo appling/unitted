@@ -2,12 +2,18 @@
 % Please edit documentation in R/dplyr_join.R
 \name{join}
 \alias{anti_join.unitted_data.frame}
+\alias{anti_join.unitted_tbl_df}
 \alias{full_join.unitted_data.frame}
+\alias{full_join.unitted_tbl_df}
 \alias{inner_join.unitted_data.frame}
+\alias{inner_join.unitted_tbl_df}
 \alias{join}
 \alias{left_join.unitted_data.frame}
+\alias{left_join.unitted_tbl_df}
 \alias{right_join.unitted_data.frame}
+\alias{right_join.unitted_tbl_df}
 \alias{semi_join.unitted_data.frame}
+\alias{semi_join.unitted_tbl_df}
 \title{Join two unitted data.frames}
 \usage{
 \method{inner_join}{unitted_data.frame}(x, y, by = NULL, copy = FALSE, ...)
@@ -21,6 +27,18 @@
 \method{semi_join}{unitted_data.frame}(x, y, by = NULL, copy = FALSE, ...)
 
 \method{anti_join}{unitted_data.frame}(x, y, by = NULL, copy = FALSE, ...)
+
+\method{inner_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
+
+\method{left_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
+
+\method{right_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
+
+\method{full_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
+
+\method{semi_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
+
+\method{anti_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
 }
 \arguments{
 \item{x}{tbls to join}

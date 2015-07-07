@@ -45,6 +45,48 @@ anti_join.unitted_data.frame <- function(x, y, by = NULL, copy = FALSE, ...) {
   unitted_half_join.unitted_data.frame(x, y, join_fun=anti_join, by=by, copy=copy, ...)
 }
 
+#' @rdname join
+#' @importFrom dplyr left_join
+#' @export
+inner_join.unitted_tbl_df <- function(x, y, by = NULL, copy = FALSE, ...) {
+  unitted_join.unitted_data.frame(x, y, join_fun=inner_join, by=by, copy=copy, ...)
+}
+
+#' @rdname join
+#' @importFrom dplyr left_join
+#' @export
+left_join.unitted_tbl_df <- function(x, y, by = NULL, copy = FALSE, ...) {
+  unitted_join.unitted_data.frame(x, y, join_fun=left_join, by=by, copy=copy, ...)
+}
+
+#' @rdname join
+#' @importFrom dplyr right_join
+#' @export
+right_join.unitted_tbl_df <- function(x, y, by = NULL, copy = FALSE, ...) {
+  unitted_join.unitted_data.frame(x, y, join_fun=right_join, by=by, copy=copy, ...)
+}
+
+#' @rdname join
+#' @importFrom dplyr full_join
+#' @export
+full_join.unitted_tbl_df <- function(x, y, by = NULL, copy = FALSE, ...) {
+  unitted_join.unitted_data.frame(x, y, join_fun=full_join, by=by, copy=copy, ...)
+}
+
+#' @rdname join
+#' @importFrom dplyr semi_join
+#' @export
+semi_join.unitted_tbl_df <- function(x, y, by = NULL, copy = FALSE, ...) {
+  unitted_half_join.unitted_data.frame(x, y, join_fun=semi_join, by=by, copy=copy, ...)
+}
+
+#' @rdname join
+#' @importFrom dplyr anti_join
+#' @export
+anti_join.unitted_tbl_df <- function(x, y, by = NULL, copy = FALSE, ...) {
+  unitted_half_join.unitted_data.frame(x, y, join_fun=anti_join, by=by, copy=copy, ...)
+}
+
 
 #' Internal function to join two unitted data.frames
 #' 
