@@ -1,10 +1,10 @@
 Package: unitted
-Title: Track units as you manipulate data
+Title: Track Units as you Manipulate Data
 Description: Attaches units to data.frames, vectors, etc. and maintains the
     correct units when you add, multiply, exponentiate, etc. those values.
 URL: https://github.com/appling/unitted
-Version: 0.2.3
-Date: 2015-07-02
+Version: 0.2.4
+Date: 2015-07-17
 Author: Alison Appling
 Maintainer: Alison Appling <alison.appling@gmail.com>
 License: file LICENSE
