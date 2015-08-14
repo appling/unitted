@@ -10,6 +10,7 @@
 \alias{deunitted,unitted-method}
 \alias{deunitted,unitted_NULL-method}
 \alias{deunitted,unitted_data.frame-method}
+\alias{deunitted,unitted_factor-method}
 \alias{deunitted,unitted_list-method}
 \alias{deunitted,unitted_tbl_df-method}
 \alias{v}
@@ -20,6 +21,8 @@ v(object, ...)
 deunitted(object, ...)
 
 \S4method{deunitted}{unitted}(object, ...)
+
+\S4method{deunitted}{unitted_factor}(object, ...)
 
 \S4method{deunitted}{unitted_NULL}(object, ...)
 

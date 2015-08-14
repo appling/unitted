@@ -126,10 +126,14 @@ setGeneric(
 #' @examples
 #' # only works during package build, at least at the moment
 new_unitted_class <- function(superclass.name, overwrite=FALSE) {
+  # manage the superclass class definition
+  if(superclass.name %in% c('tbl_df')) setOldClass(superclass.name) # special case
   class_def <- getClassDef(superclass.name)
   if(is.null(class_def)) {
     stop(paste0(superclass.name," must be registered with setOldClass or defined with setClass before calling new_unitted_class()"))
   }
+
+  # check whether the proposed class already exists
   new_name <- paste0("unitted_",superclass.name)
   if(new_name %in% names(getClass("unitted")@subclasses)) {
     if(overwrite)
@@ -137,21 +141,30 @@ new_unitted_class <- function(superclass.name, overwrite=FALSE) {
     else
       stop(paste(new_name,"is already a registered unitted class; set overwrite=TRUE to proceed anyway"))
   }
-  setClass(new_name, contains=c("unitted", superclass.name))
+
+  # create the class (special case: ordered needs extra info)
+  if(superclass.name == 'ordered') {
+    setClass(new_name, contains=c("unitted", superclass.name), slots=list(.Data='integer', levels='character', units='unitbundle'),
+             validity=function(object) TRUE)
+  } else {
+    setClass(new_name, contains=c("unitted", superclass.name))
+  }
+    
+  # create the constructor named unitted by specific to this class
   setMethod("unitted", superclass.name, function(object, units) {
     new(new_name, object, units=unitbundle(units))
   })
+  
+  # return the new class name
   new_name
 }
 
 # Class and constructor definitions for common unitted classes
 # 
-# Don't be fooled! This unassuming code block is the heart of unittted class
+# Don't be fooled! This unassuming code block is the heart of unitted class
 # definitions.
-setOldClass("ordered") # not sure, but maybe this will fix the R-devel check error?
-setOldClass("tbl_df")
 sapply(c("character","complex","logical","numeric","raw","NULL",
-         "factor","ordered","Date","POSIXct","POSIXlt",
+         "factor","Date","POSIXct","POSIXlt",
          "list","data.frame","tbl_df",
          "array","matrix","ts",
          "expression","name","function"), 
@@ -446,6 +459,20 @@ setMethod(
   function(object, ...) {
     # And what if the object's class is unitted extending another S4 class?
     return(S3Part(object, strictS3=TRUE))
+  }
+)
+
+#' @rdname deunitted
+setMethod(
+  "deunitted", "unitted_factor",
+  function(object, ...) {
+    if('ordered' %in% object@.S3Class) {
+      object@.S3Class <- object@.S3Class[-which(object@.S3Class == 'ordered')]
+      fac <- S3Part(object, strictS3=TRUE)
+      ordered(fac)
+    } else {
+      return(S3Part(object, strictS3=TRUE))
+    }
   }
 )
 

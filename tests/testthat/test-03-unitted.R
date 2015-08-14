@@ -33,11 +33,11 @@ test_that("Vectors of any type can be unitted and deunitted", {
   expect_that(u(vvec,  units), is_a("unitted"))
   expect_that(v(u(vvec, units)), is_identical_to(vvec))
   
-  vvec <- factor(letters[3:9]); # factor
+  vvec <- factor(letters[9:3]); # factor
   expect_that(u(vvec,  units), is_a("unitted"))
   expect_that(v(u(vvec, units)), is_identical_to(vvec))
   
-  vvec <- ordered(letters[3:9]); # ordered factor
+  vvec <- ordered(letters[9:3], levels=letters[9:3]); # ordered factor
   expect_that(u(vvec,  units), is_a("unitted"))
   expect_that(v(u(vvec, units)), is_identical_to(vvec))
   
