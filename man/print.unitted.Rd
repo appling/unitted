@@ -49,6 +49,6 @@ Print a unitted_tbl_df
 }
 \examples{
 head(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
-as_data_frame(u(list(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+tibble::as_tibble(u(list(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 }
 

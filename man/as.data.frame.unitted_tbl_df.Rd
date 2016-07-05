@@ -18,7 +18,7 @@ hidden. From here we could route back to the S4 dispatch system with
 processing time since we come here first.
 }
 \examples{
-x <- as_data_frame(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
+x <- as_tibble(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
 as.data.frame(x)
 }
 

@@ -99,8 +99,9 @@ setMethod(
 #' @param n Number of rows to show, as in \code{\link[dplyr]{print.tbl_df}}
 #' @param width Width of text output to generate, as in \code{\link[dplyr]{print.tbl_df}}
 #' @importFrom dplyr dim_desc trunc_mat
+#' @import tibble
 #' @examples
-#' as_data_frame(u(list(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+#' tibble::as_tibble(u(list(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 setMethod(
   ".unitted_print", "tbl_df",
   function(x, ..., n = NULL, width = NULL) {
@@ -116,22 +117,6 @@ setMethod(
     invisible(x)
   }
 )
-
-
-# trunc_mat <- function(x) {
-#   UseMethod("trunc_mat")
-# }
-# 
-# trunc_mat.default <- function(x, n=NULL, width=NULL) {
-#   dplyr::trunc_mat(x, n, width)
-# }
-# 
-# trunc_mat.unitted_tbl_df <- function(x, n=NULL, width=NULL) {
-#   new("unitted_trunc_mat", 
-#       trunc_mat=dplyr::trunc_mat(v(x, partial=TRUE), n, width))
-# }
-# 
-# setClass("unitted_trunc_mat", slots = c(trunc_mat="ANY"))
 
 
 #### str ####
@@ -201,18 +186,4 @@ str.unitted_NULL <- function(object, ...) {
   }
   
   invisible()
-}
-
-#### edit ####
-
-edit.unitted <- function(name, factor.mode=c("character","numeric"), edit.row.names=any(row.names(name) != 1:nrow(name)), ...) {
-  warning("Editing unitted objects is largely uncharted territory. Be alert and tell me if you find bugs.")
-  edited <- edit(v(name))
-  if(is.data.frame(name)) {
-    if((dim(edited) != dim(v(name))) | !identical(rownames(df),rownames(df)) | !identical(colnames(df),colnames(df)))
-      stop("Editing has changed the dimensions and/or names of your unitted object. I don't know how to handle this.")
-  } else {
-    warning("Edited a non-data.frame; did absolutely no error checking for units.")
-  }
-  edited
 }

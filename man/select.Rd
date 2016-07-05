@@ -12,9 +12,9 @@
 
 \method{select_}{unitted_tbl_df}(.data, ..., .dots)
 
-rename_.unitted_data.frame(.data, ..., .dots)
+\method{rename_}{unitted_data.frame}(.data, ..., .dots)
 
-rename_.unitted_tbl_df(.data, ..., .dots)
+\method{rename_}{unitted_tbl_df}(.data, ..., .dots)
 }
 \arguments{
 \item{.data}{a unitted_data.frame}

@@ -105,8 +105,8 @@ test_that("[<-.unitted works for data.frames", {
   expect_that({udf <- udf0; udf[2,2] <- NULL; udf}, throws_error("replacement has length zero"), info="NULL cannot replace an element")
   knownbug(expect_that({udf <- udf0; udf[2] <- NULL; udf}, equals({df <- df0; df[2] <- NULL; df}), info="columns may be deleted with udf[x] <- NULL"))
   knownbug(expect_that({udf <- udf0; udf[,2] <- NULL; udf}, equals({df <- df0; df[,2] <- NULL; df}), info="columns may be deleted with udf[,x] <- NULL"))
-  expect_that({df <- df0; df[2,] <- NULL; df}, throws_error("replacement has 0 items, need 3"), info="rows may NOT be deleted with df[x] <- NULL") # for comparison to following
-  expect_that({udf <- udf0; udf[2,] <- NULL; udf}, throws_error("replacement has 0 items, need 3"), info="rows may NOT be deleted with df[x] <- NULL")
+  expect_that({df <- df0; df[2,] <- NULL; df}, throws_error("replacement has length zero"), info="rows may NOT be deleted with df[x] <- NULL") # for comparison to following
+  expect_that({udf <- udf0; udf[2,] <- NULL; udf}, throws_error("replacement has length zero"), info="rows may NOT be deleted with df[x] <- NULL")
   
   # replacement of one element/section with several
   expect_that({df <- df0; df[2,2] <- 1:3; df}, throws_error("replacement has 3 rows, data has 1"), info="replace one element with several") # regular data.frame for comparison

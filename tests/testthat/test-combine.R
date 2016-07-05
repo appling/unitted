@@ -25,12 +25,12 @@ test_that("unitted:::c.unitted works", {
   expect_that(c(u(26:21,"mazes"),u(4:12,"mazes"),u(LETTERS[4:12],"mazes")), equals(u(c(26:21,4:12,LETTERS[4:12]),"mazes")))
   
   # data.frames
-  df1 <- data.frame(A=1:5, B=12:16)
-  df2 <- data.frame(X=letters[4:12], Y=LETTERS[6:14])
-  dfu1 <- data.frame(A=u(1:5,"cats"), B=u(12:16,"cats"))
-  dfu2 <- data.frame(X=letters[4:12], Y=u(LETTERS[6:14],"dogs"))
-  dfu3 <- data.frame(X=u(letters[4:12],"cats"), Y=u(LETTERS[6:14],"cats"))
-  dfu4 <- data.frame(X=u(letters[4:12],"cats"), Y=u(LETTERS[6:14],"dogs"))
+  df1 <- data.frame(A=1:5, B=12:16, stringsAsFactors=FALSE)
+  df2 <- data.frame(X=letters[4:12], Y=LETTERS[6:14], stringsAsFactors=FALSE)
+  dfu1 <- data.frame(A=u(1:5,"cats"), B=u(12:16,"cats"), stringsAsFactors=FALSE)
+  dfu2 <- data.frame(X=letters[4:12], Y=u(LETTERS[6:14],"dogs"), stringsAsFactors=FALSE)
+  dfu3 <- data.frame(X=u(letters[4:12],"cats"), Y=u(LETTERS[6:14],"cats"), stringsAsFactors=FALSE)
+  dfu4 <- data.frame(X=u(letters[4:12],"cats"), Y=u(LETTERS[6:14],"dogs"), stringsAsFactors=FALSE)
   udf1 <- u(dfu1)
   udf2 <- u(dfu2)
   udf3 <- u(dfu3)
@@ -275,7 +275,7 @@ test_that("rep.unitted works", {
   expect_that(rep(u(1:3,"d"), each=7), equals(u(rep(1:3,each=7),"d")))
   
   # data.frames
-  df <- data.frame(i=factor(c("k","j","l")), y=4:6, z="a", stringsAsFactors=FALSE)
+  df <- data.frame(i=c("k","j","l"), y=4:6, z="a", stringsAsFactors=FALSE)
   udf <- u(df, c("A","B","C"))
   expect_equal(rep(udf, 2), mapply(function(elem, units) unitted(elem, units), rep(df,2), c("A","B","C","A","B","C"), SIMPLIFY=FALSE))
   expect_equal(v(rep(udf, 2)), rep(df, 2))

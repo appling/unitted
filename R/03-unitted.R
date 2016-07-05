@@ -413,7 +413,7 @@ setMethod(
 #' @param x The unitted_tbl_df to convert to a data.frame
 #' @param ... Additional arguments passed to as.data.frame
 #' @examples
-#' x <- as_data_frame(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
+#' x <- as_tibble(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
 #' as.data.frame(x)
 #' @export
 as.data.frame.unitted_tbl_df <- function(x, ...) {
@@ -511,14 +511,14 @@ setMethod(
 )
 #' @rdname deunitted
 #' @examples
-#' x <- as_data_frame(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+#' x <- as_tibble(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 #' str(v(x))
 #' str(v(x, partial=TRUE))
 setMethod(
   "deunitted", "unitted_tbl_df",
   function(object, partial=FALSE, ...) {
     if(!partial) {
-      return(as_data_frame(lapply(S3Part(object, strictS3=TRUE), function(col) { deunitted(col) })))
+      return(as_tibble(lapply(S3Part(object, strictS3=TRUE), function(col) { deunitted(col) })))
     } else {
       return(S3Part(object, strictS3=TRUE))
     }
@@ -550,7 +550,7 @@ setMethod(
 setMethod(
   "deunitted", "tbl_df",
   function(object, ...) {
-    as_data_frame(lapply(object, function(col) { deunitted(col) }))
+    as_tibble(lapply(object, function(col) { deunitted(col) }))
   }
 )
 #' @rdname deunitted
