@@ -105,8 +105,6 @@ setMethod(
   ".unitted_print", "tbl_df",
   function(x, ..., n = NULL, width = NULL) {
     # comparable to getAnywhere(print.tbl_df)
-    cat("Source: local data frame ", dim_desc(v(x)), "\n", sep = "")
-    cat("\n")
     y <- trunc_mat(v(x, partial=TRUE), n = n, width = width)
     # reformat the trunc_mat as unitted
     for(colnm in names(y$table)) {
