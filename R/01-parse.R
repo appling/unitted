@@ -153,7 +153,7 @@ sort_units <- function(unitdfs) {
 
 #' Turn a units data.frame into the character representation of the units
 #' 
-#' @import plyr
+#' @import dplyr
 #' @param unitdfs list of unit data.frames, such as those returned by a call to 
 #'   parse_units
 #' @param delimiter A single-character string designating the delimiter that 
@@ -173,17 +173,18 @@ merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","a
   rule <- match.arg(rule)
   # merge the units within each unitdf
   strunits <- lapply(unitdfs, function(unitdf) {
-    unitdf$Unit <- delimit_units(unitdf$Unit, delimiter, rule)
-    unitvec <- daply(unitdf, .(rownames(unitdf)), function(df){
-      if(is.na(df$Power[1])) {
-        return(paste0(df$Unit,"^NA"))
-      } else if(df$Power[1]!=1) {
-        return(paste(df$Unit,df$Power,sep="^"))
-      } else {
-        return(df$Unit)
-      }
-    })
-    paste(unitvec, collapse=separator)
+    unitdf %>%
+      mutate(Unit = delimit_units(unitdf$Unit, delimiter, rule)) %>% 
+      rowwise() %>% do(
+        m = if(is.na(.$Power[1])) {
+          paste0(.$Unit,"^NA")
+        } else if(.$Power[1]!=1) {
+          paste(.$Unit,.$Power,sep="^")
+        } else {
+          .$Unit
+        }
+      ) %>% unlist() %>% unname() %>%
+      paste(collapse=separator)
   })
   return(unlist(strunits))
 }
