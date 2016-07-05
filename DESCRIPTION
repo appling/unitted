@@ -3,8 +3,8 @@ Title: Track Units as you Manipulate Data
 Description: Attaches units to data.frames, vectors, etc. and maintains the
     correct units when you add, multiply, exponentiate, etc. those values.
 URL: https://github.com/appling/unitted
-Version: 0.2.5
-Date: 2015-08-14
+Version: 0.2.6
+Date: 2016-07-05
 Author: Alison Appling
 Maintainer: Alison Appling <alison.appling@gmail.com>
 License: file LICENSE
@@ -14,7 +14,8 @@ Imports:
     methods,
     plyr,
     lazyeval,
-    dplyr (>= 0.4.1)
+    dplyr (>= 0.5.0),
+    tibble (>= 1.1.0)
 Suggests:
     testthat
 Collate:
@@ -31,5 +32,7 @@ Collate:
     'dplyr_join.R'
     'inspect.R'
     'package-unitted.R'
+    'tibble.R'
     'write.R'
     'zzz.R'
+RoxygenNote: 5.0.1

@@ -1,78 +1,6 @@
-#### tbl_df ####
-
-#' Implements dplyr::tbl_df
-#' 
-#' This is not generic in dplyr but is made so here.
-#' 
-#' @param data A list, as in \code{\link[dplyr]{as_data_frame}}. Each element of 
-#'   the list must have the same length.
-#' @examples
-#' tbl_df(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")))
-#' tbl_df(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")))
-#' @export
-tbl_df <- function(data) {
-  if(!is.data.frame(data)) { stop("data must be a data.frame") }
-  as_data_frame(data)
-}
-
-#' Implements dplyr::as_data_frame
-#' 
-#' dplyr's \code{\link[dplyr]{as_data_frame}} serves other dplyr functions 
-#' including \code{\link[dplyr]{tbl_df}} and \code{\link[dplyr]{mutate}}.
-#' 
-#' This is not generic in dplyr but is made so here.
-#' 
-#' @param x A list, as in \code{\link[dplyr]{as_data_frame}}. Each element of 
-#'   the list must have the same length.
-#' @examples
-#' as_data_frame(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")))
-#' as_data_frame(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")))
-#' @export
-as_data_frame <- function(x) {
-  UseMethod("as_data_frame")
-}
-
-#' Convert a data.frame or list to a tbl_df
-#' 
-#' @importFrom dplyr as_data_frame
-#' @examples
-#' as_data_frame(list(x = 1:500, y = runif(500), z = 500:1))
-#' as_data_frame(data.frame(x = 1:500, y = runif(500), z = 500:1))
-#' @export
-#' @rdname as_data_frame
-as_data_frame.default <- function(x) {
-  dplyr::as_data_frame(x)
-}
-
-
-#' Convert a unitted_list to a unitted_tbl_df
-#' 
-#' Implements \code{\link[dplyr]{as_data_frame}} for unitted_data.frames
-#' 
-#' @examples
-#' as_data_frame(u(list(x=u(1:3,"X"), y=u(3:5,"Y"), z=u(c("aa", "bb", "cc"),"Z"))))
-#' @export
-#' @rdname as_data_frame
-as_data_frame.unitted_list <- function(x) {
-  u(as_data_frame(v(x, partial=TRUE)))
-}
-
-#' Convert a unitted_data.frame to a unitted_tbl_df
-#' 
-#' Implements \code{\link[dplyr]{as_data_frame}} for unitted_data.frames
-#' 
-#' @examples
-#' as_data_frame(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")))
-#' @export
-#' @rdname as_data_frame
-as_data_frame.unitted_data.frame <- function(x) {
-  u(as_data_frame(v(x, partial=TRUE)))
-}
-
-
 #### select, rename, mutate, ... ####
 
-#' Column selection for unitted data.frames, tbl_dfs, etc
+#' Column selection for unitted data.frames, tibbles, etc
 #' 
 #' @param .data a unitted_data.frame
 #' @param ... standard dots, as in \code{\link[dplyr]{rename_}}
@@ -105,7 +33,7 @@ select_.unitted_data.frame <- function (.data, ..., .dots) {
 #'
 #' @rdname select
 #' @examples
-#' dplyr::select(tbl_df(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))), a=y, x)
+#' dplyr::select(tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))), a=y, x)
 select_.unitted_tbl_df <- function (.data, ..., .dots) {
   # copy lines from dplyr:::select_.data.frame
   dots <- lazyeval::all_dots(.dots, ...)
@@ -155,7 +83,7 @@ rename_.unitted_data.frame <- function (.data, ..., .dots) {
 #' @rdname select
 #' @examples
 #' df <- u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))
-#' dplyr::rename(tbl_df(df), a=y, beta=x)
+#' dplyr::rename(tibble(df), a=y, beta=x)
 rename_.unitted_tbl_df <- function(.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ...)
   unitted_rename(.data, .dots=dots)
@@ -183,7 +111,7 @@ unitted_rename <- function (.data, .dots) {
 #' @param .dots nonstandard dots, as in \code{\link[dplyr]{select_}}
 #' @return a unitted_data.frame after the \code{\link[dplyr]{select_}} operation
 #' 
-#' @importFrom dplyr tbl_df mutate_
+#' @importFrom dplyr tibble mutate_
 #' @importFrom lazyeval all_dots
 #' @export
 #'
@@ -192,7 +120,7 @@ unitted_rename <- function (.data, .dots) {
 #' dplyr::mutate(df, z=LETTERS[y], k=x*y)
 mutate_.unitted_data.frame <- function (.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
-  as.data.frame(dplyr::mutate_(tbl_df(.data), .dots=dots))
+  as.data.frame(dplyr::mutate_(tibble(.data), .dots=dots))
 }
 
 #' Implements dplyr::mutate and dplyr::mutate_ for unitted_tbl_dfs
@@ -206,7 +134,7 @@ mutate_.unitted_data.frame <- function (.data, ..., .dots) {
 #' @importFrom lazyeval all_dots
 #' @export
 #' @examples
-#' dtb <- tbl_df(u(data.frame(x=1:3, y=3:5), c("X","X")))
+#' dtb <- tibble(u(data.frame(x=1:3, y=3:5), c("X","X")))
 #' dplyr::mutate(dtb, z=LETTERS[y], k=x+y)
 mutate_.unitted_tbl_df <- function (.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)

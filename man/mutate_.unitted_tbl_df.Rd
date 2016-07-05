@@ -20,7 +20,7 @@ a unitted_tbl_df after the \code{\link[dplyr]{select_}} operation
 Implements dplyr::mutate and dplyr::mutate_ for unitted_tbl_dfs
 }
 \examples{
-dtb <- tbl_df(u(data.frame(x=1:3, y=3:5), c("X","X")))
+dtb <- tibble(u(data.frame(x=1:3, y=3:5), c("X","X")))
 dplyr::mutate(dtb, z=LETTERS[y], k=x+y)
 }
 
