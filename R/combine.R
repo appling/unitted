@@ -33,9 +33,9 @@ setMethod(
     } else { "atomic" }
     
     if(ctype == "atomic") {
-      #' If all elements are atomic, (1) check to make sure they all have the same 
-      #' units, (2) combine them using the usual c(), and (3) assign the resulting 
-      #' atomic thing the single common set of units.
+      # If all elements are atomic, (1) check to make sure they all have the
+      # same units, (2) combine them using the usual c(), and (3) assign the
+      # resulting atomic thing the single common set of units.
       newunits <- unique(get_units(listarg, recursive=TRUE))
       if(length(newunits) != 1) {
         stop("every element must have the same units")
@@ -43,22 +43,24 @@ setMethod(
       vlist <- lapply(listarg, deunitted)
       unitted(do.call("c", vlist), newunits)
       
-      #' If the elements include a list (including data.frame), (1) convert each
-      #' element to a list using as.list, (2) join the lists, and (3) don't
-      #' assign units; any useful units will be attached to the individual
-      #' elements of the resulting list.
-      #' #' If the elements include a data.frame, (1) convert the dataframe to a list, 
-      #' (2) convert any other elements to lists using as.list (push.units=TRUE), (3) combine into a 
-      #' single list, and (4) don't assign units; any useful units will be attached to
-      #' the individual elements of the resulting list.
+      # If the elements include a list (including data.frame), (1) convert each 
+      # element to a list using as.list, (2) join the lists, and (3) don't 
+      # assign units; any useful units will be attached to the individual 
+      # elements of the resulting list.
+      
+      # If the elements include a data.frame, (1) convert the dataframe to a
+      # list, (2) convert any other elements to lists using as.list
+      # (push.units=TRUE), (3) combine into a single list, and (4) don't assign
+      # units; any useful units will be attached to the individual elements of
+      # the resulting list.
     } else if(ctype == "list or data.frame") {
       # push.units is ignored by most as.list calls and is TRUE by default for unitted vectors& lists
       vlist <- lapply(listarg, function(elem) as.list(elem) )
       do.call("c", vlist)
       
-      #' If the elements include a unitted_list, then call as.list with
-      #' push.units=TRUE and do the list join with the requirement that all lists
-      #' have the same units. Return a single unitted_list.
+      # If the elements include a unitted_list, then call as.list with 
+      # push.units=TRUE and do the list join with the requirement that all lists
+      # have the same units. Return a single unitted_list.
     } else if(ctype == "unitted_list") {
       newunits <- unique(get_units(listarg, recursive=TRUE))
       if(length(newunits) != 1) {
