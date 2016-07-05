@@ -73,7 +73,7 @@ test_that("[<-.unitted works for vectors", {
 
 
 test_that("[<-.unitted works for data.frames", {
-  df0 <- data.frame(one=letters[c(6,16,26)], two=5:7+0.5, three=as.POSIXlt(Sys.time()+1:3))
+  df0 <- data.frame(one=letters[c(6,16,26)], two=5:7+0.5, three=as.POSIXlt(Sys.time()+1:3), stringsAsFactors=FALSE)
   units <- c("gene","freq","")
   udf0 <- u(df0, units)
   
@@ -86,7 +86,7 @@ test_that("[<-.unitted works for data.frames", {
   expect_that({udf <- udf0; udf[3,3] <- df0[1,3]+90; udf}, equals({df <- df0; df[3,3] <- df0[1,3]+90; u(df,units)}), info="replacing elem having units='' with ununittted value should be OK")
   expect_that({udf <- udf0; udf[ ,2] <- 25; udf}, equals({df <- df0; df[ ,2] <- 25; u(df,c(units[1],"",units[3]))}), info="whole column replacement should change units")
   expect_that({udf <- udf0; udf[ ,'two'] <- 25; udf}, equals({df <- df0; df[ ,'two'] <- 25; u(df,c(units[1],"",units[3]))}), info="whole column replacement should change units")
-  expect_that({udf <- udf0; udf[ ,1] <- u(c('a','b','c'),'kg'); udf}, equals({df <- df0; df[ ,1] <- c('a','b','c'); u(df,c("kg",units[2:3]))}), info="whole column replacement should change units")
+  expect_that({udf <- udf0; udf[ ,1] <- list(u(c('a','b','c'),'kg')); udf}, equals({df <- df0; df[ ,1] <- c('a','b','c'); u(df,c("kg",units[2:3]))}), info="whole column replacement should change units")
   expect_that({udf <- udf0; udf[2,] <- udf[1,]; udf}, equals({df <- df0; df[2,] <- df[1,]; u(df,units)}), info="whole row replacement should accept matching units")
   expect_that({udf <- udf0; udf['2',] <- udf[1,]; udf}, equals({df <- df0; df['2',] <- df[1,]; u(df,units)}), info="whole row replacement should accept matching units")
   expect_that({udf <- udf0; udf[2,1:2] <- udf[3,1:2]; udf}, equals({df <- df0; df[2,1:2] <- df[3,1:2]; u(df,units)}), info="partial row replacement should accept matching units")
@@ -123,15 +123,15 @@ test_that("[<-.unitted works for data.frames", {
   expect_that({udf <- udf0; udf[c(T,T,F),c(F,T,F)] <- udf[c(3,3),2]; udf}, equals({df <- df0; df[c(T,T,F),c(F,T,F)] <- df[c(3,3),2]; u(df,units)}), info="logical index to replace two elements in col")
   expect_that({udf <- udf0; udf[c(T,F,F),c(T,T,F)] <- udf[3,1:2]; udf}, equals({df <- df0; df[c(T,F,F),c(T,T,F)] <- df[3,1:2]; u(df,units)}), info="logical index to replace two elements in col")
   knownbug(expect_that({udf <- udf0; udf[c(T,F,F),] <- udf[3,]; udf}, gives_warning("this shouldn't give a warning"), info="logical index to replace whole row"))
-  expect_that({udf <- udf0; udf[c(T,F,F),] <- udf[3,]; udf}, equals({df <- df0; df[c(T,F,F),] <- df[3,]; u(df,units)}), info="logical index to replace whole row") # breaks - shouldn't give warning
+  expect_that({udf <- udf0; udf[c(T,F,F),] <- udf[3,]; udf}, equals({df <- df0; df[c(T,F,F),] <- df[3,]; u(df,units)}), info="logical index to replace whole row")
   knownbug(expect_that({udf <- udf0; udf[,c(F,T,F)] <- udf[,1]; udf}, gives_warning("this shouldn't give a warning"), info="logical index to replace whole column - shouldn't give warning"))
-  expect_that({udf <- udf0; udf[,c(F,T,F)] <- udf[,1]; udf}, equals({df <- df0; df[,c(F,T,F)] <- df[,1]; u(df,units[c(1,1,3)])}), info="logical index to replace whole column") # breaks - shouldn't give warning
+  expect_that({udf <- udf0; udf[,c(F,T,F)] <- list(udf[,1]); udf}, equals({df <- df0; df[,c(F,T,F)] <- df[,1]; u(df,units[c(1,1,3)])}), info="logical index to replace whole column")
   expect_that({df <- df0; df[,F] <- df[,1]; df}, gives_warning("data length exceeds size of matrix"))
   knownbug(expect_that({udf <- udf0; udf[,F] <- udf[,1]; udf}, gives_warning("data length exceeds size of matrix")))
   expect_that({udf <- udf0; udf[F,] <- udf[1,]; udf}, equals({df <- df0; df[F,] <- df[1,]; u(df,units)}), info="replacement of rows=F should give no warning, weirdly")
   
   # addition of new columns: numeric & character indices
-  expect_that({udf <- udf0; udf[,4] <- udf[,1]; udf}, equals({df <- df0; df[,4] <- df[,1]; u(df,units[c(1:3,1)])}), info="new column should take on units of new data")
+  expect_that({udf <- udf0; udf[,4] <- list(udf[,1]); udf}, equals({df <- df0; df[,4] <- df[,1]; u(df,units[c(1:3,1)])}), info="new column should take on units of new data")
   expect_that({udf <- udf0; udf[,4] <- df0[,1]; udf}, equals({df <- df0; df[,4] <- df[,1]; u(df,c(units,""))}), info="new column should take on units of new data")
   expect_that({df <- df0; df[,5] <- df[,1]; df}, throws_error("new columns would leave holes after existing columns"), info="far-away new column should get error")
   expect_that({udf <- udf0; udf[,5] <- udf[,1]; udf}, throws_error("new columns would leave holes after existing columns"), info="far-away new column should get error")
