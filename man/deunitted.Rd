@@ -79,7 +79,7 @@ unitted, it will be returned intact.
 \examples{
 x <- u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C")))
 v(x)
-x <- as_tibble(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+x <- tibble::as_tibble(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 str(v(x))
 str(v(x, partial=TRUE))
 }

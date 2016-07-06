@@ -96,8 +96,9 @@ setMethod(
 #' Print a unitted_tbl_df
 #' 
 #' @rdname print.unitted
-#' @param n Number of rows to show, as in \code{\link[dplyr]{print.tbl_df}}
-#' @param width Width of text output to generate, as in \code{\link[dplyr]{print.tbl_df}}
+#' @param n Number of rows to show, as in \code{\link[tibble]{print.tbl_df}}
+#' @param width Width of text output to generate, as in
+#'   \code{\link[tibble]{print.tbl_df}}
 #' @importFrom dplyr dim_desc trunc_mat
 #' @import tibble
 #' @examples
@@ -106,7 +107,7 @@ setMethod(
   ".unitted_print", "tbl_df",
   function(x, ..., n = NULL, width = NULL) {
     # comparable to getAnywhere(print.tbl_df)
-    y <- trunc_mat(v(x, partial=TRUE), n = n, width = width)
+    y <- trunc_mat(v(x), n = n, width = width)
     # reformat the trunc_mat as unitted
     for(colnm in names(y$table)) {
       y$table[colnm] <- u(unclass(y$table[[colnm]]), get_units(x)[colnm])
@@ -128,7 +129,7 @@ setMethod(
 #' @name unitted_str
 #' @rdname unitted_str
 #' @export
-#' 
+#' @importFrom utils str
 #' @param object The object whose structure is to be displayed
 #' @param ... other arguments passed to \code{str}
 str.unitted <- function(object, ...) {
@@ -138,6 +139,7 @@ str.unitted <- function(object, ...) {
 }
 
 #' @rdname unitted_str
+#' @importFrom utils str
 #' @export
 str.unitted_data.frame <- function(object, ...) {
   if (!is.data.frame(object)) {
@@ -168,6 +170,7 @@ str.unitted_NULL <- function(object, ...) {
 
 #### .str ####
 
+#' importFrom utils str
 .str <- function(object, ...) {
   if(isS4(object)) {
     cat("S4 object of class '", class(object), "' (package '", attr(class(object),"package"), "'):\n",sep="")

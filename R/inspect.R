@@ -25,6 +25,7 @@ setMethod(
 )
 
 #' @rdname get_units
+#' @importFrom stats setNames
 #' @param recursive logical. If \code{object} is a list or data.frame, should
 #'   the units attached to each element be returned?
 setMethod(
@@ -39,6 +40,7 @@ setMethod(
 )
 
 #' @rdname get_units
+#' @importFrom stats setNames
 setMethod(
   "get_units", "list",
   function(object, recursive=TRUE, ...) {
@@ -51,6 +53,7 @@ setMethod(
 )
 
 #' @rdname get_units
+#' @importFrom stats setNames
 setMethod(
   "get_units", "data.frame",
   function(object, recursive=TRUE, ...) {

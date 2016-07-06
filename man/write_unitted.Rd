@@ -16,21 +16,21 @@ write_unitted(x, file = "", ...)
 \item{x}{The unitted object to be written. Currently only implemented for 
 data.frames.}
 
-\item{file, }{The file to write to, as in \code{\link{write.table}}}
+\item{file, }{The file to write to, as in \code{\link[utils]{write.table}}}
 
-\item{...}{other arguments passed to \code{\link{write.table}}}
+\item{...}{other arguments passed to \code{\link[utils]{write.table}}}
 
 \item{comment.char}{a single character, or "", with which to prepend the line
 containing units information}
 
 \item{sep}{the character string used to separate columns, as in 
-\code{\link{write.table}}}
+\code{\link[utils]{write.table}}}
 
 \item{row.names}{logical. whether to write row names to the file, as in 
-\code{\link{write.table}}}
+\code{\link[utils]{write.table}}}
 
 \item{quote}{logical. whether to place quotes around every data entry, as in 
-\code{\link{write.table}}}
+\code{\link[utils]{write.table}}}
 }
 \description{
 Write a unitted object to file.

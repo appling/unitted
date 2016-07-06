@@ -337,6 +337,7 @@ NULL
 #' @param x first unitted object to merge
 #' @param y second unitted object to merge
 #' @param ... other arguments passed to \code{c}
+#' @importFrom utils capture.output
 #' @export
 setMethod(
   "merge", 

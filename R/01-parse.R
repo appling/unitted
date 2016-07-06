@@ -172,6 +172,7 @@ merge_units <- function(unitdfs, delimiter="|", rule=c("disambiguate","never","a
   # definition, taking the first as the default. Convert to integer.
   rule <- match.arg(rule)
   # merge the units within each unitdf
+  . <- 'dplyr.var'
   strunits <- lapply(unitdfs, function(unitdf) {
     unitdf %>%
       mutate(Unit = delimit_units(unitdf$Unit, delimiter, rule)) %>% 

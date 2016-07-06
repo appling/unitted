@@ -21,7 +21,7 @@ as in \code{\link{read.table}}}
 \item{sep}{character string separating columns of the table, as in 
 \code{\link{read.table}}}
 
-\item{stringsAsFactors}{logical indicating whether to convert strings to
+\item{stringsAsFactors}{logical indicating whether to convert strings to 
 factors, as in \code{\link{read.table}}}
 
 \item{...}{Other arguments passed to \code{\link{read.table}}.}

@@ -31,9 +31,10 @@
 \item{row.names}{logical (or character vector), indicating whether (or
     what) row names should be printed.}
 
-\item{n}{Number of rows to show, as in \code{\link[dplyr]{print.tbl_df}}}
+\item{n}{Number of rows to show, as in \code{\link[tibble]{print.tbl_df}}}
 
-\item{width}{Width of text output to generate, as in \code{\link[dplyr]{print.tbl_df}}}
+\item{width}{Width of text output to generate, as in
+\code{\link[tibble]{print.tbl_df}}}
 }
 \value{
 An invisible unitted vector

@@ -12,6 +12,9 @@
 
 \method{as_tibble}{unitted_tbl_df}(x)
 }
+\arguments{
+\item{x}{the unitted object to convert to a unitted_tbl_df}
+}
 \description{
 Implements \code{\link[tibble]{as_tibble}} for unitted_lists
 
@@ -20,8 +23,11 @@ Implements \code{\link[tibble]{as_tibble}} for unitted_data.frames
 Implements \code{\link[tibble]{as_tibble}} for unitted_tbl_dfs
 }
 \examples{
-as_tibble(u(list(x=u(1:3,"X"), y=u(3:5,"Y"), z=u(c("aa", "bb", "cc"),"Z"))))
-as_tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")))
-as_tibble(u(list(x=u(1:3,"X"), y=u(3:5,"Y"), z=u(c("aa", "bb", "cc"),"Z"))))
+tibble::as_tibble(
+ u(list(x=u(1:3,"X"), y=u(3:5,"Y"), z=u(c("aa", "bb", "cc"),"Z"))))
+tibble::as_tibble(
+ u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")))
+tibble::as_tibble(
+ u(data.frame(x=u(1:3,"X"), y=u(3:5,"Y"), z=u(c("aa", "bb", "cc"),"Z"))))
 }
 

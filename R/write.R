@@ -4,7 +4,7 @@
 #' @exportMethod write_unitted
 #' @param x The unitted object to be written. Currently only implemented for 
 #'   data.frames.
-#' @param file, The file to write to, as in \code{\link{write.table}}
+#' @param file, The file to write to, as in \code{\link[utils]{write.table}}
 #' @return NULL
 #' @examples
 #' write_unitted(u(data.frame(x=1:3, y=9:7), c(x="grapes","seeds")))
@@ -24,12 +24,13 @@ setGeneric(
 #' @param comment.char a single character, or "", with which to prepend the line
 #'   containing units information
 #' @param sep the character string used to separate columns, as in 
-#'   \code{\link{write.table}}
+#'   \code{\link[utils]{write.table}}
 #' @param row.names logical. whether to write row names to the file, as in 
-#'   \code{\link{write.table}}
+#'   \code{\link[utils]{write.table}}
 #' @param quote logical. whether to place quotes around every data entry, as in 
-#'   \code{\link{write.table}}
-#' @param ... other arguments passed to \code{\link{write.table}}
+#'   \code{\link[utils]{write.table}}
+#' @param ... other arguments passed to \code{\link[utils]{write.table}}
+#' @importFrom utils write.table
 setMethod(
   "write_unitted", "unitted_data.frame",
   function(x, file="", comment.char="#", sep="\t", row.names=FALSE, quote=FALSE, ...) {
@@ -98,7 +99,7 @@ setMethod(
 #'   as in \code{\link{read.table}}
 #' @param sep character string separating columns of the table, as in 
 #'   \code{\link{read.table}}
-#' @param stringsAsFactors logical indicating whether to convert strings to
+#' @param stringsAsFactors logical indicating whether to convert strings to 
 #'   factors, as in \code{\link{read.table}}
 #' @param ... Other arguments passed to \code{\link{read.table}}.
 #' @param attach.units logical. If TRUE, the returned value is unitted. If 
@@ -106,6 +107,7 @@ setMethod(
 #'   a non-unitted data.frame.
 #' @return a unitted_data.frame if attach.units=TRUE, or a data.frame if 
 #'   attach.units=FALSE.
+#' @importFrom utils read.table
 #' @export
 #' @examples
 #' practice <- u(data.frame(x=1:3, y=9:7, row.names=as.character(1:3)), c(x="grapes","seeds"))

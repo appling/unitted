@@ -3,6 +3,8 @@
 #' Uses the corresponding dplyr join functions.
 #' 
 #' @name join
+#' @param x left-hand-side table to join
+#' @param y right-hand-side table to join
 #' @inheritParams dplyr::inner_join
 #' @importFrom dplyr inner_join
 #' @export

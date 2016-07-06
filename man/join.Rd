@@ -41,7 +41,9 @@
 \method{anti_join}{unitted_tbl_df}(x, y, by = NULL, copy = FALSE, ...)
 }
 \arguments{
-\item{x}{tbls to join}
+\item{x}{left-hand-side table to join}
+
+\item{y}{right-hand-side table to join}
 
 \item{by}{a character vector of variables to join by.  If \code{NULL}, the
   default, \code{join} will do a natural join, using all variables with

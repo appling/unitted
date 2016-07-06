@@ -15,10 +15,12 @@ NULL
 #' @importFrom dplyr select_ select_vars_
 #' @importFrom lazyeval all_dots
 #' @export
-#'
+#' 
 #' @rdname select
 #' @examples
-#' dplyr::select(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")), a=y, x)
+#' dplyr::select(
+#'  u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")), 
+#'  a=y, x)
 select_.unitted_data.frame <- function (.data, ..., .dots) {
   # copy lines from dplyr:::select_.data.frame
   dots <- lazyeval::all_dots(.dots, ...)
@@ -30,10 +32,12 @@ select_.unitted_data.frame <- function (.data, ..., .dots) {
 #' @importFrom dplyr select_ select_vars_
 #' @importFrom lazyeval all_dots
 #' @export
-#'
+#' 
 #' @rdname select
 #' @examples
-#' dplyr::select(tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))), a=y, x)
+#' dplyr::select(
+#'  tibble::as_tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))), 
+#'  a=y, x)
 select_.unitted_tbl_df <- function (.data, ..., .dots) {
   # copy lines from dplyr:::select_.data.frame
   dots <- lazyeval::all_dots(.dots, ...)
@@ -83,7 +87,7 @@ rename_.unitted_data.frame <- function (.data, ..., .dots) {
 #' @rdname select
 #' @examples
 #' df <- u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))
-#' dplyr::rename(tibble(df), a=y, beta=x)
+#' dplyr::rename(tibble::as_tibble(df), a=y, beta=x)
 rename_.unitted_tbl_df <- function(.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ...)
   unitted_rename(.data, .dots=dots)
@@ -120,7 +124,7 @@ unitted_rename <- function (.data, .dots) {
 #' dplyr::mutate(df, z=LETTERS[y], k=x*y)
 mutate_.unitted_data.frame <- function (.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)
-  as.data.frame(dplyr::mutate_(tibble(.data), .dots=dots))
+  as.data.frame(dplyr::mutate_(as_tibble(.data), .dots=dots))
 }
 
 #' Implements dplyr::mutate and dplyr::mutate_ for unitted_tbl_dfs
@@ -134,7 +138,7 @@ mutate_.unitted_data.frame <- function (.data, ..., .dots) {
 #' @importFrom lazyeval all_dots
 #' @export
 #' @examples
-#' dtb <- tibble(u(data.frame(x=1:3, y=3:5), c("X","X")))
+#' dtb <- tibble::as_tibble(u(data.frame(x=1:3, y=3:5), c("X","X")))
 #' dplyr::mutate(dtb, z=LETTERS[y], k=x+y)
 mutate_.unitted_tbl_df <- function (.data, ..., .dots) {
   dots <- lazyeval::all_dots(.dots, ..., all_named = TRUE)

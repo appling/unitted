@@ -223,11 +223,7 @@ setMethod(
     
     # Overwrite units when current column units are absent and/or units[col] is not NA
     for(col in 1:ncol(object)) {
-      if(isS4(units[[col]])) {
-        object[,col] <- unitted(object[,col], units[[col]])
-      } else {
-        object[,col] <- unitted(object[,col], units[[col]])
-      }
+      object[,col] <- list(unitted(object[,col], units[[col]]))
     }
     # Known bug: The following line creates row names for data.frames even if 
     # they were absent before. This is a property of S4 data.frames that doesn't
@@ -413,7 +409,7 @@ setMethod(
 #' @param x The unitted_tbl_df to convert to a data.frame
 #' @param ... Additional arguments passed to as.data.frame
 #' @examples
-#' x <- as_tibble(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
+#' x <- tibble::as_tibble(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
 #' as.data.frame(x)
 #' @export
 as.data.frame.unitted_tbl_df <- function(x, ...) {
@@ -510,8 +506,9 @@ setMethod(
   }
 )
 #' @rdname deunitted
+#' @import tibble
 #' @examples
-#' x <- as_tibble(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
+#' x <- tibble::as_tibble(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 #' str(v(x))
 #' str(v(x, partial=TRUE))
 setMethod(
@@ -546,6 +543,7 @@ setMethod(
     as.data.frame(lapply(object, function(col) { deunitted(col) }))
   }
 )
+#' @import tibble
 #' @rdname deunitted
 setMethod(
   "deunitted", "tbl_df",
@@ -656,6 +654,7 @@ setMethod(
     }
   }
 )
+#' @importFrom stats setNames
 setMethod(
   "get_unitbundles", "unitted_data.frame",
   function(object, recursive=TRUE, ...) {
@@ -666,6 +665,7 @@ setMethod(
     }
   }
 )
+#' @importFrom stats setNames
 setMethod(
   "get_unitbundles", "unitted_tbl_df",
   function(object, recursive=TRUE, ...) {
@@ -686,6 +686,7 @@ setMethod(
     }
   }
 )
+#' @importFrom stats setNames
 setMethod(
   "get_unitbundles", "unitted_list",
   function(object, recursive=FALSE, ...) {
