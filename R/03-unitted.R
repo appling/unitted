@@ -165,14 +165,15 @@ new_unitted_class <- function(superclass.name, overwrite=FALSE) {
 # definitions.
 sapply(c("character","complex","logical","numeric","raw","NULL",
          "factor","Date","POSIXct","POSIXlt",
-         "list","data.frame","tbl_df",
+         "list","tbl_df", #"data.frame",
          "array","matrix","ts",
          "expression","name","function"), 
        new_unitted_class)
 # setOldClass("difftime")
 # new_unitted_class("difftime")
 
-
+#' @exportClass unitted_data.frame
+setClass("unitted_data.frame", contains=c("unitted", "data.frame"))
 
 #### Specific Constructors ####
 
@@ -350,6 +351,7 @@ setMethod(
 
 #### as.data.frame ####
 
+
 #' Construct a unitted element of a data.frame
 #' 
 #' \code{data.frames} are constructed by applying \code{as.data.frame()} to each
@@ -363,6 +365,7 @@ setMethod(
 #' @param x A unitted object
 #' @param ... Other arguments passed to \code{as.data.frame()}
 #' @return A unitted data.frame element
+#' @export
 as.data.frame.unitted <- function(x, ...) {
   .unitted_as.data.frame(object=x, ...)
 }

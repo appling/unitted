@@ -171,6 +171,7 @@ str.unitted_NULL <- function(object, ...) {
 #### .str ####
 
 #' importFrom utils str
+#' @rdname dot.str
 .str <- function(object, ...) {
   if(isS4(object)) {
     cat("S4 object of class '", class(object), "' (package '", attr(class(object),"package"), "'):\n",sep="")
