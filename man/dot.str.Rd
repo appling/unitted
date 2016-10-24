@@ -6,6 +6,11 @@
 \usage{
 .str(object, ...)
 }
+\arguments{
+\item{object}{the object to describe}
+
+\item{...}{other args for future development}
+}
 \description{
 importFrom utils str
 }

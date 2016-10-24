@@ -172,6 +172,13 @@ sapply(c("character","complex","logical","numeric","raw","NULL",
 # setOldClass("difftime")
 # new_unitted_class("difftime")
 
+#' A data.frame with units attached to each column
+#' 
+#' Data frame columns can be extracted with units and cells can be modified with
+#' units checking.
+#' 
+#' @name unitted_data.frame-class
+#' @rdname unitted_data.frame-class
 #' @exportClass unitted_data.frame
 setClass("unitted_data.frame", contains=c("unitted", "data.frame"))
 
