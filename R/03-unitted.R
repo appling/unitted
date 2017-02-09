@@ -358,7 +358,6 @@ setMethod(
 
 #### as.data.frame ####
 
-
 #' Construct a unitted element of a data.frame
 #' 
 #' \code{data.frames} are constructed by applying \code{as.data.frame()} to each
