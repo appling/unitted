@@ -32,4 +32,3 @@ Turn a units data.frame into the character representation of the units
 \seealso{
 Other unit-merging functions: \code{\link{delimit_units}}
 }
-

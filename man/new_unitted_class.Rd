@@ -44,4 +44,3 @@ dispatch system (S3 or s4).
 \examples{
 # only works during package build, at least at the moment
 }
-

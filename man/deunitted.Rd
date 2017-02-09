@@ -2,18 +2,18 @@
 % Please edit documentation in R/03-unitted.R
 \docType{methods}
 \name{v}
+\alias{v}
 \alias{deunitted}
-\alias{deunitted,ANY-method}
-\alias{deunitted,data.frame-method}
-\alias{deunitted,list-method}
-\alias{deunitted,tbl_df-method}
 \alias{deunitted,unitted-method}
+\alias{deunitted,unitted_factor-method}
 \alias{deunitted,unitted_NULL-method}
 \alias{deunitted,unitted_data.frame-method}
-\alias{deunitted,unitted_factor-method}
-\alias{deunitted,unitted_list-method}
 \alias{deunitted,unitted_tbl_df-method}
-\alias{v}
+\alias{deunitted,unitted_list-method}
+\alias{deunitted,data.frame-method}
+\alias{deunitted,tbl_df-method}
+\alias{deunitted,list-method}
+\alias{deunitted,ANY-method}
 \title{Extract data from a unitted object}
 \usage{
 v(object, ...)
@@ -88,4 +88,3 @@ str(v(x, partial=TRUE))
   of unitted objects; \code{\linkS4class{unitted}} for the definition of the 
   unitted class
 }
-

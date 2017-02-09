@@ -15,4 +15,3 @@ a data.frame with columns for unit and power
 \description{
 Separate a unitbundle into a data frame of units and powers
 }
-

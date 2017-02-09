@@ -2,9 +2,9 @@
 % Please edit documentation in R/display.R
 \docType{methods}
 \name{print.unitted}
+\alias{print.unitted}
 \alias{.unitted_print,data.frame-method}
 \alias{.unitted_print,tbl_df-method}
-\alias{print.unitted}
 \title{Print a unitted object}
 \usage{
 \method{print}{unitted}(x, ...)
@@ -52,4 +52,3 @@ Print a unitted_tbl_df
 head(u(data.frame(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 tibble::as_tibble(u(list(x = u(1:500,"A"), y = u(runif(500),"B"), z = u(500:1,"C"))))
 }
-

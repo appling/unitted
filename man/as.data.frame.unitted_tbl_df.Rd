@@ -21,4 +21,3 @@ processing time since we come here first.
 x <- tibble::as_tibble(u(data.frame(x=u(1:3,"k"), y=u(3:5, "g"))))
 as.data.frame(x)
 }
-

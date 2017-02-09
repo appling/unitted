@@ -27,6 +27,7 @@ contain a single units bundle (e.g., "kg ha^-1"), a matrix or array of
 bundles, or a list of bundles. Any of these may be retrieved with 
 \code{\link{get_units}}.}
 }}
+
 \examples{
 # unitted object creation
 miles_vec <- unitted(1:5,"mi")
@@ -43,4 +44,3 @@ hours_vec == hours_vec
   \code{\link{deunitted}} for recovering the data from the unitted object, 
   and \code{\link{unitted_Ops}} for smart units behaviors.
 }
-

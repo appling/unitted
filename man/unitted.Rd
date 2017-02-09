@@ -4,10 +4,10 @@
 \name{u}
 \alias{u}
 \alias{unitted}
-\alias{unitted,array-method}
 \alias{unitted,data.frame-method}
-\alias{unitted,list-method}
 \alias{unitted,tbl_df-method}
+\alias{unitted,array-method}
+\alias{unitted,list-method}
 \alias{unitted,unitted-method}
 \title{Attach units to data}
 \usage{
@@ -109,4 +109,3 @@ multiple units in an array or matrix if the option were available.
   
   }
 }
-

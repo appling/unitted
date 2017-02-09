@@ -11,4 +11,3 @@ Appropriate to full, inner, left, and right joins, where the units are those
 resulting from a separate join on the units alone
 }
 \keyword{internal}
-

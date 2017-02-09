@@ -8,4 +8,3 @@
 Data frame columns can be extracted with units and cells can be modified with
 units checking.
 }
-

@@ -17,4 +17,3 @@ It is not clear what it would mean to perform logical operations on
 unitbundles; for this reason, methods in the \code{Logic} group throw errors
 when applied to unitbundles.
 }
-

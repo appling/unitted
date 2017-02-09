@@ -59,4 +59,3 @@ e1 are returned.}
 \code{\link{unitbundle}} for the \code{unitbundle} class; 
   \code{\linkS4class{unitted}} for data with unitbundles attached
 }
-

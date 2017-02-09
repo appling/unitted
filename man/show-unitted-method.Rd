@@ -13,4 +13,3 @@
 \description{
 Displays a unitted object, including its units and data type whenever possible
 }
-

@@ -4,7 +4,7 @@ Description: Attaches units to data.frames, vectors, etc. and maintains the
     correct units when you add, multiply, exponentiate, etc. those values.
 URL: https://github.com/appling/unitted
 Version: 0.2.7
-Date: 2016-10-23
+Date: 2017-02-09
 Author: Alison Appling
 Maintainer: Alison Appling <alison.appling@gmail.com>
 License: file LICENSE
@@ -34,4 +34,4 @@ Collate:
     'tibble.R'
     'write.R'
     'zzz.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

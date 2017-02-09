@@ -14,4 +14,3 @@
 \description{
 importFrom utils str
 }
-

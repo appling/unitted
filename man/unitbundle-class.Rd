@@ -2,9 +2,9 @@
 % Please edit documentation in R/02-unitbundle.R
 \docType{class}
 \name{unitbundle-class}
+\alias{unitbundle-class}
 \alias{Constructor}
 \alias{unitbundle}
-\alias{unitbundle-class}
 \title{Class unitbundle}
 \usage{
 unitbundle(units, delimiter = "|", ..., unitdf, unitstr, unitbdl)
@@ -90,6 +90,7 @@ parsed such that \code{"g soil"} is a single unit.
   
   }
 }
+
 \examples{
 unitbundle()
 unitbundle("kg ha^-1 yr^-1")
@@ -103,4 +104,3 @@ unitbundle(unitbdl=unitbundle("kg ha^-1 yr^-1"))
   \code{\link{unitbundle_Ops}} for arithmetic and other operations on
   unitbundles; \code{\link{get_units}} for conversion to character formats
 }
-

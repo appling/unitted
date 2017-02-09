@@ -41,4 +41,3 @@ strings will be turned into N internal representations. }
 Other unit-parsing functions: \code{\link{prepare_delimiter}},
   \code{\link{simplify_units}}, \code{\link{sort_units}}
 }
-

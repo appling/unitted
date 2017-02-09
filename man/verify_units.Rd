@@ -34,4 +34,3 @@ expected. If the first element of return.values is x, verify_units(x) returns
 x when units are as expected, and the function may therefore be chained with 
 other commands.
 }
-

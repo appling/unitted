@@ -45,4 +45,3 @@ read_unitted("practice.tsv")
 all.equal(practice, read_unitted("practice.tsv"))
 file.remove("practice.tsv")
 }
-

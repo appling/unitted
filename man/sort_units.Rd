@@ -23,4 +23,3 @@ Other unit-parsing functions: \code{\link{parse_units}},
   \code{\link{prepare_delimiter}},
   \code{\link{simplify_units}}
 }
-

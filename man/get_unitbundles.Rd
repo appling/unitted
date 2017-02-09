@@ -26,4 +26,3 @@ unitbundle associated with that object.
 get_unitbundles() of a data.frame or unitted_data.frame returns a named list of
 unitbundles (or NAs), one per data.frame column.
 }
-

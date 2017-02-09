@@ -11,4 +11,3 @@ Appropriate to semi_join and anti_join, both of which retain the columns and
 units of the first data.frame
 }
 \keyword{internal}
-

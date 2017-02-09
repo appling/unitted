@@ -10,4 +10,3 @@
 data manipulation activities - addition, multiplication, exponentiation,
 subsetting, and so on.
 }
-

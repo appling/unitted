@@ -23,4 +23,3 @@ Implements dplyr::mutate and dplyr::mutate_ for unitted_data.frames
 df <- u(data.frame(x=1:3, y=3:5), c("X","Y"))
 dplyr::mutate(df, z=LETTERS[y], k=x*y)
 }
-

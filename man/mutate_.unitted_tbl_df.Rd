@@ -23,4 +23,3 @@ Implements dplyr::mutate and dplyr::mutate_ for unitted_tbl_dfs
 dtb <- tibble::as_tibble(u(data.frame(x=1:3, y=3:5), c("X","X")))
 dplyr::mutate(dtb, z=LETTERS[y], k=x+y)
 }
-

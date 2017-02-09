@@ -19,4 +19,3 @@ Helper to parse_units
 Other unit-parsing functions: \code{\link{parse_units}},
   \code{\link{simplify_units}}, \code{\link{sort_units}}
 }
-

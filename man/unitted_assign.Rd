@@ -2,16 +2,16 @@
 % Please edit documentation in R/assign.R
 \docType{methods}
 \name{unitted_assign}
-\alias{$<-}
-\alias{$<-,unitted_data.frame-method}
-\alias{Assign}
+\alias{unitted_assign}
 \alias{[<-}
+\alias{Assign}
 \alias{[<-,unitted,ANY,missing-method}
+\alias{$<-,unitted_data.frame-method}
+\alias{$<-}
 \alias{[<-,unitted_data.frame,ANY,ANY-method}
 \alias{[<-,unitted_data.frame,ANY,missing-method}
 \alias{[<-,unitted_data.frame,missing,ANY-method}
 \alias{[<-,unitted_data.frame,missing,missing-method}
-\alias{unitted_assign}
 \title{Replace parts of a unitted vector, array, or data.frame}
 \usage{
 \S4method{[}{unitted,ANY,missing}(x, i, j, ...) <- value
@@ -49,4 +49,3 @@ Replace parts of a unitted vector, array, or data.frame
 \code{\link{unitted_access}} for assignment to parts of objects; 
   \code{\linkS4class{unitted}} for definition of the unitted class
 }
-

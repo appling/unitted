@@ -10,4 +10,3 @@ unitted_rename(.data, .dots)
 Internal function for renaming unitted objects
 }
 \keyword{internal}
-

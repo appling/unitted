@@ -2,14 +2,14 @@
 % Please edit documentation in R/arithmetic.R
 \docType{methods}
 \name{Ops,unitted,unitted-method}
-\alias{Ops}
-\alias{Ops,ANY,unitted-method}
-\alias{Ops,array,unitted-method}
-\alias{Ops,data.frame,unitted-method}
-\alias{Ops,unitted,ANY-method}
-\alias{Ops,unitted,array-method}
-\alias{Ops,unitted,data.frame-method}
 \alias{Ops,unitted,unitted-method}
+\alias{Ops}
+\alias{Ops,unitted,ANY-method}
+\alias{Ops,ANY,unitted-method}
+\alias{Ops,unitted,data.frame-method}
+\alias{Ops,data.frame,unitted-method}
+\alias{Ops,unitted,array-method}
+\alias{Ops,array,unitted-method}
 \alias{Ops.unitted}
 \alias{unitted_Ops}
 \alias{unitted_Ops,ANY-method}
@@ -60,4 +60,3 @@ unitted objects respect their units.
 \code{\link{unitbundle}} for the \code{unitbundle} class; 
   \code{\linkS4class{unitted}} for data with unitbundles attached
 }
-

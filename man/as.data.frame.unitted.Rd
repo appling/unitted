@@ -23,4 +23,3 @@ with as.data.frame.unitted continue to store their units as members of the
 complete data.frame, although those units may not be visible until/unless the
 data.frame is itself made unitted by a call to \code{u(mydf)}.
 }
-

@@ -3,12 +3,13 @@
 \docType{methods}
 \name{get_units}
 \alias{get_units}
+\alias{get_units}
 \alias{get_units,ANY-method}
-\alias{get_units,data.frame-method}
-\alias{get_units,list-method}
 \alias{get_units,unitbundle-method}
 \alias{get_units,unitted-method}
 \alias{get_units,unitted_list-method}
+\alias{get_units,list-method}
+\alias{get_units,data.frame-method}
 \title{Gets the units as a string or strings.}
 \usage{
 get_units(object, ...)
@@ -60,4 +61,3 @@ representation.
 get_units(5)
 get_units(unitbundle("king kong"))
 }
-

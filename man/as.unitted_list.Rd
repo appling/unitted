@@ -14,4 +14,3 @@ as.unitted_list(x, ...)
 \description{
 Convert to a unitted_list
 }
-

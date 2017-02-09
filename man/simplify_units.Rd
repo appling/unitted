@@ -19,4 +19,3 @@ Combine redundant units and eliminate units raised to the 0th power
 Other unit-parsing functions: \code{\link{parse_units}},
   \code{\link{prepare_delimiter}}, \code{\link{sort_units}}
 }
-

@@ -25,4 +25,3 @@ according to \code{rule}.
 \seealso{
 Other unit-merging functions: \code{\link{merge_units}}
 }
-

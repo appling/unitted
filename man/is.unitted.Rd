@@ -15,4 +15,3 @@ Logical. TRUE if x is unitted, FALSE otherwise
 \description{
 Determine whether an object is unitted
 }
-

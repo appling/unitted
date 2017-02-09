@@ -10,4 +10,3 @@ unitted_select(.data, .dots)
 Internal function for selecting from unitted objects
 }
 \keyword{internal}
-

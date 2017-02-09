@@ -2,10 +2,10 @@
 % Please edit documentation in R/combine.R
 \docType{methods}
 \name{unitted_merge}
-\alias{merge,ANY,unitted-method}
-\alias{merge,unitted,ANY-method}
-\alias{merge,unitted_data.frame,unitted_data.frame-method}
 \alias{unitted_merge}
+\alias{merge,unitted_data.frame,unitted_data.frame-method}
+\alias{merge,unitted,ANY-method}
+\alias{merge,ANY,unitted-method}
 \title{Merge unitted data.frames by one or more common columns}
 \usage{
 \S4method{merge}{unitted_data.frame,unitted_data.frame}(x, y, ...)
@@ -31,4 +31,3 @@ columns
 Other unitted object manipulation: \code{\link{unitted_bind}},
   \code{\link{unitted_c}}, \code{\link{unitted_rep}}
 }
-

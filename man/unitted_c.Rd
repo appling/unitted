@@ -2,9 +2,9 @@
 % Please edit documentation in R/combine.R
 \docType{methods}
 \name{unitted_c}
+\alias{unitted_c}
 \alias{c,unitted-method}
 \alias{c.unitted}
-\alias{unitted_c}
 \title{Combine unitted elements into a unitted vector}
 \usage{
 \S4method{c}{unitted}(x, ..., recursive = FALSE)
@@ -41,4 +41,3 @@ whenever the first argument is unitted.
 Other unitted object manipulation: \code{\link{unitted_bind}},
   \code{\link{unitted_merge}}, \code{\link{unitted_rep}}
 }
-
