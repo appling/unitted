@@ -3,7 +3,7 @@ Title: Track Units as you Manipulate Data
 Description: Attaches units to data.frames, vectors, etc. and maintains the
     correct units when you add, multiply, exponentiate, etc. those values.
 URL: https://github.com/appling/unitted
-Version: 0.2.7
+Version: 0.2.8
 Date: 2017-02-09
 Author: Alison Appling
 Maintainer: Alison Appling <alison.appling@gmail.com>
