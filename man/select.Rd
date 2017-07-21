@@ -20,8 +20,6 @@
 \item{.data}{a unitted_data.frame}
 
 \item{...}{standard dots, as in \code{\link[dplyr]{rename_}}}
-
-\item{.dots}{nonstandard dots, as in \code{\link[dplyr]{rename_}}}
 }
 \value{
 a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation

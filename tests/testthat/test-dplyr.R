@@ -35,5 +35,20 @@ test_that("dplyr::select and rename work on unitted_data.frames and unitted_tbl_
 })
 
 test_that("dplyr::mutate works on unitted_data.frames and unitted_tbl_dfs", {
+  udf <- u(data.frame(x=1:3, x2=1:3, y=3:5, stringsAsFactors=FALSE), c("mg L^-1","mg L^-1","L s^-1"))
+  tbldf <- tibble::as_tibble(udf)
+  
+  # mutate - data.frame
+  expect_equal(dplyr::mutate(udf, z=LETTERS[y])$z, u(c('C','D','E'), NA))
+  expect_equal(dplyr::mutate(udf, z=u(LETTERS[y], 'LL'))$z, u(c('C','D','E'), 'LL'))
+  expect_equal(dplyr::mutate(udf, k=x+x2), u(dplyr::mutate(v(udf), k=x+x2), c(get_units(udf[c('x','x2','y','x')]))))
+  expect_error(dplyr::mutate(udf, z=LETTERS[y], k=x+y), 'Units of e2 are invalid')
+  
+  # mutate - tbldf
+  expect_equal(dplyr::mutate(tbldf, z=LETTERS[y])[['z']], u(c('C','D','E'), NA))
+  expect_equal(dplyr::mutate(tbldf, z=u(LETTERS[y], 'LL'))[['z']], u(c('C','D','E'), 'LL'))
+  expect_equal(dplyr::mutate(tbldf, k=x+x2), u(dplyr::mutate(v(tbldf), k=x+x2), c(get_units(tbldf[c('x','x2','y','x')]))))
+  expect_equal(dplyr::mutate(tbldf, k=x*y)[['k']], tbldf[['x']]*tbldf[['y']])
+  expect_error(dplyr::mutate(tbldf, z=LETTERS[y], k=x+y), 'Units of e2 are invalid')
   
 })
