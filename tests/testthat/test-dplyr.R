@@ -37,9 +37,3 @@ test_that("dplyr::select and rename work on unitted_data.frames and unitted_tbl_
 test_that("dplyr::mutate works on unitted_data.frames and unitted_tbl_dfs", {
   
 })
-
-knownbugdemo <- function() {
-  df <- u(data.frame(x=1:3, y=3:5, z=factor(c("aa", "bb", "cc"))), c("X","Y","Z"))
-  tbldf <- tibble::as_tibble(df)
-  expect_error(print(tbldf), "attempting to coerce non-factor") # Error in as.character.factor(x)
-}
