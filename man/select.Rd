@@ -2,19 +2,19 @@
 % Please edit documentation in R/dplyr.R
 \name{select}
 \alias{select}
-\alias{select_.unitted_data.frame}
-\alias{select_.unitted_tbl_df}
-\alias{rename_.unitted_data.frame}
-\alias{rename_.unitted_tbl_df}
-\title{Column selection for unitted data.frames, tibbles, etc}
+\alias{select.unitted_data.frame}
+\alias{select.unitted_tbl_df}
+\alias{rename.unitted_data.frame}
+\alias{rename.unitted_tbl_df}
+\title{Select/rename variables by name for unitted data.frames & tibbles}
 \usage{
-\method{select_}{unitted_data.frame}(.data, ..., .dots)
+\method{select}{unitted_data.frame}(.data, ...)
 
-\method{select_}{unitted_tbl_df}(.data, ..., .dots)
+\method{select}{unitted_tbl_df}(.data, ...)
 
-\method{rename_}{unitted_data.frame}(.data, ..., .dots)
+\method{rename}{unitted_data.frame}(.data, ...)
 
-\method{rename_}{unitted_tbl_df}(.data, ..., .dots)
+\method{rename}{unitted_tbl_df}(.data, ...)
 }
 \arguments{
 \item{.data}{a unitted_data.frame}
@@ -29,7 +29,7 @@ a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
 a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
 }
 \description{
-Column selection for unitted data.frames, tibbles, etc
+Select/rename variables by name for unitted data.frames & tibbles
 
 Implements dplyr::select and dplyr::select_ for unitted_data.frames
 

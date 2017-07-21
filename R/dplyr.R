@@ -1,12 +1,12 @@
 #### select, rename, mutate, ... ####
 
-#' Column selection for unitted data.frames, tibbles, etc
+#' Select/rename variables by name for unitted data.frames & tibbles
 #' 
 #' @param .data a unitted_data.frame
 #' @param ... standard dots, as in \code{\link[dplyr]{rename_}}
 #' @param .dots nonstandard dots, as in \code{\link[dplyr]{rename_}}
 #' @return a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
-#' 
+#'   
 #' @name select
 NULL
 
@@ -21,10 +21,12 @@ NULL
 #' dplyr::select(
 #'  u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")), 
 #'  a=y, x)
-select_.unitted_data.frame <- function (.data, ..., .dots) {
-  # copy lines from dplyr:::select_.data.frame
-  dots <- lazyeval::all_dots(.dots, ...)
-  unitted_select(.data, dots)
+select.unitted_data.frame <- function (.data, ...) {
+  # copy lines from dplyr:::select.data.frame
+  vars <- dplyr::select_vars(names(.data), !!! quos(...))
+  # call dplyr::select rather than dplyr:::select_impl to preserve :::
+  dplyr::select(v(.data), ...) %>%
+    u(get_unitbundles(.data)[vars])
 }
 
 #' Implements dplyr::select and dplyr::select_ for unitted_tbl_dfs
@@ -38,27 +40,7 @@ select_.unitted_data.frame <- function (.data, ..., .dots) {
 #' dplyr::select(
 #'  tibble::as_tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))), 
 #'  a=y, x)
-select_.unitted_tbl_df <- function (.data, ..., .dots) {
-  # copy lines from dplyr:::select_.data.frame
-  dots <- lazyeval::all_dots(.dots, ...)
-  unitted_select(.data, dots)
-}
-
-#' Internal function for selecting from unitted objects
-#' 
-#' @keywords internal
-unitted_select <- function (.data, .dots) {
-  
-  # copy lines from dplyr:::select_.data.frame
-  vars <- select_vars_(names(.data), .dots)
-  
-  # use dplyr's internal functions to select/rename the data columns
-  select_(v(.data), .dots=vars) %>%
-    # use the vars from select_vars_ above to select the units
-    u(get_unitbundles(.data)[vars])
-  
-}
-
+select.unitted_tbl_df <- select.unitted_data.frame
 
 
 #' Implements dplyr::rename and dplyr::rename_ for unitted_data.frames
@@ -71,9 +53,11 @@ unitted_select <- function (.data, .dots) {
 #' @examples
 #' df <- u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))
 #' dplyr::rename(df, a=y, beta=x)
-rename_.unitted_data.frame <- function (.data, ..., .dots) {
-  dots <- lazyeval::all_dots(.dots, ...)
-  unitted_rename(.data, .dots=dots)
+rename.unitted_data.frame <- function (.data, ...) {
+  vars <- rename_vars(names(.data), !!! quos(...))
+  # call dplyr::select rather than dplyr:::select_impl to preserve :::
+  dplyr::rename(v(.data), ...) %>%
+    u(get_unitbundles(.data)[vars])
 }
 
 #' Implements dplyr::rename and dplyr::rename_ for unitted_tbl_dfs
@@ -88,25 +72,8 @@ rename_.unitted_data.frame <- function (.data, ..., .dots) {
 #' @examples
 #' df <- u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))
 #' dplyr::rename(tibble::as_tibble(df), a=y, beta=x)
-rename_.unitted_tbl_df <- function(.data, ..., .dots) {
-  dots <- lazyeval::all_dots(.dots, ...)
-  unitted_rename(.data, .dots=dots)
-}
-  
-#' Internal function for renaming unitted objects
-#' 
-#' @keywords internal
-unitted_rename <- function (.data, .dots) {
-  
-  # copy lines from dplyr:::select_.data.frame
-  vars <- rename_vars_(names(.data), .dots)
-  
-  # use dplyr's internal functions to select/rename the data columns
-  select_(v(.data), .dots=vars) %>%
-    # use the vars from select_vars_ above to select the units
-    u(get_unitbundles(.data)[vars])
-  
-}
+rename.unitted_tbl_df <- rename.unitted_data.frame
+
 
 #' Implements dplyr::mutate and dplyr::mutate_ for unitted_data.frames
 #' 
