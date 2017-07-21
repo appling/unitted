@@ -12,7 +12,8 @@
 \S4method{.unitted_print}{data.frame}(x, ..., digits = NULL, quote = FALSE,
   right = TRUE, row.names = TRUE)
 
-\S4method{.unitted_print}{tbl_df}(x, ..., n = NULL, width = NULL)
+\S4method{.unitted_print}{tbl_df}(x, ..., n = NULL, width = NULL,
+  n_extra = NULL)
 }
 \arguments{
 \item{x}{The unitted object}
@@ -31,10 +32,21 @@
 \item{row.names}{logical (or character vector), indicating whether (or
     what) row names should be printed.}
 
-\item{n}{Number of rows to show, as in \code{\link[tibble]{print.tbl_df}}}
+\item{n}{As in tibble's \code{\link[tibble]{formatting}}, Number of rows to
+show. If `NULL`, the default, will print all rows if less than option 
+`tibble.print_max`. Otherwise, will print `tibble.print_min` rows.}
 
-\item{width}{Width of text output to generate, as in
-\code{\link[tibble]{print.tbl_df}}}
+\item{width}{As in tibble's \code{\link[tibble]{formatting}}, Width of text
+output to generate. This defaults to NULL, which means use 
+`getOption("tibble.width")` or (if also NULL) `getOption("width")`; the 
+latter displays only the columns that fit on one screen. You can also set 
+`options(tibble.width = Inf)` to override this default and always print all
+columns.}
+
+\item{n_extra}{As in tibble's \code{\link[tibble]{formatting}}, Number of
+extra columns to print abbreviated information for, if the width is too
+small for the entire tibble. If `NULL`, the default, will print information
+about at most `tibble.max_extra_cols` extra columns.}
 }
 \value{
 An invisible unitted vector
