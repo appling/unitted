@@ -34,6 +34,24 @@ test_that("dplyr::select and rename work on unitted_data.frames and unitted_tbl_
   
 })
 
+test_that("select() and rename() work on unitted objects via tidyselect (regression: select_vars/rename_vars removed in dplyr 1.0.0)", {
+  # Constructs the same fixture used in existing tests and in man/select.Rd examples.
+  df <- u(data.frame(x=1:3, y=3:5, z=c("aa","bb","cc"), stringsAsFactors=FALSE), c("X","Y","Z"))
+  tbl <- tibble::as_tibble(df)
+
+  # select: rename y->a, keep x — exercises select.unitted_data.frame -> tidyselect::vars_select
+  expect_equal(dplyr::select(df, a=y, x),
+               u(dplyr::select(v(df), a=y, x), c("Y","X")))
+  expect_equal(dplyr::select(tbl, a=y, x),
+               u(dplyr::select(v(tbl), a=y, x), c("Y","X")))
+
+  # rename: y->a, x->beta — exercises rename.unitted_data.frame -> tidyselect::vars_rename
+  expect_equal(dplyr::rename(df, a=y, beta=x),
+               u(dplyr::rename(v(df), a=y, beta=x), c("X","Y","Z")))
+  expect_equal(dplyr::rename(tbl, a=y, beta=x),
+               u(dplyr::rename(v(tbl), a=y, beta=x), c("X","Y","Z")))
+})
+
 test_that("dplyr::mutate works on unitted_data.frames and unitted_tbl_dfs", {
   udf <- u(data.frame(x=1:3, x2=1:3, y=3:5, stringsAsFactors=FALSE), c("mg L^-1","mg L^-1","L s^-1"))
   tbldf <- tibble::as_tibble(udf)
