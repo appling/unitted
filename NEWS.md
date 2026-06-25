@@ -7,6 +7,12 @@
   `tidyselect::vars_select()` and `tidyselect::vars_rename()` respectively,
   and added `tidyselect` and `rlang` to `Imports`.
 
+* Removed dead test assertions for `dplyr::select_()` and `dplyr::rename_()`
+  (the old standard-evaluation underscore-suffix variants made defunct in
+  dplyr 1.0.0). No `select_.`/`rename_.` S3 method was ever implemented for
+  `unitted_data.frame` or `unitted_tbl_df`, so these tests exercised only the
+  defunct dplyr generics themselves — not any unitted code path.
+
 # 0.2.9
 
 * new implementations of `select`, `rename`, and `mutate` (for unitted data) to

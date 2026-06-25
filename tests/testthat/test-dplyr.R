@@ -22,15 +22,11 @@ test_that("dplyr::select and rename work on unitted_data.frames and unitted_tbl_
   
   # select
   expect_equal(dplyr::select(udf, a=y, x), u(dplyr::select(v(udf), a=y, x), c("Y","X")))
-  expect_equal(dplyr::select_(udf, a="y", "x"), u(dplyr::select_(v(udf), a="y", "x"), c("Y","X")))
   expect_equal(dplyr::select(tbldf, a=y, x), u(dplyr::select(v(tbldf), a=y, x), c("Y","X")))
-  expect_equal(dplyr::select_(tbldf, a="y", "x"), u(dplyr::select_(v(tbldf), a="y", "x"), c("Y","X")))
-  
+
   # rename
   expect_equal(dplyr::rename(udf, a=y, beta=x), u(dplyr::rename(v(udf), a=y, beta=x), c("X","Y","Z")))
-  expect_equal(dplyr::rename_(udf, a="y", beta="x"), u(dplyr::rename_(v(udf), a="y", beta="x"), c("X","Y","Z")))
   expect_equal(dplyr::rename(tbldf, a=y, beta=x), u(dplyr::rename(v(tbldf), a=y, beta=x), c("X","Y","Z")))
-  expect_equal(dplyr::rename_(tbldf, a="y", beta="x"), u(dplyr::rename_(v(tbldf), a="y", beta="x"), c("X","Y","Z")))
   
 })
 
