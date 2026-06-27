@@ -11,18 +11,18 @@ NULL
 
 #' Implements dplyr::select and dplyr::select_ for unitted_data.frames
 #' 
-#' @importFrom dplyr select_ select_vars_
+#' @importFrom dplyr select_
 #' @importFrom lazyeval all_dots
 #' @export
-#' 
+#'
 #' @rdname select
 #' @examples
 #' dplyr::select(
-#'  u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")), 
+#'  u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z")),
 #'  a=y, x)
 select.unitted_data.frame <- function (.data, ...) {
   # copy lines from dplyr:::select.data.frame
-  vars <- dplyr::select_vars(names(.data), !!! quos(...))
+  vars <- tidyselect::vars_select(names(.data), !!! rlang::quos(...))
   # call dplyr::select rather than dplyr:::select_impl to preserve :::
   dplyr::select(v(.data), ...) %>%
     u(get_unitbundles(.data)[vars])
@@ -30,21 +30,21 @@ select.unitted_data.frame <- function (.data, ...) {
 
 #' Implements dplyr::select and dplyr::select_ for unitted_tbl_dfs
 #' 
-#' @importFrom dplyr select_ select_vars_
+#' @importFrom dplyr select_
 #' @importFrom lazyeval all_dots
 #' @export
-#' 
+#'
 #' @rdname select
 #' @examples
 #' dplyr::select(
-#'  tibble::as_tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))), 
+#'  tibble::as_tibble(u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))),
 #'  a=y, x)
 select.unitted_tbl_df <- select.unitted_data.frame
 
 
 #' Implements dplyr::rename and dplyr::rename_ for unitted_data.frames
 #' 
-#' @importFrom dplyr select_ rename_vars_
+#' @importFrom dplyr select_
 #' @importFrom lazyeval all_dots
 #' @export
 #'
@@ -53,7 +53,7 @@ select.unitted_tbl_df <- select.unitted_data.frame
 #' df <- u(data.frame(x=1:3, y=3:5, z=c("aa", "bb", "cc")), c("X","Y","Z"))
 #' dplyr::rename(df, a=y, beta=x)
 rename.unitted_data.frame <- function (.data, ...) {
-  vars <- rename_vars(names(.data), !!! quos(...))
+  vars <- tidyselect::vars_rename(names(.data), !!! rlang::quos(...))
   # call dplyr::select rather than dplyr:::select_impl to preserve :::
   dplyr::rename(v(.data), ...) %>%
     u(get_unitbundles(.data)[vars])
@@ -63,7 +63,7 @@ rename.unitted_data.frame <- function (.data, ...) {
 #' 
 #' @return a unitted_data.frame after the \code{\link[dplyr]{rename_}} operation
 #' 
-#' @importFrom dplyr select_ rename_vars_
+#' @importFrom dplyr select_
 #' @importFrom lazyeval all_dots
 #' @export
 #'
