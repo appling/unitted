@@ -7,12 +7,12 @@ test_that("Objects are recognized as unitted IFF the outer object is unitted", {
   units <- "mg dm^-3 sec^-1 dm^4 sec"
   
   # vectors
-  expect_that(is.unitted(u(101:106, "dalmatians")), is_true()) # numeric
+  expect_true(is.unitted(u(101:106, "dalmatians"))) # numeric
   expect_that(u(rep(c(T,F,NA),4), units), is_a("unitted")) # logical
   knownbug(expect_that(class(u(Sys.Date()+(-2):6, units)), equals(c("unitted","Date"))))
   knownbug(expect_that(class(u(Sys.time()+1:9, units)), equals(c("unitted","POSIXct","POSIXt"))))
   knownbug(expect_that(class(u(as.POSIXlt(Sys.time()+1:9), units)), equals(c("unitted","POSIXlt","POSIXt"))))
-  expect_that(is.unitted(u(as.POSIXlt(Sys.time()+1:9), units)), is_true()) # POSIXlt
+  expect_true(is.unitted(u(as.POSIXlt(Sys.time()+1:9), units))) # POSIXlt
   
   # data.frames
   df <- data.frame(z=1:5, y=sample(letters,5))
@@ -22,17 +22,17 @@ test_that("Objects are recognized as unitted IFF the outer object is unitted", {
   expect_that(is.unitted(dfu), is_false())
   udf <- u(df, c("hi","mom"))
   expect_that(c(class(udf)), equals(c("unitted_data.frame")))
-  expect_that(is.unitted(udf), is_true())
+  expect_true(is.unitted(udf))
   
   # arrays
   uarr <- u(array(1:60, c(3,5,4)),"bees")
-  expect_that(is.unitted(uarr), is_true())
+  expect_true(is.unitted(uarr))
   expect_that(c(class(uarr)), equals("unitted_array"))
   expect_that(typeof(uarr), equals("integer"))
 
   # matrices
   umat <- u(matrix(1:60, c(15,4)),"bees")
-  expect_that(is.unitted(umat), is_true())
+  expect_true(is.unitted(umat))
   expect_that(c(class(umat)), equals("unitted_matrix"))
   expect_that(typeof(umat), equals("integer"))
 
@@ -40,7 +40,7 @@ test_that("Objects are recognized as unitted IFF the outer object is unitted", {
   ulist <- u(list(a=1,b=2,5))
   listu <- list(a=u(1,"lasso"),b=u(2,"spurs"),c=5)
   expect_that(is.unitted(listu), is_false())
-  expect_that(is.unitted(listu$b), is_true())  
+  expect_true(is.unitted(listu$b))  
 })
 
 
@@ -149,9 +149,9 @@ test_that("verify_units passes IFF the units are the same", {
 test_that("verify_units options allow flexibility", {
   ### Options
   # return.values=list(x,NULL)
-  expect_that(verify_units(u(1:5,"m"), "m", return.values=list(TRUE,FALSE)), is_true())
+  expect_true(verify_units(u(1:5,"m"), "m", return.values=list(TRUE,FALSE)))
   expect_that(verify_units(u(1:5,"m"), "m", return.values=list(list(a=1:4,b=5),FALSE)), equals(list(a=1:4,b=5)))
-  expect_that(verify_units(u(1:5,"m"), "m", return.values=c(TRUE,FALSE)), is_true())
+  expect_true(verify_units(u(1:5,"m"), "m", return.values=c(TRUE,FALSE)))
   expect_that(verify_units(u(1:5,"m"), "M", return.values=c("apples","oranges")), throws_error("Unexpected units"))
   # violation.handler=stop
   expect_that(verify_units(u(1:5,"m"), "M", violation.handler=warning), gives_warning("Unexpected units"))

@@ -35,8 +35,8 @@ test_that("unitbundles can be created", {
 
 test_that("validObject works", {
   
-  expect_that(validObject(unitbundle()), is_true())
-  expect_that(validObject(unitbundle(unitstr="kg ha^-1 yr^-2")), is_true())
+  expect_true(validObject(unitbundle()))
+  expect_true(validObject(unitbundle(unitstr="kg ha^-1 yr^-2")))
   expect_that(validObject({ub <- unitbundle(); names(ub@unitdf) <- c("Bombs","Away"); ub}), throws_error("unitdf should contain exactly the columns Unit and Power"))
   expect_that(validObject({ub <- unitbundle(); ub@unitdf <- data.frame(Unit=c("one","two","three","four"), Power=c(1,-3,2,7.4)); ub}), throws_error("Unit should be of type 'character'"))
   expect_that(validObject({ub <- unitbundle(data.frame(Unit=c("one","two","three","four"), Power=c(1,-3,2,7.4))); ub@unitdf$Power <- ub@unitdf$Unit; ub}), throws_error("Power should be numeric"))
@@ -46,8 +46,8 @@ test_that("validObject works", {
 
 test_that("unitbundles can be inspected", {
   
-  expect_that(isTRUE(is.na(get_units(5))), is_true())
-  expect_that(all(get_units(list(unitbundle(),unitbundle()))==""), is_true())
+  expect_true(isTRUE(is.na(get_units(5))))
+  expect_true(all(get_units(list(unitbundle(),unitbundle()))==""))
   expect_that(get_units(unitbundle()), equals(""))
   expect_that(get_units(unitbundle(data.frame(Unit=c("joe","button"), Power=NA))), equals("button^NA joe^NA"))
   expect_that(get_units(unitbundle(data.frame(Unit=c("uno","dos","tres"), Power=c(-3,2.4,99)))), equals("dos^2.4 tres^99 uno^-3"))
@@ -85,10 +85,10 @@ test_that("arithmetic works for unitbundles", {
   
   # Exponentiation
   expect_that(ub ^ ub, throws_error())
-  expect_that(is.na(ub ^ unitbundle()), is_true())
+  expect_true(is.na(ub ^ unitbundle()))
   expect_that(ub ^ 2, equals(ub * ub))
   expect_that(3 ^ ub, throws_error())
-  expect_that(is.na(3 ^ unitbundle()), is_true())
+  expect_true(is.na(3 ^ unitbundle()))
   
   # Modulo %%  
   expect_that(7 %% 2, equals(1))
