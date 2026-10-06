@@ -8,7 +8,7 @@ test_that("Objects are recognized as unitted IFF the outer object is unitted", {
   
   # vectors
   expect_true(is.unitted(u(101:106, "dalmatians"))) # numeric
-  expect_that(u(rep(c(T,F,NA),4), units), is_a("unitted")) # logical
+  expect_s4_class(u(rep(c(T,F,NA),4), units), "unitted") # logical
   knownbug(expect_equal(class(u(Sys.Date()+(-2):6, units)), c("unitted","Date")))
   knownbug(expect_equal(class(u(Sys.time()+1:9, units)), c("unitted","POSIXct","POSIXt")))
   knownbug(expect_equal(class(u(as.POSIXlt(Sys.time()+1:9), units)), c("unitted","POSIXlt","POSIXt")))
@@ -19,7 +19,7 @@ test_that("Objects are recognized as unitted IFF the outer object is unitted", {
   expect_equal(class(df), "data.frame")
   dfu <- transform(df, x=u(z,"bluebottles"))
   expect_equal(class(dfu), "data.frame")
-  expect_that(is.unitted(dfu), is_false())
+  expect_false(is.unitted(dfu))
   udf <- u(df, c("hi","mom"))
   expect_equal(c(class(udf)), c("unitted_data.frame"))
   expect_true(is.unitted(udf))
@@ -39,7 +39,7 @@ test_that("Objects are recognized as unitted IFF the outer object is unitted", {
   # lists
   ulist <- u(list(a=1,b=2,5))
   listu <- list(a=u(1,"lasso"),b=u(2,"spurs"),c=5)
-  expect_that(is.unitted(listu), is_false())
+  expect_false(is.unitted(listu))
   expect_true(is.unitted(listu$b))  
 })
 
@@ -53,9 +53,9 @@ test_that("get_units returns a unit string or vector of unit strings", {
   
   # data.frames
   df <- data.frame(co=1:4,balt=4:7)
-  expect_that(get_units(u(df, c("u1","u2^4"))), is_equivalent_to(c("u1","u2^4")))
-  expect_that(get_units(u(df, c("u1",NA))), is_equivalent_to(c("u1","")))
-  expect_that(get_units(u(df, NA)), is_equivalent_to(c("","")))
+  expect_equal(unname(get_units(u(df, c("u1","u2^4")))), c("u1","u2^4"))
+  expect_equal(unname(get_units(u(df, c("u1",NA)))), c("u1",""))
+  expect_equal(unname(get_units(u(df, NA))), c("",""))
   expect_equal(get_units(data.frame(y=1:5, x=u(2:6,"pins"))), c(y=NA,x="pins"))
   expect_equal(get_units(data.frame(y=1:5, x=u(2:6,"pins")))[["x"]], "pins")
   
@@ -112,27 +112,27 @@ test_that("verify_units passes IFF the units are the same", {
   # vectors
   expect_error(verify_units(u(1:5,"m"),c("m","m")), "Conflicting dimensions for given units")
   expect_error(verify_units(u(1:5,"m"),"q"), "Unexpected units: given 'm', expected 'q'")
-  expect_that(verify_units(u(1:5,"m"),"m"), is_identical_to(u(1:5,"m")))
+  expect_identical(verify_units(u(1:5,"m"),"m"), u(1:5,"m"))
   
   # arrays
   expect_error(verify_units(u(array(1:5),"kids"),c("kiddos","kids")), "Conflicting dimensions for given units")
   expect_error(verify_units(u(array(1:5),"kids"),"kiddos"), "Unexpected units")
-  expect_that(verify_units(u(array(1:5),"kids"),c("kids")), is_identical_to(u(array(1:5),"kids")))
+  expect_identical(verify_units(u(array(1:5),"kids"),c("kids")), u(array(1:5),"kids"))
   
   # matrices
   expect_error(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kiddos","kids")), "Conflicting dimensions for given units")
   expect_error(verify_units(u(matrix(1:6,ncol=3),"kids"),"kiddos"), "Unexpected units")
-  expect_that(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kids")), is_identical_to(u(matrix(1:6,ncol=3),"kids")))
+  expect_identical(verify_units(u(matrix(1:6,ncol=3),"kids"),c("kids")), u(matrix(1:6,ncol=3),"kids"))
   
   # data.frames
   expect_error(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("q")), "Conflicting dimensions for given units")
   expect_error(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("p","q")), "Unexpected units")
-  expect_that(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("m","m")), is_identical_to(data.frame(a=u(1:5,"m"),b=u(6:10,"m"))))
+  expect_identical(verify_units(data.frame(a=u(1:5,"m"),b=u(6:10,"m")),c("m","m")), data.frame(a=u(1:5,"m"),b=u(6:10,"m")))
   
   # unitted data.frames
   expect_error(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("q")), "Conflicting dimensions for given units")
   expect_error(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("p","q")), "Unexpected units")
-  expect_that(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("m","m")), is_identical_to(u(data.frame(a=1:5,b=6:10),c("m","m"))))
+  expect_identical(verify_units(u(data.frame(a=1:5,b=6:10),c("m","m")),c("m","m")), u(data.frame(a=1:5,b=6:10),c("m","m")))
   
   # lists
   expect_equal(verify_units(list(a=u(10:1,"h n y")),c("y h^3 n h^-2")), list(a=u(10:1,"n y h")))

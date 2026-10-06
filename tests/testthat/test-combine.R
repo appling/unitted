@@ -73,7 +73,7 @@ test_that("unitted:::c.unitted works", {
   expect_error(c(uls1, uls3), "every element must have the same high-level units")
   expect_equal(c(uls1, u(ls3, "jump")), u(c(ls1, ls3),"jump"))
   expect_equal(get_units(c(uls1, u(ls3, "jump")), recursive=TRUE), c(A=NA,c=NA,e="E",r="R",g=NA))
-  expect_that(c(uls1, u(vec,"jump")), is_a("unitted_list"))
+  expect_s4_class(c(uls1, u(vec,"jump")), "unitted_list")
   expect_equal(get_units(c(uls1, u(vec,"jump")), recursive=FALSE), "jump")
   expect_equal(get_units(c(uls1, u(vec,"jump")), recursive=TRUE), c(A=NA,c=NA,NA,NA))
   
