@@ -99,14 +99,14 @@ test_that("rbind works", {
   # deparse.level argument
   expect_equal(rbind(uvec,uvec, deparse.level=0), u(rbind(vec,vec, deparse.level=0),"snaps"))
   expect_equal(rbind(uvec,uvec, deparse.level=1), rbind(uvec,uvec))
-  expect_that(rbind(uvec,uvec, deparse.level=2), gives_warning("deparse.level=2 has no unitted implementation; defaulting to deparse.level=1"))
+  expect_warning(rbind(uvec,uvec, deparse.level=2), "deparse.level=2 has no unitted implementation; defaulting to deparse.level=1")
   
   # nested within functions
   test_rbind <- function(...) {
     rbind(..., u(5:9,"snaps"))
   }
-  expect_that(test_rbind(uvec,uvec), gives_warning("arguments could not be deparsed; forcing deparse.level to 0"))
-  expect_that(test_rbind(uvec,uvec,deparse.level=0), gives_warning("arguments could not be deparsed; forcing deparse.level to 0"))
+  expect_warning(test_rbind(uvec,uvec), "arguments could not be deparsed; forcing deparse.level to 0")
+  expect_warning(test_rbind(uvec,uvec,deparse.level=0), "arguments could not be deparsed; forcing deparse.level to 0")
   expect_equal(suppressWarnings(test_rbind(uvec,uvec)), u(rbind(vec,vec,5:9,deparse.level=0),"snaps"))
   test_rbind2 <- function(...) {
     rbind(..., u(5:9,"snaps"), deparse.level=0)
@@ -177,14 +177,14 @@ test_that("cbind works", {
   # deparse.level argument
   expect_equal(cbind(uvec,uvec, deparse.level=0), u(cbind(vec,vec, deparse.level=0),"snaps"))
   expect_equal(cbind(uvec,uvec, deparse.level=1), cbind(uvec,uvec))
-  expect_that(cbind(uvec,uvec, deparse.level=2), gives_warning("deparse.level=2 has no unitted implementation; defaulting to deparse.level=1"))
+  expect_warning(cbind(uvec,uvec, deparse.level=2), "deparse.level=2 has no unitted implementation; defaulting to deparse.level=1")
   
   # nested within functions
   test_cbind <- function(...) {
     cbind(..., u(5:9,"snaps"))
   }
-  expect_that(test_cbind(uvec,uvec), gives_warning("arguments could not be deparsed; forcing deparse.level to 0"))
-  expect_that(test_cbind(uvec,uvec,deparse.level=0), gives_warning("arguments could not be deparsed; forcing deparse.level to 0"))
+  expect_warning(test_cbind(uvec,uvec), "arguments could not be deparsed; forcing deparse.level to 0")
+  expect_warning(test_cbind(uvec,uvec,deparse.level=0), "arguments could not be deparsed; forcing deparse.level to 0")
   expect_equal(suppressWarnings(test_cbind(uvec,uvec)), u(cbind(vec,vec,5:9,deparse.level=0),"snaps"))
   test_cbind2 <- function(...) {
     cbind(..., u(5:9,"snaps"), deparse.level=0)

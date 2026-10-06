@@ -13,7 +13,7 @@ test_that("[<-.unitted works for vectors", {
   expect_equal({u0vec[50] <- 5; u0vec}, {vvec[50] <- 5; u(vvec, "")})
   expect_equal({u0vec[] <- 1:99; u0vec}, {vvec[] <- 1:99; u(vvec, "")})
   expect_equal({u0vec[149] <- 7; u0vec}, {vvec[149] <- 7; u(vvec, "")})
-  expect_that({u1vec <- u0vec; u1vec[3] <- 1:20}, gives_warning("number of items to replace is not a multiple of replacement length")) # changes u0vec
+  expect_warning({u1vec <- u0vec; u1vec[3] <- 1:20}, "number of items to replace is not a multiple of replacement length") # changes u0vec
   expect_equal({u0vec[c(12,15,108)] <- c(1,2,4); u0vec}, {vvec[c(12,15,108)] <- c(1,2,4); u(vvec, "")})
   
   # single element replacement - numeric indices
@@ -25,7 +25,7 @@ test_that("[<-.unitted works for vectors", {
   expect_equal({uvec[4.9] <- u(7, "dbs"); uvec}, {vvec[4.9] <- 7; u(vvec, "dbs")})
   expect_equal({uvec[102] <- u(12, "dbs"); uvec}, {vvec[102] <- 12; u(vvec, "dbs")})
   expect_equal({uvec[-20] <- u(42, "dbs"); uvec}, {vvec[-20] <- 42; u(vvec, "dbs")})
-  expect_that({uvec[3] <- u(1:20, "dbs"); uvec}, gives_warning("number of items to replace is not a multiple of replacement length"))
+  expect_warning({uvec[3] <- u(1:20, "dbs"); uvec}, "number of items to replace is not a multiple of replacement length")
   
   # multiple element replacement - no indices
   vvec <- 101:199
@@ -41,7 +41,7 @@ test_that("[<-.unitted works for vectors", {
   expect_equal({uvec[c(12,15,18)] <- u(c(1,2,4), "dbs"); uvec}, {vvec[c(12,15,18)] <- c(1,2,4); u(vvec, "dbs")})
   expect_equal({uvec[c(72,75,78)] <- u(c(1,2,4), "dbs"); uvec}, {vvec[c(72,75,78)] <- c(1,2,4); u(vvec, "dbs")})
   expect_equal({uvec[c(-20,-63)] <- u(42, "dbs"); uvec}, {vvec[c(-20,-63)] <- 42; u(vvec, "dbs")})
-  expect_that({uvec[c(72,75,78)] <- u(c(1,4), "dbs"); uvec}, gives_warning("number of items to replace is not a multiple of replacement length"))
+  expect_warning({uvec[c(72,75,78)] <- u(c(1,4), "dbs"); uvec}, "number of items to replace is not a multiple of replacement length")
   
   # From ?Extract: "An empty index selects all values: this is most often
   # used to replace all the entries but keep the attributes."
@@ -114,20 +114,20 @@ test_that("[<-.unitted works for data.frames", {
   # it should be OK (albeit weird) to replace one row with several (the first wins)
   knownbug(expect_equal({udf <- udf0; udf[2,1:2] <- df0[c(1,3),1:2]; udf}, {df <- df0; df[2,1:2] <- df[c(1,3),1:2]; u(df,units)}, info="replace one row from several rows"))
   # replacing one column with several should generate an error
-  expect_that({df <- df0; df[2,1:2] <- df[1,c(1,2,1,2)]}, gives_warning("provided 4 variables to replace 2 variables"))
-  knownbug(expect_that({udf <- udf0; udf[2,1:2] <- udf0[1,c(1,2,1,2)]; udf}, gives_warning("provided 4 variables to replace 2 variables")))
+  expect_warning({df <- df0; df[2,1:2] <- df[1,c(1,2,1,2)]}, "provided 4 variables to replace 2 variables")
+  knownbug(expect_warning({udf <- udf0; udf[2,1:2] <- udf0[1,c(1,2,1,2)]; udf}, "provided 4 variables to replace 2 variables"))
   knownbug(expect_equal(udf, u(df,units), info="this expect_that relies on the previous two. expect that replacement happened despite warnings"))
   
   # replacement by logical indices
   expect_equal({udf <- udf0; udf[c(T,F,F),c(F,T,F)] <- udf[3,2]; udf}, {df <- df0; df[c(T,F,F),c(F,T,F)] <- df[3,2]; u(df,units)}, info="logical index to replace single element")
   expect_equal({udf <- udf0; udf[c(T,T,F),c(F,T,F)] <- udf[c(3,3),2]; udf}, {df <- df0; df[c(T,T,F),c(F,T,F)] <- df[c(3,3),2]; u(df,units)}, info="logical index to replace two elements in col")
   expect_equal({udf <- udf0; udf[c(T,F,F),c(T,T,F)] <- udf[3,1:2]; udf}, {df <- df0; df[c(T,F,F),c(T,T,F)] <- df[3,1:2]; u(df,units)}, info="logical index to replace two elements in col")
-  knownbug(expect_that({udf <- udf0; udf[c(T,F,F),] <- udf[3,]; udf}, gives_warning("this shouldn't give a warning"), info="logical index to replace whole row"))
+  knownbug(expect_warning({udf <- udf0; udf[c(T,F,F),] <- udf[3,]; udf}, "this shouldn't give a warning", info="logical index to replace whole row"))
   expect_equal({udf <- udf0; udf[c(T,F,F),] <- udf[3,]; udf}, {df <- df0; df[c(T,F,F),] <- df[3,]; u(df,units)}, info="logical index to replace whole row")
-  knownbug(expect_that({udf <- udf0; udf[,c(F,T,F)] <- udf[,1]; udf}, gives_warning("this shouldn't give a warning"), info="logical index to replace whole column - shouldn't give warning"))
+  knownbug(expect_warning({udf <- udf0; udf[,c(F,T,F)] <- udf[,1]; udf}, "this shouldn't give a warning", info="logical index to replace whole column - shouldn't give warning"))
   expect_equal({udf <- udf0; udf[,c(F,T,F)] <- list(udf[,1]); udf}, {df <- df0; df[,c(F,T,F)] <- df[,1]; u(df,units[c(1,1,3)])}, info="logical index to replace whole column")
-  expect_that({df <- df0; df[,F] <- df[,1]; df}, gives_warning("data length exceeds size of matrix"))
-  knownbug(expect_that({udf <- udf0; udf[,F] <- udf[,1]; udf}, gives_warning("data length exceeds size of matrix")))
+  expect_warning({df <- df0; df[,F] <- df[,1]; df}, "data length exceeds size of matrix")
+  knownbug(expect_warning({udf <- udf0; udf[,F] <- udf[,1]; udf}, "data length exceeds size of matrix"))
   expect_equal({udf <- udf0; udf[F,] <- udf[1,]; udf}, {df <- df0; df[F,] <- df[1,]; u(df,units)}, info="replacement of rows=F should give no warning, weirdly")
   
   # addition of new columns: numeric & character indices
@@ -224,9 +224,9 @@ test_that("[[<-.unitted works for data.frames", {
   # one numeric or character index; logical indices really don't (and shouldn't) work
   knownbug(expect_equal({udf <- udf0; udf[[1]] <- 5; udf}, {df <- df0; df[[1]] <- 5; u(df,units)}), "units get lost & scrambled")
   knownbug(expect_equal({udf <- udf0; udf[[1]] <- u(5,"toasts"); udf}, {df <- df0; df[[1]] <- 5; u(df,units)}, info="consistent units should work without warning"), "units get lost & scrambled")
-  knownbug(expect_that({udf <- udf0; udf[[1]] <- u(5,"newunits"); udf}, gives_warning("[[<-.unitted retains old units, ignores new ones")))
+  knownbug(expect_warning({udf <- udf0; udf[[1]] <- u(5,"newunits"); udf}, "[[<-.unitted retains old units, ignores new ones"))
   knownbug(expect_equal(udf, {df <- df0; df[[1]] <- 5; u(df,units)}),"unit scrambling")
-  knownbug(expect_that({udf <- udf0; udf[["yip"]] <- u(5,"toasts"); udf}, gives_warning("[[<-.unitted retains old units, ignores new ones")), "need warning, and units get lost & scrambled")
+  knownbug(expect_warning({udf <- udf0; udf[["yip"]] <- u(5,"toasts"); udf}, "[[<-.unitted retains old units, ignores new ones"), "need warning, and units get lost & scrambled")
   knownbug(expect_equal(udf, {df <- df0; df[["yip"]] <- 5; u(df,units)}), "units get lost & scrambled")
   knownbug(expect_equal({udf <- udf0; udf[["yip"]] <- u(5,"eggs"); udf}, {df <- df0; df[["yip"]] <- 5; u(df,units)}), "units get lost & scrambled")
   knownbug(expect_error({udf <- udf0; udf[[c("xam","zoom")]] <- 7; udf}, "more elements supplied than there are to replace"))
@@ -239,7 +239,7 @@ test_that("[[<-.unitted works for data.frames", {
   # two numeric or character indices (logical breaks correctly)
   knownbug({
     expect_equal({udf <- udf0; udf[[2,1]] <- u(55,"toasts"); udf}, {df <- df0; df[[2,1]] <- 55; u(df,units)}, info="consistent units should work without warning")
-    expect_that({udf <- udf0; udf[[1,2]] <- u(55,"toasts"); udf}, gives_warning("[[<-.unitted retains old units, ignores new ones"), info="inconsistent units should give warning")# breaks - need warning
+    expect_warning({udf <- udf0; udf[[1,2]] <- u(55,"toasts"); udf}, "[[<-.unitted retains old units, ignores new ones", info="inconsistent units should give warning")# breaks - need warning
     expect_equal(udf, {df <- df0; df[[1,2]] <- 55; u(df,units)}, info="inconsistent units should give warning but also right answer")
     expect_equal({udf <- udf0; udf[[1,2]] <- 55; udf}, {df <- df0; df[[1,2]] <- 55; u(df,units)})
     expect_error({udf <- udf0; udf[[ ,2]] <- 55; udf}, "only valid calls are ", info="cols may NOT be changed with df[[x,]] <- value")
@@ -265,8 +265,8 @@ test_that("[[<-.unitted works for data.frames", {
   # adding columns
   knownbug({
     expect_equal({udf <- udf0; udf[["whoo"]] <- 5; udf}, {df <- df0; df[["whoo"]] <- 5; u(df,c(units[1],"jellies",units[3]))}) # breaks - should create column
-    expect_that({udf <- udf0; udf[["whoo"]] <- u(5,""); udf}, gives_warning("ignoring new units with [[<-.unitted column creation; use [<- instead to pass units"))
-    expect_that({udf <- udf0; udf[["whoo"]] <- u(5,"jellies"); udf}, gives_warning("ignoring new units with [[<-.unitted column creation; use [<- instead to pass units"))
+    expect_warning({udf <- udf0; udf[["whoo"]] <- u(5,""); udf}, "ignoring new units with [[<-.unitted column creation; use [<- instead to pass units")
+    expect_warning({udf <- udf0; udf[["whoo"]] <- u(5,"jellies"); udf}, "ignoring new units with [[<-.unitted column creation; use [<- instead to pass units")
     expect_equal(udf, {df <- df0; df[["whoo"]] <- 5; u(df,c(units,""))})
   })
   
@@ -317,7 +317,7 @@ test_that("[[<-.unitted works for arrays and matrices", {
     expect_equal(umat, {mat <- mat0; mat[['2']] <- 10; u(mat,units)})
     expect_equal({uarr <- uarr0; uarr[['2']] <- 10; uarr}, {arr <- arr0; arr[['2']] <- 10; u(arr,units)}) # creates 1-D array with new element c('2'=10)
     expect_equal({uarr <- uarr0; uarr[['2']] <- u(10,units); uarr}, {arr <- arr0; arr[['2']] <- 10; u(arr,units)}) # creates 1-D array with new element c('2'=10)
-    expect_that({uarr <- uarr0; uarr[['2']] <- u(10,"newunits"); uarr}, gives_warning("[[<-.unitted retains old units, ignores new ones")) # creates 1-D array with new element c('2'=10)
+    expect_warning({uarr <- uarr0; uarr[['2']] <- u(10,"newunits"); uarr}, "[[<-.unitted retains old units, ignores new ones") # creates 1-D array with new element c('2'=10)
     expect_equal(uarr, {arr <- arr0; arr[['2']] <- 10; u(arr,units)})
   }, 'currently requiring 2D matrices')
   expect_error({umat <- umat0; umat[['2','3']] <- 10; umat}, "subscript out of bounds")

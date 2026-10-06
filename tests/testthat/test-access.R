@@ -351,7 +351,7 @@ test_that("data.frames can be accessed with '$.unitted'", {
 test_that("lists can be accessed with '$.unitted'", {
   vlist <- list(yxz=1:5,yum=LETTERS[6:10],zop=rnorm(5))
   units <- c(yxz="toasts",yum="eggs",zop="hams^2")
-  knownbug(expect_that(ulist <- u(vlist, units), gives_warning("The implementation of unitted lists is currently primitive")), "a character argument describing a units bundle must have length 1")
+  knownbug(expect_warning(ulist <- u(vlist, units), "The implementation of unitted lists is currently primitive"), "a character argument describing a units bundle must have length 1")
   ulist <- lapply(1:length(vlist), function(listnum) { u(vlist[[listnum]], units[listnum]) })
   names(ulist) <- names(vlist)
   
